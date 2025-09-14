@@ -27,5 +27,4 @@ Uma aplicação full-stack de agendamento de aulas particulares utilizando Sprin
 
 ### Classe
 
-
 ## Como rodar
