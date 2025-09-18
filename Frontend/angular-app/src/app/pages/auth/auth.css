@@ -1,0 +1,48 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #08080B;
+  margin: 0;
+  padding: 0;
+}
+
+.auth-container {
+  max-width: 500px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.521);
+  background-color: #181C1F;
+  color: white;
+}
+
+h2 {
+  font-size: 30px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 11px;
+  border: 1px solid #146BC2;
+  background-color: #2A3236;
+  color: white;
+}
+
+button {
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  color: #faf2dd;
+  background-color: #146BC2;
+  padding: 0.5rem 1rem;
+}
+
+button:hover {
+  background-color: #0f4f90;
+}
