@@ -1,24 +1,20 @@
 ﻿<nav class="navbar" *ngIf="isLoggedIn$ | async">
   <div class="navbar-container">
-    <!-- Logo -->
     <div class="navbar-brand" (click)="goToHome()">
       <span class="brand-text">Estuda+</span>
     </div>
 
-    <!-- Botões de Navegação -->
     <div class="navbar-actions">
       <button class="btn-agenda" (click)="goToAgenda()">
         <span class="icon"></span>
         <span>Agenda</span>
       </button>
 
-      <!-- Menu do Usuário -->
       <div class="user-menu-wrapper">
         <button class="user-avatar" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen()">
           <span class="avatar-initials">{{ getUserInitials() }}</span>
         </button>
 
-        <!-- Dropdown -->
         <div class="user-dropdown" *ngIf="isUserMenuOpen()">
           <div class="dropdown-content">
             <div class="dropdown-header">
@@ -57,7 +53,6 @@
     </div>
   </div>
 
-  <!-- Botão Scroll to Top -->
   <button class="scroll-top-btn" *ngIf="showScrollTop()" (click)="scrollToTop()">
     <span></span>
   </button>

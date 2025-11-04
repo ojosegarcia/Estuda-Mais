@@ -1,7 +1,3 @@
-/* ===================================
-   PÁGINA DE BUSCA - LISTAGEM DE PROFESSORES
-   =================================== */
-
 .page-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -16,10 +12,6 @@
   margin-bottom: var(--spacing-lg);
   text-align: center;
 }
-
-/* ===================================
-   LOADING STATE
-   =================================== */
 
 .loading-state {
   display: flex;
@@ -39,20 +31,12 @@
   50% { opacity: 0.5; }
 }
 
-/* ===================================
-   GRID DE CARDS
-   =================================== */
-
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--spacing-lg);
   margin-top: var(--spacing-lg);
 }
-
-/* ===================================
-   EMPTY STATE
-   =================================== */
 
 .empty-state {
   display: flex;
@@ -69,10 +53,6 @@
   color: var(--text-secondary);
   margin-bottom: var(--spacing-md);
 }
-
-/* ===================================
-   RESPONSIVIDADE
-   =================================== */
 
 @media (max-width: 768px) {
   .page-container {

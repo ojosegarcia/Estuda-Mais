@@ -67,7 +67,7 @@ p {
   margin-left: 0.25rem;
 }
 .radio-options input[type="radio"] {
-  width: auto; /* Reseta o width: 100% dos inputs normais */
+  width: auto; 
   margin-bottom: 0;
   cursor: pointer;
 }

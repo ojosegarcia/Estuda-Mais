@@ -24,7 +24,6 @@ export class PerfilComponent implements OnInit {
     }
   }
 
-  // Type guards para verificar tipo de usuário
   isAluno(): boolean {
     return this.currentUser?.tipoUsuario === 'ALUNO';
   }
@@ -33,7 +32,6 @@ export class PerfilComponent implements OnInit {
     return this.currentUser?.tipoUsuario === 'PROFESSOR';
   }
 
-  // Métodos para obter propriedades específicas com type safety
   getEscolaridade(): string | undefined {
     return this.isAluno() ? (this.currentUser as Aluno).escolaridade : undefined;
   }

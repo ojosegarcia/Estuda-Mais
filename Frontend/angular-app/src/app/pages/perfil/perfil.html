@@ -7,7 +7,6 @@
   </div>
 
   <div class="perfil-content" *ngIf="currentUser">
-    <!-- Card de Informações Pessoais -->
     <div class="info-card">
       <div class="card-header">
         <h2 class="card-title">
@@ -50,7 +49,6 @@
       </div>
     </div>
 
-    <!-- Card de Estatísticas (Placeholder) -->
     <div class="stats-card">
       <div class="card-header">
         <h2 class="card-title">
@@ -88,7 +86,6 @@
       </div>
     </div>
 
-    <!-- Card de Ações -->
     <div class="actions-card">
       <div class="card-header">
         <h2 class="card-title">
@@ -119,7 +116,6 @@
     </div>
   </div>
 
-  <!-- Mensagem de carregamento -->
   <div class="loading-state" *ngIf="!currentUser">
     <div class="loading-spinner"></div>
     <p>Carregando perfil...</p>

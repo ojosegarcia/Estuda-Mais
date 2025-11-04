@@ -1,11 +1,9 @@
-﻿/* ==================== CONTAINER ==================== */
-.my-classes-container {
+﻿.my-classes-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
 }
 
-/* ==================== HEADER ==================== */
 .page-header {
   margin-bottom: 2rem;
 }
@@ -30,7 +28,6 @@
   margin: 0;
 }
 
-/* ==================== EMPTY STATE ==================== */
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
@@ -53,7 +50,6 @@
   color: var(--text-secondary);
 }
 
-/* ==================== VIEW ALUNO - GRID ==================== */
 .classes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -164,7 +160,6 @@
   color: white;
 }
 
-/* ==================== VIEW PROFESSOR ==================== */
 .stats-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -334,7 +329,6 @@
   transform: scale(1.1);
 }
 
-/* ==================== RESPONSIVIDADE ==================== */
 @media (max-width: 768px) {
   .my-classes-container {
     padding: 1rem;

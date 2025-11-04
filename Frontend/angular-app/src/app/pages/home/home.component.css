@@ -1,20 +1,11 @@
-/* Removemos os estilos :host e .navbar daqui.
-  O :host é desnecessário se o fundo já é global (em styles.css)
-  e a .navbar pertence ao navbar.component.css
-*/
-
 .home-container {
-  /* O padding-top de 8rem é para "empurrar" o conteúdo
-    para baixo da sua navbar fixa. Ajuste se for necessário.
-  */
   padding: 8rem 2rem 2rem 2rem; 
   box-sizing: border-box;
   width: 100%;
-  min-height: 100vh; /* Garante que ocupe a tela toda */
+  min-height: 100vh; 
   text-align: center;
 }
 
-/* Este é o seu estilo de gradiente para o título */
 .hero-text h1 {
   font-size: 3rem;
   font-weight: bold;
@@ -29,7 +20,6 @@
   color: #cccccc;
 }
 
-/* Esta parte estava correta */
 .categories {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -59,7 +49,6 @@
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-/* Você tinha um estilo para <span>, mas não tinha a classe .icon */
 .category-card .icon {
   font-size: 2rem;
 }

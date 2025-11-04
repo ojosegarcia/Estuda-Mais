@@ -9,7 +9,6 @@
     </p>
   </div>
 
-  <!-- View para ALUNO -->
   <div class="classes-content" *ngIf="isAluno()">
     <div class="empty-state" *ngIf="aulasAluno.length === 0">
       <div class="empty-icon">📚</div>
@@ -55,7 +54,6 @@
     </div>
   </div>
 
-  <!-- View para PROFESSOR -->
   <div class="classes-content" *ngIf="isProfessor()">
     <div class="stats-summary">
       <div class="stat-card">

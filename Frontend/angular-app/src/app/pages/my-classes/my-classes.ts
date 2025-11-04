@@ -13,7 +13,6 @@ import { Usuario } from '../../shared/models/usuarioModel';
 export class MyClassesComponent implements OnInit {
   currentUser: Usuario | null = null;
 
-  // Dados mockados para demonstração
   aulasAluno = [
     {
       id: 1,
@@ -81,7 +80,6 @@ export class MyClassesComponent implements OnInit {
     return this.currentUser?.tipoUsuario === 'ALUNO';
   }
 
-  // Getters para contar aulas por status
   get aulasConfirmadas(): number {
     return this.aulasProfessor.filter(aula => aula.status === 'Confirmada').length;
   }
@@ -90,7 +88,6 @@ export class MyClassesComponent implements OnInit {
     return this.aulasProfessor.filter(aula => aula.status === 'Pendente').length;
   }
 
-  // Métodos placeholder para ações futuras
   confirmarAula(aulaId: number): void {
     alert(`Confirmar aula #${aulaId} - Funcionalidade em desenvolvimento`);
   }

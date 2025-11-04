@@ -39,7 +39,6 @@ export class ProfessorService {
     return of(professoresFiltrados).pipe(delay(500));
   }
 
-  // NOVO MÉTODO PARA A PÁGINA DE DETALHES
   getProfessorById(id: number): Observable<Professor | undefined> {
     const professor = this.mockProfessores.find(prof => prof.id === id);
     return of(professor).pipe(delay(300));
