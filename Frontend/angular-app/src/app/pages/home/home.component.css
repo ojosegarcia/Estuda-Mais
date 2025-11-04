@@ -1,57 +1,20 @@
-:host {
-  display: block;
-  width: 100%;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  background-color: #131313;
-  color: white;
-}
-
-
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  margin: 0;
-  padding: 1rem 2rem;
-  background-color: #1e1e1e;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  z-index: 100;
-}
-
-.navbar .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.navbar .nav-links a {
-  color: white;
-  text-decoration: none;
-  margin-left: 2rem;
-  transition: color 0.3s;
-}
-
-.navbar .nav-links a:hover {
-  color: #146BC2;
-}
-
+/* Removemos os estilos :host e .navbar daqui.
+  O :host é desnecessário se o fundo já é global (em styles.css)
+  e a .navbar pertence ao navbar.component.css
+*/
 
 .home-container {
-  min-height: 100vh;
-  width: 100%;
-  text-align: center;
-  padding: 8rem 2rem 2rem 2rem;
+  /* O padding-top de 8rem é para "empurrar" o conteúdo
+    para baixo da sua navbar fixa. Ajuste se for necessário.
+  */
+  padding: 8rem 2rem 2rem 2rem; 
   box-sizing: border-box;
-  background-color: #131313;
+  width: 100%;
+  min-height: 100vh; /* Garante que ocupe a tela toda */
+  text-align: center;
 }
 
-
+/* Este é o seu estilo de gradiente para o título */
 .hero-text h1 {
   font-size: 3rem;
   font-weight: bold;
@@ -66,7 +29,7 @@
   color: #cccccc;
 }
 
-
+/* Esta parte estava correta */
 .categories {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -83,7 +46,6 @@
   font-weight: 500;
   transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -97,6 +59,7 @@
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-.category-card span {
+/* Você tinha um estilo para <span>, mas não tinha a classe .icon */
+.category-card .icon {
   font-size: 2rem;
 }

@@ -1,0 +1,127 @@
+<div class="perfil-container">
+  <div class="perfil-header">
+    <div class="profile-avatar-large">
+      <span class="avatar-initials-large">{{ getUserInitials() }}</span>
+    </div>
+    <h1 class="perfil-title">Meu Perfil</h1>
+  </div>
+
+  <div class="perfil-content" *ngIf="currentUser">
+    <!-- Card de Informações Pessoais -->
+    <div class="info-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="icon">👤</span>
+          Informações Pessoais
+        </h2>
+      </div>
+      
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-item">
+            <label class="info-label">Nome Completo</label>
+            <p class="info-value">{{ currentUser.nomeCompleto }}</p>
+          </div>
+
+          <div class="info-item">
+            <label class="info-label">Email</label>
+            <p class="info-value">{{ currentUser.email }}</p>
+          </div>
+
+          <div class="info-item">
+            <label class="info-label">Tipo de Usuário</label>
+            <div class="badge-container">
+              <span class="user-type-badge" [class.professor]="isProfessor()">
+                {{ currentUser.tipoUsuario }}
+              </span>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="isAluno() && getEscolaridade()">
+            <label class="info-label">Escolaridade</label>
+            <p class="info-value">{{ getEscolaridade() }}</p>
+          </div>
+        </div>
+
+        <div class="info-item full-width" *ngIf="isProfessor() && getSobre()">
+          <label class="info-label">Sobre</label>
+          <p class="info-value about-text">{{ getSobre() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card de Estatísticas (Placeholder) -->
+    <div class="stats-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="icon">📊</span>
+          Estatísticas
+        </h2>
+      </div>
+      
+      <div class="card-body">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon">📚</div>
+            <div class="stat-content">
+              <p class="stat-value">0</p>
+              <p class="stat-label">Aulas {{ currentUser.tipoUsuario === 'PROFESSOR' ? 'Ministradas' : 'Realizadas' }}</p>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+              <p class="stat-value">0.0</p>
+              <p class="stat-label">Avaliação Média</p>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-content">
+              <p class="stat-value">0</p>
+              <p class="stat-label">{{ currentUser.tipoUsuario === 'PROFESSOR' ? 'Alunos' : 'Professores' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card de Ações -->
+    <div class="actions-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="icon">⚙️</span>
+          Ações
+        </h2>
+      </div>
+      
+      <div class="card-body">
+        <button class="btn-action" disabled>
+          <span class="action-icon">✏️</span>
+          <span>Editar Perfil</span>
+          <span class="coming-soon">Em breve</span>
+        </button>
+
+        <button class="btn-action" disabled>
+          <span class="action-icon">🔒</span>
+          <span>Alterar Senha</span>
+          <span class="coming-soon">Em breve</span>
+        </button>
+
+        <button class="btn-action" disabled>
+          <span class="action-icon">🔔</span>
+          <span>Notificações</span>
+          <span class="coming-soon">Em breve</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensagem de carregamento -->
+  <div class="loading-state" *ngIf="!currentUser">
+    <div class="loading-spinner"></div>
+    <p>Carregando perfil...</p>
+  </div>
+</div>

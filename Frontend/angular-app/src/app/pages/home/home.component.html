@@ -1,0 +1,16 @@
+<div class="home-container">
+  <header class="hero-text"> <h1>Encontre seu professor ideal!</h1>
+    <p>Aprenda qualquer disciplina com os melhores profissionais.</p>
+  </header>
+  
+  <section class="categories">
+    <div *ngFor="let materia of materias" 
+         class="category-card" 
+         (click)="buscarPorMateria(materia.id)">
+
+      <span class="icon">{{ materia.icone }}</span>
+      
+      <span class="nome">{{ materia.nome }}</span>
+    </div>
+  </section>
+</div>

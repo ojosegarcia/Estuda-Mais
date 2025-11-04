@@ -1,0 +1,64 @@
+﻿<nav class="navbar" *ngIf="isLoggedIn$ | async">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-brand" (click)="goToHome()">
+      <span class="brand-text">Estuda+</span>
+    </div>
+
+    <!-- Botões de Navegação -->
+    <div class="navbar-actions">
+      <button class="btn-agenda" (click)="goToAgenda()">
+        <span class="icon"></span>
+        <span>Agenda</span>
+      </button>
+
+      <!-- Menu do Usuário -->
+      <div class="user-menu-wrapper">
+        <button class="user-avatar" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen()">
+          <span class="avatar-initials">{{ getUserInitials() }}</span>
+        </button>
+
+        <!-- Dropdown -->
+        <div class="user-dropdown" *ngIf="isUserMenuOpen()">
+          <div class="dropdown-content">
+            <div class="dropdown-header">
+              <div class="user-info">
+                <div class="user-name-row">
+                  <p class="user-name">{{ currentUser?.nomeCompleto }}</p>
+                  <span class="user-type-badge" [class.aluno]="currentUser?.tipoUsuario === 'ALUNO'" [class.professor]="currentUser?.tipoUsuario === 'PROFESSOR'">
+                    {{ currentUser?.tipoUsuario === 'ALUNO' ? 'Aluno' : 'Professor' }}
+                  </span>
+                </div>
+                <p class="user-email">{{ currentUser?.email }}</p>
+              </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <button class="dropdown-item" (click)="goToAgenda()">
+              <span class="item-icon"></span>
+              <span>Minhas Aulas</span>
+            </button>
+
+            <button class="dropdown-item" (click)="goToPerfil()">
+              <span class="item-icon"></span>
+              <span>Perfil</span>
+            </button>
+
+            <div class="dropdown-divider"></div>
+
+            <button class="dropdown-item logout" (click)="logout()">
+              <span class="item-icon"></span>
+              <span>Sair</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botão Scroll to Top -->
+  <button class="scroll-top-btn" *ngIf="showScrollTop()" (click)="scrollToTop()">
+    <span></span>
+  </button>
+</nav>

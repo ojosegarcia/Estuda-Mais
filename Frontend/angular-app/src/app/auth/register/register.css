@@ -7,7 +7,6 @@
   margin: 0;
   padding: 0;
 }
-
 .auth-container {
   max-width: 500px;
   width: 100%;
@@ -17,13 +16,11 @@
   background-color: #181C1F;
   color: white;
 }
-
 h2 {
   font-size: 30px;
   text-align: center;
   margin-bottom: 1rem;
 }
-
 input {
   width: 100%;
   margin-bottom: 1rem;
@@ -33,16 +30,44 @@ input {
   background-color: #2A3236;
   color: white;
 }
-
-button {
+button, .toggle-link-btn {
   border-radius: 4px;
   cursor: pointer;
   border: none;
   color: #faf2dd;
   background-color: #146BC2;
   padding: 0.5rem 1rem;
+  text-decoration: none;
+  display: inline-block;
+}
+button:hover, .toggle-link-btn:hover {
+  background-color: #0f4f90;
+}
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+p {
+  margin-top: 1rem;
+  text-align: center;
 }
 
-button:hover {
-  background-color: #0f4f90;
+.user-type-selector {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.radio-options {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+.radio-options label {
+  cursor: pointer;
+  margin-left: 0.25rem;
+}
+.radio-options input[type="radio"] {
+  width: auto; /* Reseta o width: 100% dos inputs normais */
+  margin-bottom: 0;
+  cursor: pointer;
 }

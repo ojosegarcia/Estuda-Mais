@@ -1,0 +1,53 @@
+<div *ngIf="professor$ | async as professor" class="profile-container">
+
+  <header class="profile-header">
+    <div class="professor-avatar-large">
+      <span class="avatar-initials">{{ getInitials(professor.nomeCompleto) }}</span>
+    </div>
+    <div class="profile-header-info">
+      <h1>{{ professor.nomeCompleto }}</h1>
+      <div class="profile-tags">
+        <span *ngFor="let materia of professor.materias" class="materia-tag">
+          {{ materia.nome }}
+        </span>
+      </div>
+    </div>
+    <div class="profile-header-actions">
+      <span class="profile-preco">R$ {{ professor.valorHora }}/hora</span>
+      <button class="btn-primary">Agendar Aula</button>
+    </div>
+  </header>
+
+  <div class="profile-body">
+
+    <div class="profile-main">
+      <section>
+        <h2>Sobre Mim</h2>
+        <p>{{ professor.sobre }}</p>
+      </section>
+
+      <section>
+        <h2>Experiência</h2>
+        <ul class="experiencia-lista">
+          <li *ngFor="let exp of professor.experiencias">
+            <strong>{{ exp.cargo }}</strong> em {{ exp.instituicao }} ({{ exp.periodo }})
+            <p>{{ exp.descricao }}</p>
+          </li>
+        </ul>
+      </section>
+
+      </div>
+
+    <aside class="profile-sidebar">
+      <section>
+        <h2>Disponibilidade</h2>
+        <p>(Em breve)</p>
+      </section>
+      <section>
+        <h2>Avaliações</h2>
+        <p>(Em breve)</p>
+      </section>
+    </aside>
+  </div>
+
+</div>

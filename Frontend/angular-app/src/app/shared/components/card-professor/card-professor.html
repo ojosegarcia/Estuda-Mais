@@ -1,0 +1,23 @@
+<a [routerLink]="['/professor-detalhe', professor.id]" class="card">
+  <div class="card-imagem">
+    <div class="professor-avatar">
+      <span class="avatar-initials">{{ getInitials(professor.nomeCompleto) }}</span>
+    </div>
+  </div>
+  <div class="card-conteudo">
+    <h3 class="card-nome">{{ professor.nomeCompleto }}</h3>
+
+    <div class="card-materias">
+      <span *ngFor="let materia of professor.materias" class="materia-tag">
+        {{ materia.nome }}
+      </span>
+    </div>
+
+    <p class="card-sobre">{{ (professor.sobre || 'Professor sem descrição') | slice:0:100 }}...</p>
+
+    <div class="card-footer">
+      <span class="card-preco">R$ {{ professor.valorHora }}/hora</span>
+      <span class="card-nota">⭐ 4.8</span>
+    </div>
+  </div>
+</a>

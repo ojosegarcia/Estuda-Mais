@@ -1,0 +1,111 @@
+﻿<div class="my-classes-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <span class="icon">📅</span>
+      Minhas Aulas
+    </h1>
+    <p class="page-subtitle" *ngIf="currentUser">
+      {{ isProfessor() ? 'Gerencie suas aulas agendadas' : 'Acompanhe suas aulas marcadas' }}
+    </p>
+  </div>
+
+  <!-- View para ALUNO -->
+  <div class="classes-content" *ngIf="isAluno()">
+    <div class="empty-state" *ngIf="aulasAluno.length === 0">
+      <div class="empty-icon">📚</div>
+      <h3>Nenhuma aula agendada</h3>
+      <p>Você ainda não tem aulas marcadas</p>
+    </div>
+
+    <div class="classes-grid" *ngIf="aulasAluno.length > 0">
+      <div class="class-card" *ngFor="let aula of aulasAluno">
+        <div class="card-header">
+          <h3 class="class-subject">{{ aula.materia }}</h3>
+          <span class="status-badge" [class.confirmed]="aula.status === 'Confirmada'">
+            {{ aula.status }}
+          </span>
+        </div>
+        
+        <div class="card-body">
+          <div class="info-row">
+            <span class="info-icon">👨‍🏫</span>
+            <span>{{ aula.professor }}</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-icon">📅</span>
+            <span>{{ aula.data }}</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-icon">🕐</span>
+            <span>{{ aula.horario }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn-secondary btn-sm" (click)="reagendarAula(aula.id)">
+            Reagendar
+          </button>
+          <button class="btn-danger btn-sm" (click)="cancelarAula(aula.id)">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View para PROFESSOR -->
+  <div class="classes-content" *ngIf="isProfessor()">
+    <div class="stats-summary">
+      <div class="stat-card">
+        <div class="stat-number">{{ aulasProfessor.length }}</div>
+        <div class="stat-label">Total de Aulas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ aulasConfirmadas }}</div>
+        <div class="stat-label">Confirmadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ aulasPendentes }}</div>
+        <div class="stat-label">Pendentes</div>
+      </div>
+    </div>
+
+    <div class="classes-list">
+      <div class="class-item" *ngFor="let aula of aulasProfessor">
+        <div class="item-left">
+          <div class="student-avatar">
+            <span>{{ aula.aluno.split(' ')[0][0] }}{{ aula.aluno.split(' ')[1] ? aula.aluno.split(' ')[1][0] : '' }}</span>
+          </div>
+          <div class="item-info">
+            <h4 class="student-name">{{ aula.aluno }}</h4>
+            <p class="class-details">
+              <span class="subject-tag">{{ aula.materia }}</span>
+              <span class="separator"></span>
+              <span>{{ aula.data }} às {{ aula.horario.split(' - ')[0] }}</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="item-right">
+          <span class="status-badge" [class.confirmed]="aula.status === 'Confirmada'" [class.pending]="aula.status === 'Pendente'">
+            {{ aula.status }}
+          </span>
+          
+          <div class="action-buttons">
+            <button class="btn-icon btn-success" *ngIf="aula.status === 'Pendente'" (click)="confirmarAula(aula.id)" title="Confirmar">
+              
+            </button>
+            <button class="btn-icon btn-warning" (click)="reagendarAula(aula.id)" title="Reagendar">
+              
+            </button>
+            <button class="btn-icon btn-danger" (click)="cancelarAula(aula.id)" title="Cancelar">
+              
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

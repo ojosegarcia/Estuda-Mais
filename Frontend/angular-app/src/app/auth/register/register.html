@@ -1,0 +1,40 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <h2>Cadastro</h2>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+      <div class="form-group user-type-selector">
+        <label>Eu sou:</label>
+        <div class="radio-options">
+          <input type="radio" id="tipoAluno" value="ALUNO" formControlName="tipoUsuario">
+          <label for="tipoAluno">Aluno</label>
+          
+          <input type="radio" id="tipoProfessor" value="PROFESSOR" formControlName="tipoUsuario">
+          <label for="tipoProfessor">Professor</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Nome:</label>
+        <input id="name" formControlName="nomeCompleto">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input id="email" formControlName="email">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha:</label>
+        <input id="password" type="password" formControlName="password" placeholder="Informe pelo menos 6 Dígitos">
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid">Cadastrar</button>
+    </form>
+
+    <p>
+      Já tem conta?
+      <a class="toggle-link-btn" routerLink="/auth/login">Fazer login</a>
+    </p>
+  </div>
+</div>

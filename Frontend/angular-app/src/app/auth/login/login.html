@@ -1,0 +1,121 @@
+<div class="login-page">
+  <!-- Lado Esquerdo - Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <!-- Logo -->
+      <div class="hero-logo">
+        <span class="logo-text">Estuda+</span>
+      </div>
+
+      <!-- Frase Principal -->
+      <h1 class="hero-title">
+        Transforme seu aprendizado com os melhores professores
+      </h1>
+      <p class="hero-subtitle">
+        Conecte-se com professores qualificados e alcance seus objetivos educacionais
+      </p>
+
+      <!-- Cards de Benefícios -->
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">🎓</div>
+          <h3 class="benefit-title">Professores Qualificados</h3>
+          <p class="benefit-text">Profissionais experientes e certificados</p>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon">⏰</div>
+          <h3 class="benefit-title">Horários Flexíveis</h3>
+          <p class="benefit-text">Agende no horário que funciona para você</p>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon">💡</div>
+          <h3 class="benefit-title">Aprendizado Personalizado</h3>
+          <p class="benefit-text">Aulas adaptadas ao seu ritmo</p>
+        </div>
+      </div>
+
+      <!-- Depoimento -->
+      <div class="testimonial">
+        <div class="testimonial-content">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">
+            A plataforma me ajudou a encontrar o professor perfeito. Minhas notas melhoraram muito!
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar">JS</div>
+            <div class="author-info">
+              <p class="author-name">João Silva</p>
+              <p class="author-role">Estudante de Matemática</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lado Direito - Formulário de Login -->
+  <div class="form-section">
+    <div class="form-container">
+      <div class="form-header">
+        <h2 class="form-title">Bem-vindo de volta!</h2>
+        <p class="form-subtitle">Entre na sua conta para continuar</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label class="form-label" for="email">
+            <span class="label-icon">✉️</span>
+            Email
+          </label>
+          <input 
+            class="form-input" 
+            id="email" 
+            type="email" 
+            formControlName="email" 
+            placeholder="seu@email.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">
+            <span class="label-icon">🔒</span>
+            Senha
+          </label>
+          <input 
+            class="form-input" 
+            id="password" 
+            type="password" 
+            formControlName="password" 
+            placeholder="Digite sua senha">
+        </div>
+
+        <button class="btn btn-primary btn-full btn-login" type="submit" [disabled]="loginForm.invalid">
+          <span>Entrar</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
+
+      <!-- Divisor -->
+      <div class="divider">
+        <span class="divider-text">ou</span>
+      </div>
+
+      <!-- Call to Action -->
+      <div class="cta-section">
+        <p class="cta-text">Ainda não tem uma conta?</p>
+        <a class="btn btn-secondary btn-full btn-register" routerLink="/auth/register">
+          <span>Criar conta gratuita</span>
+          <span class="btn-icon">✨</span>
+        </a>
+      </div>
+
+      <!-- Footer do Form -->
+      <div class="form-footer">
+        <p class="footer-text">
+          Ao continuar, você concorda com nossos Termos de Uso
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

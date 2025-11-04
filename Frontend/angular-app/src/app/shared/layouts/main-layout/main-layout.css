@@ -1,0 +1,12 @@
+﻿.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-dark);
+}
+
+.main-content {
+  flex: 1;
+  margin-top: 64px; /* Altura da navbar */
+  padding: 0;
+}
