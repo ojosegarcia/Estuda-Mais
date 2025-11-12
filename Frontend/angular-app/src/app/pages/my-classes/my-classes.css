@@ -48,6 +48,14 @@
 
 .empty-state p {
   color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.empty-state .btn-primary {
+  margin-top: 1rem;
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  text-decoration: none;
 }
 
 .classes-grid {
@@ -327,6 +335,102 @@
   background: var(--error-color);
   color: white;
   transform: scale(1.1);
+}
+
+/* ==================== STATUS STYLING ==================== */
+.status-solicitada {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--warning-color);
+}
+
+.status-confirmada {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--success-color);
+}
+
+.status-recusada {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--error-color);
+}
+
+.status-cancelada {
+  background: rgba(156, 163, 175, 0.2);
+  color: var(--text-tertiary);
+}
+
+.status-realizada {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--primary-light);
+}
+
+/* Adiciona borda colorida nos cards baseado no status */
+.class-card.status-confirmada {
+  border-left: 4px solid var(--success-color);
+}
+
+.class-card.status-solicitada {
+  border-left: 4px solid var(--warning-color);
+}
+
+.class-card.status-recusada,
+.class-card.status-cancelada {
+  border-left: 4px solid var(--error-color);
+  opacity: 0.7;
+}
+
+.class-card.status-realizada {
+  border-left: 4px solid var(--primary-color);
+}
+
+.class-item.status-confirmada {
+  border-left: 4px solid var(--success-color);
+}
+
+.class-item.status-solicitada {
+  border-left: 4px solid var(--warning-color);
+}
+
+.class-item.status-recusada,
+.class-item.status-cancelada {
+  border-left: 4px solid var(--error-color);
+  opacity: 0.7;
+}
+
+.class-item.status-realizada {
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Link de reunião */
+.meeting-link {
+  color: var(--primary-light);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all var(--transition-base);
+}
+
+.meeting-link:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+/* Ícone do subject */
+.subject-icon {
+  font-size: 1rem;
+  margin-right: 0.25rem;
+}
+
+/* Preço na visão do professor */
+.price {
+  font-weight: 600;
+  color: var(--success-color);
+}
+
+/* Loading state */
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
 }
 
 @media (max-width: 768px) {

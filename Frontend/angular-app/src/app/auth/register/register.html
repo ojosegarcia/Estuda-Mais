@@ -1,40 +1,131 @@
-<div class="auth-page">
-  <div class="auth-container">
-    <h2>Cadastro</h2>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+<div class="register-page">
+  <!-- Hero Section (Lado Esquerdo) -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-logo">
+        <span class="logo-text">Estuda+</span>
+      </div>
 
-      <div class="form-group user-type-selector">
-        <label>Eu sou:</label>
-        <div class="radio-options">
-          <input type="radio" id="tipoAluno" value="ALUNO" formControlName="tipoUsuario">
-          <label for="tipoAluno">Aluno</label>
-          
-          <input type="radio" id="tipoProfessor" value="PROFESSOR" formControlName="tipoUsuario">
-          <label for="tipoProfessor">Professor</label>
+      <h1 class="hero-title">
+        Comece sua jornada de aprendizado hoje!
+      </h1>
+      <p class="hero-subtitle">
+        Crie sua conta gratuita e conecte-se com os melhores professores
+      </p>
+
+      <div class="benefits-list">
+        <div class="benefit-item">
+          <div class="benefit-icon">✅</div>
+          <div class="benefit-content">
+            <h3 class="benefit-title">Cadastro Rápido</h3>
+            <p class="benefit-text">Menos de 2 minutos para começar</p>
+          </div>
+        </div>
+
+        <div class="benefit-item">
+          <div class="benefit-icon">🎓</div>
+          <div class="benefit-content">
+            <h3 class="benefit-title">100% Gratuito</h3>
+            <p class="benefit-text">Sem taxas de cadastro ou mensalidade</p>
+          </div>
+        </div>
+
+        <div class="benefit-item">
+          <div class="benefit-icon">🔒</div>
+          <div class="benefit-content">
+            <h3 class="benefit-title">Dados Seguros</h3>
+            <p class="benefit-text">Suas informações protegidas</p>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="form-group">
-        <label for="name">Nome:</label>
-        <input id="name" formControlName="nomeCompleto">
+  <!-- Form Section (Lado Direito) -->
+  <div class="form-section">
+    <div class="form-container">
+      <div class="form-header">
+        <h2 class="form-title">Criar Conta</h2>
+        <p class="form-subtitle">Preencha os dados para começar</p>
       </div>
 
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input id="email" formControlName="email">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <!-- Tipo de Usuário -->
+        <div class="form-group user-type-group">
+          <label class="form-label">Eu sou:</label>
+          <div class="user-type-options">
+            <label class="user-type-card" [class.active]="registerForm.get('tipoUsuario')?.value === 'ALUNO'">
+              <input type="radio" name="tipoUsuario" value="ALUNO" formControlName="tipoUsuario">
+              <div class="card-icon">🎓</div>
+              <span class="card-label">Aluno</span>
+            </label>
+
+            <label class="user-type-card" [class.active]="registerForm.get('tipoUsuario')?.value === 'PROFESSOR'">
+              <input type="radio" name="tipoUsuario" value="PROFESSOR" formControlName="tipoUsuario">
+              <div class="card-icon">👨‍🏫</div>
+              <span class="card-label">Professor</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Nome -->
+        <div class="form-group">
+          <label class="form-label" for="name">
+            <span class="label-icon">👤</span>
+            Nome Completo
+          </label>
+          <input 
+            class="form-input" 
+            id="name" 
+            type="text" 
+            formControlName="nomeCompleto" 
+            placeholder="Seu nome completo">
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">
+            <span class="label-icon">✉️</span>
+            Email
+          </label>
+          <input 
+            class="form-input" 
+            id="email" 
+            type="email" 
+            formControlName="email" 
+            placeholder="seu@email.com">
+        </div>
+
+        <!-- Senha -->
+        <div class="form-group">
+          <label class="form-label" for="password">
+            <span class="label-icon">🔒</span>
+            Senha
+          </label>
+          <input 
+            class="form-input" 
+            id="password" 
+            type="password" 
+            formControlName="password" 
+            placeholder="Mínimo 6 caracteres">
+        </div>
+
+        <button class="btn btn-primary btn-full btn-register" type="submit" [disabled]="registerForm.invalid">
+          <span>Criar Conta</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
+
+      <div class="divider">
+        <span class="divider-text">ou</span>
       </div>
 
-      <div class="form-group">
-        <label for="password">Senha:</label>
-        <input id="password" type="password" formControlName="password" placeholder="Informe pelo menos 6 Dígitos">
+      <div class="cta-section">
+        <p class="cta-text">Já tem uma conta?</p>
+        <a class="btn btn-secondary btn-full btn-login" routerLink="/auth/login">
+          <span>Fazer login</span>
+        </a>
       </div>
-
-      <button type="submit" [disabled]="registerForm.invalid">Cadastrar</button>
-    </form>
-
-    <p>
-      Já tem conta?
-      <a class="toggle-link-btn" routerLink="/auth/login">Fazer login</a>
-    </p>
+    </div>
   </div>
 </div>

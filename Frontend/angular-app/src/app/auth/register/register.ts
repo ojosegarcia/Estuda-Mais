@@ -35,6 +35,13 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this.authService.register(this.registerForm.value);
+    this.authService.register(this.registerForm.value).subscribe({
+      next: (usuario) => {
+        console.log('Usuário cadastrado com sucesso:', usuario);
+      },
+      error: (err) => {
+        console.error('Erro ao cadastrar:', err);
+      }
+    });
   }
 }

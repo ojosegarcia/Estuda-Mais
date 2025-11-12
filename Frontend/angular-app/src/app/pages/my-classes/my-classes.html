@@ -9,101 +9,103 @@
     </p>
   </div>
 
-  <div class="classes-content" *ngIf="isAluno()">
-    <div class="empty-state" *ngIf="aulasAluno.length === 0">
-      <div class="empty-icon">📚</div>
-      <h3>Nenhuma aula agendada</h3>
-      <p>Você ainda não tem aulas marcadas</p>
-    </div>
-
-    <div class="classes-grid" *ngIf="aulasAluno.length > 0">
-      <div class="class-card" *ngFor="let aula of aulasAluno">
-        <div class="card-header">
-          <h3 class="class-subject">{{ aula.materia }}</h3>
-          <span class="status-badge" [class.confirmed]="aula.status === 'Confirmada'">
-            {{ aula.status }}
-          </span>
-        </div>
-        
-        <div class="card-body">
-          <div class="info-row">
-            <span class="info-icon">👨‍🏫</span>
-            <span>{{ aula.professor }}</span>
-          </div>
-          
-          <div class="info-row">
-            <span class="info-icon">📅</span>
-            <span>{{ aula.data }}</span>
-          </div>
-          
-          <div class="info-row">
-            <span class="info-icon">🕐</span>
-            <span>{{ aula.horario }}</span>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <button class="btn-secondary btn-sm" (click)="reagendarAula(aula.id)">
-            Reagendar
-          </button>
-          <button class="btn-danger btn-sm" (click)="cancelarAula(aula.id)">
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Carregando...</p>
   </div>
 
-  <div class="classes-content" *ngIf="isProfessor()">
-    <div class="stats-summary">
-      <div class="stat-card">
-        <div class="stat-number">{{ aulasProfessor.length }}</div>
-        <div class="stat-label">Total de Aulas</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ aulasConfirmadas }}</div>
-        <div class="stat-label">Confirmadas</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ aulasPendentes }}</div>
-        <div class="stat-label">Pendentes</div>
-      </div>
-    </div>
+  <ng-container *ngIf="aulas$ | async as aulas">
 
-    <div class="classes-list">
-      <div class="class-item" *ngFor="let aula of aulasProfessor">
-        <div class="item-left">
-          <div class="student-avatar">
-            <span>{{ aula.aluno.split(' ')[0][0] }}{{ aula.aluno.split(' ')[1] ? aula.aluno.split(' ')[1][0] : '' }}</span>
-          </div>
-          <div class="item-info">
-            <h4 class="student-name">{{ aula.aluno }}</h4>
-            <p class="class-details">
-              <span class="subject-tag">{{ aula.materia }}</span>
-              <span class="separator"></span>
-              <span>{{ aula.data }} às {{ aula.horario.split(' - ')[0] }}</span>
-            </p>
-          </div>
-        </div>
+    <div class="classes-content" *ngIf="isAluno()">
+      
+      <div class="empty-state" *ngIf="aulas.length === 0 && !isLoading">
+        <div class="empty-icon">📚</div>
+        <h3>Nenhuma aula agendada</h3>
+        <p>Você ainda não tem aulas marcadas.</p>
+        <a routerLink="/home" class="btn-primary">Encontrar Professores</a>
+      </div>
 
-        <div class="item-right">
-          <span class="status-badge" [class.confirmed]="aula.status === 'Confirmada'" [class.pending]="aula.status === 'Pendente'">
-            {{ aula.status }}
-          </span>
+      <div class="classes-grid" *ngIf="aulas.length > 0">
+        <div class="class-card" *ngFor="let aula of aulas" [ngClass]="getStatusClass(aula.statusAula)">
+          <div class="card-header">
+            <h3 class="class-subject">
+              <span class="subject-icon">📚</span>
+              {{ 'Matéria ID: ' + aula.idMateria }}
+            </h3>
+            <span class="status-badge" [ngClass]="getStatusClass(aula.statusAula)">
+              {{ getStatusLabel(aula.statusAula) }}
+            </span>
+          </div>
           
-          <div class="action-buttons">
-            <button class="btn-icon btn-success" *ngIf="aula.status === 'Pendente'" (click)="confirmarAula(aula.id)" title="Confirmar">
-              
-            </button>
-            <button class="btn-icon btn-warning" (click)="reagendarAula(aula.id)" title="Reagendar">
-              
-            </button>
-            <button class="btn-icon btn-danger" (click)="cancelarAula(aula.id)" title="Cancelar">
-              
+          <div class="card-body">
+            <div class="info-row">
+              <span class="info-icon">👨‍🏫</span>
+              <span>{{ 'Professor ID: ' + aula.idProfessor }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">📅</span>
+              <span>{{ formatarData(aula.dataAula) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-icon">🕐</span>
+              <span>{{ aula.horarioInicio }} - {{ aula.horarioFim }}</span>
+            </div>
+          </div>
+
+          <div class="card-footer" *ngIf="aula.statusAula === 'SOLICITADA' || aula.statusAula === 'CONFIRMADA'">
+            <button class="btn-danger btn-sm" (click)="cancelarAula(aula.id)">
+              ❌ Cancelar Aula
             </button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <div class="classes-content" *ngIf="isProfessor()">
+      
+      <div class="stats-summary">
+        <div class="stat-card"><div class="stat-number">{{ totalAulas }}</div><div class="stat-label">Total de Aulas</div></div>
+        <div class="stat-card"><div class="stat-number">{{ aulasConfirmadas }}</div><div class="stat-label">Confirmadas</div></div>
+        <div class="stat-card"><div class="stat-number">{{ aulasPendentes }}</div><div class="stat-label">Pendentes</div></div>
+      </div>
+
+      <div class="empty-state" *ngIf="aulas.length === 0 && !isLoading">
+        <div class="empty-icon">🔔</div>
+        <h3>Nenhuma solicitação de aula</h3>
+        <p>Você ainda não tem aulas na sua agenda.</p>
+      </div>
+
+      <div class="classes-list" *ngIf="aulas.length > 0">
+        <div class="class-item" *ngFor="let aula of aulas" [ngClass]="getStatusClass(aula.statusAula)">
+          <div class="item-left">
+            <div class="student-avatar">
+              <span>A{{ aula.idAluno % 10 }}</span>
+            </div>
+            <div class="item-info">
+              <h4 class="student-name">{{ 'Aluno ID: ' + aula.idAluno }}</h4>
+              <p class="class-details">
+                <span class="subject-tag">📚 {{ 'Matéria ID: ' + aula.idMateria }}</span>
+                <span class="separator">•</span>
+                <span>{{ formatarData(aula.dataAula) }} às {{ aula.horarioInicio }}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="item-right">
+            <span class="status-badge" [ngClass]="getStatusClass(aula.statusAula)">
+              {{ getStatusLabel(aula.statusAula) }}
+            </span>
+            
+            <div class="action-buttons" *ngIf="aula.statusAula === 'SOLICITADA'">
+              <button class="btn-icon btn-success" (click)="confirmarAula(aula.id)" title="Confirmar Aula">✔️</button>
+              <button class="btn-icon btn-danger" (click)="recusarAula(aula.id)" title="Recusar Aula">❌</button>
+            </div>
+
+            <div class="action-buttons" *ngIf="aula.statusAula === 'CONFIRMADA'">
+              <button class="btn-icon btn-danger" (click)="cancelarAula(aula.id)" title="Cancelar Aula">❌</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </div>

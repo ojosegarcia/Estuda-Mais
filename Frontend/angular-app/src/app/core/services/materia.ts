@@ -1,23 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Materia } from '../../shared/models'; 
-import { Observable, of } from 'rxjs'; 
+import { Observable } from 'rxjs'; 
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MateriaService {
 
-  private mockMaterias: Materia[] = [
-    { id: 1, nome: 'Matemática', icone: '📐' }, 
-    { id: 2, nome: 'Artes', icone: '🎨' },     
-    { id: 3, nome: 'Vestibular', icone: '📚' }, 
-    { id: 4, nome: 'Programação', icone: '💻' }, 
-    { id: 5, nome: 'Inglês', icone: '🌎' }      
-  ];
+  private apiUrl = 'http://localhost:3000/materias';
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   getMaterias(): Observable<Materia[]> {
-    return of(this.mockMaterias);
+    return this.http.get<Materia[]>(this.apiUrl);
+  }
+
+  getMateriaPorId(id: number): Observable<Materia> {
+    return this.http.get<Materia>(`${this.apiUrl}/${id}`);
   }
 }

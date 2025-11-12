@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:angular-app": "node dist/angular-app/server/server.mjs"
+    "serve:ssr:angular-app": "node dist/angular-app/server/server.mjs",
+    "mock:api": "json-server --watch db.json"
   },
   "prettier": {
     "printWidth": 100,
@@ -44,6 +45,7 @@
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
     "jasmine-core": "~5.9.0",
+    "json-server": "^1.0.0-beta.3",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",

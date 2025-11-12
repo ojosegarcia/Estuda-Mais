@@ -1,9 +1,10 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Usuario } from '../../shared/models/usuarioModel';
+import { AuthService } from '../../core/services/auth';
 import { Aluno } from '../../shared/models/alunoModel';
 import { Professor } from '../../shared/models/professorModel';
+import { Usuario, Materia } from '../../shared/models';
 
 @Component({
   selector: 'app-perfil',
@@ -15,14 +16,15 @@ import { Professor } from '../../shared/models/professorModel';
 export class PerfilComponent implements OnInit {
   currentUser: Usuario | null = null;
 
-  constructor(private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    const userData = localStorage.getItem('usuarioLogado');
-    if (userData) {
-      this.currentUser = JSON.parse(userData);
-    }
+    this.currentUser = this.authService.getCurrentUser();
   }
+
 
   isAluno(): boolean {
     return this.currentUser?.tipoUsuario === 'ALUNO';
@@ -32,12 +34,12 @@ export class PerfilComponent implements OnInit {
     return this.currentUser?.tipoUsuario === 'PROFESSOR';
   }
 
-  getEscolaridade(): string | undefined {
-    return this.isAluno() ? (this.currentUser as Aluno).escolaridade : undefined;
+  getAluno(): Aluno {
+    return this.currentUser as Aluno;
   }
 
-  getSobre(): string | undefined {
-    return this.isProfessor() ? (this.currentUser as Professor).sobre : undefined;
+  getProfessor(): Professor {
+    return this.currentUser as Professor;
   }
 
   getUserInitials(): string {
@@ -47,12 +49,51 @@ export class PerfilComponent implements OnInit {
     return (names[0][0] + names[names.length - 1][0]).toUpperCase();
   }
 
-  goBack(): void {
-    this.router.navigate(['/home']);
+  // Métodos auxiliares para acessar propriedades específicas de tipo
+  getEscolaridade(): string | undefined {
+    if (this.isAluno()) {
+      return (this.currentUser as Aluno).escolaridade;
+    }
+    return undefined;
+  }
+
+  getInteresse(): string | undefined {
+    if (this.isAluno()) {
+      return (this.currentUser as Aluno).interesse;
+    }
+    return undefined;
+  }
+
+  getInteresseLabel(): string {
+    const interesse = this.getInteresse();
+    if (!interesse) return '';
+    
+    const labels: { [key: string]: string } = {
+      'APRENDER_NOVO': '🌟 Aprender algo novo',
+      'REFORCAR_CONHECIMENTO': '💪 Reforçar o que já sei',
+      'PREPARAR_CONQUISTA': '🎯 Me preparar para uma conquista'
+    };
+    
+    return labels[interesse] || interesse;
+  }
+
+  getSobre(): string | undefined {
+    if (this.isProfessor()) {
+      return (this.currentUser as Professor).sobre;
+    }
+    return undefined;
+  }
+
+  getMaterias(): Materia[] {
+    if (this.isProfessor()) {
+      const professor = this.currentUser as Professor;
+      return professor.materias || [];
+    }
+    return [];
   }
 
   editarPerfil(): void {
-    alert('Função de editar perfil em desenvolvimento');
+    this.router.navigate(['/perfil/editar']);
   }
 
   editarDisponibilidade(): void {

@@ -6,6 +6,7 @@ import { MainLayoutComponent } from './shared/layouts/main-layout/main-layout';
 import { authGuard } from './core/guards/auth.guard';
 import { BuscaComponent } from './pages/busca/busca';
 import { ProfessorDetalheComponent } from './pages/professor-detalhe/professor-detalhe';
+import { PerfilEditComponent } from './pages/perfil-edit/perfil-edit';
 
 export const routes: Routes = [
   {
@@ -39,9 +40,13 @@ export const routes: Routes = [
         component: BuscaComponent
       },
       {
-        path: 'professor-detalhe/:id', 
+        path: 'professor-detalhe/:id',
         component: ProfessorDetalheComponent
-  }
+      },
+      {
+      path: 'perfil/editar', 
+      component: PerfilEditComponent
+    },
     ]
   },
   {

@@ -14,7 +14,7 @@
           Informações Pessoais
         </h2>
       </div>
-      
+
       <div class="card-body">
         <div class="info-grid">
           <div class="info-item">
@@ -40,11 +40,38 @@
             <label class="info-label">Escolaridade</label>
             <p class="info-value">{{ getEscolaridade() }}</p>
           </div>
+
+          <div class="info-item" *ngIf="isAluno() && getInteresse()">
+            <label class="info-label">Meu Objetivo</label>
+            <p class="info-value">{{ getInteresseLabel() }}</p>
+          </div>
         </div>
 
         <div class="info-item full-width" *ngIf="isProfessor() && getSobre()">
           <label class="info-label">Sobre</label>
           <p class="info-value about-text">{{ getSobre() }}</p>
+        </div>
+
+        <!-- MATÉRIAS DO PROFESSOR -->
+        <div class="info-item full-width" *ngIf="isProfessor() && getMaterias().length > 0">
+          <label class="info-label">
+            <span class="icon">📚</span>
+            Matérias que Leciono
+          </label>
+          <div class="materias-badges">
+            <span class="materia-badge" *ngFor="let materia of getMaterias()">
+              <span class="materia-icon">{{ materia.icone }}</span>
+              {{ materia.nome }}
+            </span>
+          </div>
+        </div>
+
+        <div class="info-item full-width" *ngIf="isProfessor() && getMaterias().length === 0">
+          <label class="info-label">
+            <span class="icon">⚠️</span>
+            Matérias que Leciono
+          </label>
+          <p class="info-value warning-text">Nenhuma matéria cadastrada. Edite seu perfil para adicionar.</p>
         </div>
       </div>
     </div>
@@ -56,14 +83,15 @@
           Estatísticas
         </h2>
       </div>
-      
+
       <div class="card-body">
         <div class="stats-grid">
           <div class="stat-item">
             <div class="stat-icon">📚</div>
             <div class="stat-content">
               <p class="stat-value">0</p>
-              <p class="stat-label">Aulas {{ currentUser.tipoUsuario === 'PROFESSOR' ? 'Ministradas' : 'Realizadas' }}</p>
+              <p class="stat-label">Aulas {{ currentUser.tipoUsuario === 'PROFESSOR' ? 'Ministradas' : 'Realizadas' }}
+              </p>
             </div>
           </div>
 
@@ -93,18 +121,11 @@
           Ações
         </h2>
       </div>
-      
+
       <div class="card-body">
-        <button class="btn-action" disabled>
+        <button class="btn-action" (click)="editarPerfil()">
           <span class="action-icon">✏️</span>
           <span>Editar Perfil</span>
-          <span class="coming-soon">Em breve</span>
-        </button>
-
-        <button class="btn-action" disabled>
-          <span class="action-icon">🔒</span>
-          <span>Alterar Senha</span>
-          <span class="coming-soon">Em breve</span>
         </button>
 
         <button class="btn-action" disabled>

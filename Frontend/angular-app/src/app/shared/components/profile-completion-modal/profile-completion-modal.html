@@ -1,0 +1,43 @@
+<div class="modal-backdrop" (click)="completeLater()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-icon">✏️</div>
+      <h2 class="modal-title">Complete seu Perfil</h2>
+      <button class="modal-close" (click)="completeLater()" aria-label="Fechar">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-text">
+        Olá! Notamos que seu perfil está incompleto. 
+        Preencha suas informações para ter uma melhor experiência na plataforma e 
+        aumentar suas chances de encontrar o match perfeito!
+      </p>
+
+      <div class="modal-benefits">
+        <div class="benefit-item">
+          <span class="benefit-icon">✅</span>
+          <span class="benefit-text">Perfil mais atrativo</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">🎯</span>
+          <span class="benefit-text">Melhores recomendações</span>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon">⭐</span>
+          <span class="benefit-text">Maior credibilidade</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="completeLater()">
+        Depois
+      </button>
+      <button class="btn btn-primary" (click)="completeNow()">
+        Completar Agora
+      </button>
+    </div>
+  </div>
+</div>

@@ -2,18 +2,31 @@
 import { Professor } from './professorModel';
 import { Materia } from './materiaModel';
 
+
+export type StatusAula = 
+  | 'SOLICITADA' 
+  | 'CONFIRMADA' 
+  | 'RECUSADA' 
+  | 'REALIZADA' 
+  | 'CANCELADA'; 
+
 export interface Aula {
   id: number;
   idProfessor: number;
   idAluno: number;
   idMateria: number;
+  
   professor?: Professor;
   aluno?: Aluno;
   materia?: Materia;
-  dataAula: string;
+  
+  dataAula: string; 
   horarioInicio: string;
   horarioFim: string;
-  statusAula: string;
+  
+  
+  statusAula: StatusAula; 
+  
   linkReuniao?: string;
   valorAula: number;
   dataCriacao: string;

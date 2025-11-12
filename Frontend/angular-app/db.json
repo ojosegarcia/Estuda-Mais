@@ -1,0 +1,236 @@
+{
+  "usuarios": [
+    {
+      "id": "1",
+      "nomeCompleto": "João Aluno",
+      "email": "aluno@email.com",
+      "password": "123456",
+      "tipoUsuario": "ALUNO",
+      "escolaridade": "Ensino Médio Completo",
+      "interesse": "APRENDER_NOVO",
+      "telefone": "(11) 98765-4321",
+      "ativo": true,
+      "dataCadastro": "2025-11-01T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "nomeCompleto": "Maria Estudante",
+      "email": "maria@email.com",
+      "password": "123456",
+      "tipoUsuario": "ALUNO",
+      "escolaridade": "Superior Incompleto",
+      "interesse": "REFORCAR_CONHECIMENTO",
+      "telefone": "(11) 91234-5678",
+      "ativo": true,
+      "dataCadastro": "2025-11-02T14:30:00Z"
+    },
+    {
+      "id": "101",
+      "nomeCompleto": "Prof. Ana Silva",
+      "email": "ana@email.com",
+      "password": "123456",
+      "tipoUsuario": "PROFESSOR",
+      "aprovado": true,
+      "sobre": "Doutora em Matemática pela USP com 10 anos de experiência em ensino superior e preparação para vestibulares.",
+      "metodologia": "Foco em resolução de exercícios práticos e teoria aplicada.",
+      "valorHora": 80,
+      "telefone": "(11) 99999-1111",
+      "ativo": true,
+      "dataCadastro": "2025-10-15T08:00:00Z",
+      "materias": [
+        {
+          "id": 1,
+          "nome": "Matemática",
+          "icone": "📐"
+        },
+        {
+          "id": 3,
+          "nome": "Vestibular",
+          "icone": "📚"
+        }
+      ]
+    },
+    {
+      "id": "102",
+      "nomeCompleto": "Prof. Bruno Gomes",
+      "email": "bruno@email.com",
+      "password": "123456",
+      "tipoUsuario": "PROFESSOR",
+      "aprovado": true,
+      "sobre": "Desenvolvedor Sênior e entusiasta de Angular, React e Node.js. 8 anos de mercado.",
+      "metodologia": "Projetos práticos do zero ao deploy.",
+      "valorHora": 100,
+      "telefone": "(11) 98888-2222",
+      "ativo": true,
+      "dataCadastro": "2025-10-20T11:00:00Z",
+      "materias": [
+        {
+          "id": 4,
+          "nome": "Programação",
+          "icone": "💻"
+        }
+      ]
+    },
+    {
+      "id": "103",
+      "nomeCompleto": "Prof. Carla Dias",
+      "email": "carla@email.com",
+      "password": "123456",
+      "tipoUsuario": "PROFESSOR",
+      "aprovado": true,
+      "sobre": "Professora de inglês com certificação TOEFL e intercâmbio de 2 anos na Inglaterra.",
+      "metodologia": "Conversação e imersão cultural.",
+      "valorHora": 70,
+      "telefone": "(11) 97777-3333",
+      "ativo": true,
+      "dataCadastro": "2025-10-25T16:00:00Z",
+      "materias": [
+        {
+          "id": 5,
+          "nome": "Inglês",
+          "icone": "🌎"
+        }
+      ]
+    },
+    {
+      "id": 1762821046059,
+      "nomeCompleto": "Gabriel Correa De Oliveira",
+      "email": "Gabriel.Teste@gmail.com",
+      "password": "VenomAA12!",
+      "tipoUsuario": "ALUNO",
+      "ativo": true,
+      "dataCadastro": "2025-11-11T00:30:46.059Z"
+    }
+  ],
+  "materias": [
+    {
+      "id": "1",
+      "nome": "Matemática",
+      "icone": "📐",
+      "descricao": "Álgebra, Geometria, Cálculo"
+    },
+    {
+      "id": "2",
+      "nome": "Artes",
+      "icone": "🎨",
+      "descricao": "História da Arte, Técnicas de Pintura"
+    },
+    {
+      "id": "3",
+      "nome": "Vestibular",
+      "icone": "📚",
+      "descricao": "Preparação para ENEM e Vestibulares"
+    },
+    {
+      "id": "4",
+      "nome": "Programação",
+      "icone": "💻",
+      "descricao": "JavaScript, Python, Java, Angular"
+    },
+    {
+      "id": "5",
+      "nome": "Inglês",
+      "icone": "🌎",
+      "descricao": "Conversação, Gramática, TOEFL"
+    }
+  ],
+  "aulas": [
+    {
+      "id": "1",
+      "idProfessor": 101,
+      "idAluno": 1,
+      "idMateria": 1,
+      "dataAula": "2025-11-15",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "statusAula": "SOLICITADA",
+      "valorAula": 80,
+      "dataCriacao": "2025-11-10T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "idProfessor": 101,
+      "idAluno": 2,
+      "idMateria": 3,
+      "dataAula": "2025-11-16",
+      "horarioInicio": "10:00",
+      "horarioFim": "11:00",
+      "statusAula": "CONFIRMADA",
+      "linkReuniao": "https://meet.google.com/abc-defg-hij",
+      "valorAula": 80,
+      "dataCriacao": "2025-11-09T14:30:00Z"
+    },
+    {
+      "id": "3",
+      "idProfessor": 102,
+      "idAluno": 1,
+      "idMateria": 4,
+      "dataAula": "2025-11-12",
+      "horarioInicio": "16:00",
+      "horarioFim": "17:00",
+      "statusAula": "RECUSADA",
+      "valorAula": 100,
+      "dataCriacao": "2025-11-08T09:00:00Z"
+    },
+    {
+      "id": "4",
+      "idProfessor": 103,
+      "idAluno": 2,
+      "idMateria": 5,
+      "dataAula": "2025-11-18",
+      "horarioInicio": "09:00",
+      "horarioFim": "10:00",
+      "statusAula": "CONFIRMADA",
+      "linkReuniao": "https://zoom.us/j/123456789",
+      "valorAula": 70,
+      "dataCriacao": "2025-11-10T08:00:00Z"
+    },
+    {
+      "id": 1762821088710,
+      "idProfessor": "101",
+      "idAluno": 1762821046059,
+      "idMateria": 1,
+      "dataAula": "2025-11-12",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "valorAula": 80,
+      "aluno": {
+        "id": 1762821046059,
+        "nomeCompleto": "Gabriel Correa De Oliveira",
+        "email": "Gabriel.Teste@gmail.com",
+        "password": "VenomAA12!",
+        "tipoUsuario": "ALUNO",
+        "ativo": true,
+        "dataCadastro": "2025-11-11T00:30:46.059Z"
+      },
+      "professor": {
+        "id": "101",
+        "nomeCompleto": "Prof. Ana Silva",
+        "email": "ana@email.com",
+        "password": "123456",
+        "tipoUsuario": "PROFESSOR",
+        "aprovado": true,
+        "sobre": "Doutora em Matemática pela USP com 10 anos de experiência em ensino superior e preparação para vestibulares.",
+        "metodologia": "Foco em resolução de exercícios práticos e teoria aplicada.",
+        "valorHora": 80,
+        "telefone": "(11) 99999-1111",
+        "ativo": true,
+        "dataCadastro": "2025-10-15T08:00:00Z",
+        "materias": [
+          {
+            "id": 1,
+            "nome": "Matemática",
+            "icone": "📐"
+          },
+          {
+            "id": 3,
+            "nome": "Vestibular",
+            "icone": "📚"
+          }
+        ]
+      },
+      "statusAula": "SOLICITADA",
+      "dataCriacao": "2025-11-11T00:31:28.710Z"
+    }
+  ]
+}
