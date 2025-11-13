@@ -1,109 +1,118 @@
-<div class="perfil-container"> <div class="perfil-header">
+<div class="perfil-container">
+  <div class="perfil-header">
     <h1 class="perfil-title">Editar Perfil</h1>
     <p>Atualize suas informações. Esses dados serão vistos por outros usuários.</p>
   </div>
 
-  <div class="perfil-content" *ngIf="profileForm">
-    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+  <form class="perfil-content" *ngIf="profileForm" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
 
-      <div class="info-card">
-        <div class="card-header">
-          <h2 class="card-title">
-            <span class="icon">✏️</span>
-            Suas Informações
-          </h2>
+    <div class="info-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="icon">✏️</span>
+          Suas Informações
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="info-grid">
+
+          <div class="info-item">
+            <label class="info-label" for="nomeCompleto">Nome Completo</label>
+            <input class="info-value" id="nomeCompleto" formControlName="nomeCompleto">
+          </div>
+
+          <div class="info-item">
+            <label class="info-label" for="telefone">Telefone</label>
+            <input class="info-value" id="telefone" formControlName="telefone" placeholder="(opcional)">
+          </div>
+
+          <div class="info-item" *ngIf="f['escolaridade']">
+            <label class="info-label" for="escolaridade">Escolaridade *</label>
+            <select class="info-value" id="escolaridade" formControlName="escolaridade">
+              <option *ngFor="let esc of opcoesEscolaridade" [value]="esc">{{ esc }}</option>
+            </select>
+          </div>
+
+          <div class="info-item" *ngIf="f['interesse']">
+            <label class="info-label" for="interesse">Meu Objetivo *</label>
+            <select class="info-value" id="interesse" formControlName="interesse">
+              <option value="">Selecione seu objetivo</option>
+              <option *ngFor="let opt of opcoesInteresse" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+
+          <div class="info-item" *ngIf="f['valorHora']">
+            <label class="info-label" for="valorHora">Valor da Hora/Aula (R$)</label>
+            <input class="info-value" type="number" id="valorHora" formControlName="valorHora">
+          </div>
         </div>
-        
-        <div class="card-body">
-          <div class="info-grid">
 
-            <div class="info-item">
-              <label class="info-label" for="nomeCompleto">Nome Completo</label>
-              <input class="info-value" id="nomeCompleto" formControlName="nomeCompleto">
-              </div>
-
-            <div class="info-item">
-              <label class="info-label" for="telefone">Telefone</label>
-              <input class="info-value" id="telefone" formControlName="telefone" placeholder="(opcional)">
-            </div>
-            
-            <div class="info-item" *ngIf="f['escolaridade']">
-              <label class="info-label" for="escolaridade">Escolaridade *</label>
-              <input class="info-value" id="escolaridade" formControlName="escolaridade" placeholder="Ex: Ensino Médio Completo">
-            </div>
-
-            <div class="info-item" *ngIf="f['interesse']">
-              <label class="info-label" for="interesse">Meu Objetivo *</label>
-              <select class="info-value" id="interesse" formControlName="interesse">
-                <option value="">Selecione seu objetivo</option>
-                <option value="APRENDER_NOVO">🌟 Aprender algo novo</option>
-                <option value="REFORCAR_CONHECIMENTO">💪 Reforçar o que já sei</option>
-                <option value="PREPARAR_CONQUISTA">🎯 Me preparar para uma conquista</option>
-              </select>
-            </div>
-
-            <div class="info-item" *ngIf="f['valorHora']">
-              <label class="info-label" for="valorHora">Valor da Hora/Aula (R$)</label>
-              <input class="info-value" type="number" id="valorHora" formControlName="valorHora">
-            </div>
-          </div>
-          
-          <div class="info-item full-width" *ngIf="f['sobre']">
-            <label class="info-label" for="sobre">Sobre Mim</label>
-            <textarea class="info-value about-text" id="sobre" formControlName="sobre" rows="6" placeholder="Escreva uma biografia..."></textarea>
-          </div>
-          
-          <div class="info-item full-width" *ngIf="f['metodologia']">
-            <label class="info-label" for="metodologia">Minha Metodologia</label>
-            <textarea class="info-value about-text" id="metodologia" formControlName="metodologia" rows="4" placeholder="Como são suas aulas?"></textarea>
-          </div>
-
-          <!-- SEÇÃO DE MATÉRIAS - APENAS PARA PROFESSORES -->
-          <div class="info-item full-width" *ngIf="isProfessor()">
-            <label class="info-label required-field">
-              <span class="icon">📚</span>
-              Matérias que Leciono *
-            </label>
-            <p class="field-hint">Selecione pelo menos uma matéria que você ensina:</p>
-            
-            <div class="materias-grid">
-              <div 
-                *ngFor="let materia of todasMaterias" 
-                class="materia-checkbox-card"
-                [class.selected]="isMateriaSelected(materia.id)"
-                (click)="toggleMateria(materia.id)"
-              >
-                <input 
-                  type="checkbox" 
-                  [id]="'materia-' + materia.id"
-                  [checked]="isMateriaSelected(materia.id)"
-                  (click)="$event.stopPropagation()"
-                  (change)="toggleMateria(materia.id)"
-                >
-                <label [for]="'materia-' + materia.id" class="materia-label">
-                  <span class="materia-icon">{{ materia.icone }}</span>
-                  <span class="materia-nome">{{ materia.nome }}</span>
-                  <span class="check-icon" *ngIf="isMateriaSelected(materia.id)">✓</span>
-                </label>
-              </div>
-            </div>
-            
-            <p class="materias-count" *ngIf="materiasSelecionadas.size > 0">
-              {{ materiasSelecionadas.size }} matéria(s) selecionada(s)
-            </p>
-          </div>
-          
-          <div class="form-actions">
-            <button type="button" (click)="router.navigate(['/perfil'])" class="btn-secondary">
-              Cancelar
-            </button>
-            <button type="submit" [disabled]="profileForm.invalid" class="btn-primary">
-              Salvar Alterações
-            </button>
-          </div>
-
+        <div class="info-item full-width" *ngIf="f['sobre']">
+          <label class="info-label" for="sobre">Sobre Mim</label>
+          <textarea class="info-value about-text" id="sobre" formControlName="sobre" rows="6" placeholder="Escreva uma biografia..."></textarea>
+        </div>
+        <div class="info-item full-width" *ngIf="f['metodologia']">
+          <label class="info-label" for="metodologia">Minha Metodologia</label>
+          <textarea class="info-value about-text" id="metodologia" formControlName="metodologia" rows="4" placeholder="Como são suas aulas?"></textarea>
         </div>
       </div>
-    </form>
-  </div>
-</div>
+    </div> <div class="info-card" *ngIf="isProfessor()">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="icon">📚</span>
+          Matérias que Leciono *
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="info-item full-width">
+          <p class="field-hint">Selecione pelo menos uma matéria que você ensina:</p>
+          
+          <div class="materias-grid" formArrayName="materiasBase">
+            <div *ngFor="let materia of todasMaterias; let i = index" class="materia-checkbox-card"
+              [class.selected]="isMateriaSelected(materia.id)" (click)="toggleMateria(materia.id)">
+              
+              <input type="checkbox" 
+                     [id]="'materia-' + materia.id" 
+                     [formControlName]="i"
+                     (click)="$event.stopPropagation()">
+              
+              <label [for]="'materia-' + materia.id" class="materia-label">
+                <span class="materia-icon">{{ materia.icone }}</span>
+                <span class="materia-nome">{{ materia.nome }}</span>
+                <span class="check-icon" *ngIf="isMateriaSelected(materia.id)">✓</span>
+              </label>
+            </div>
+          </div>
+          <p class="materias-count" *ngIf="materiasSelecionadas.size > 0">
+            {{ materiasSelecionadas.size }} matéria(s) selecionada(s)
+          </p>
+        </div>
+
+        <!-- Campo de matérias customizadas DESABILITADO temporariamente -->
+        <!--
+        <div class="info-item full-width">
+          <label class="info-label" for="materiaCustomInput">Adicionar outras matérias</label>
+          <p class="field-hint">Não encontrou? Adicione aqui (ex: "Alemão", "Cálculo IV").</p>
+          <div class="input-com-botao">
+            <input class="info-value" id="materiaCustomInput" formControlName="materiaCustomInput" (keydown.enter)="adicionarMateriaCustom(); $event.preventDefault()">
+            <button type="button" class="btn-secondary" (click)="adicionarMateriaCustom()">Adicionar</button>
+          </div>
+          <div class="tags-container" *ngIf="materiasCustomizadas.length > 0">
+            <span *ngFor="let nome of materiasCustomizadas; let i = index" class="tag">
+              {{ nome }}
+              <button typeGype="button" (click)="removerMateriaCustom(i)" title="Remover">&times;</button>
+            </span>
+          </div>
+        </div>
+        -->
+      </div>
+    </div> <div class="form-actions">
+      <button type="button" (click)="cancelar()" class="btn-secondary">
+        Cancelar
+      </button>
+      <button type="submit" [disabled]="profileForm.invalid" class="btn-primary">
+        Salvar Alterações
+      </button>
+    </div>
+
+  </form> </div> ```

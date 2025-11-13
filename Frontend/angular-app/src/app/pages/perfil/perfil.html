@@ -1,144 +1,147 @@
-<div class="perfil-container">
-  <div class="perfil-header">
-    <div class="profile-avatar-large">
-      <span class="avatar-initials-large">{{ getUserInitials() }}</span>
-    </div>
-    <h1 class="perfil-title">Meu Perfil</h1>
-  </div>
+<!-- 
+  Este 'ng-container' é a correção principal.
+  1. Ele "ouve" o Observable 'currentUser$'
+  2. O 'async' pipe se inscreve e espera os dados.
+  3. Quando os dados chegam, ele os coloca na variável local 'currentUser'.
+  4. O *ngIf só renderiza o conteúdo quando 'currentUser' não é nulo.
+-->
+<ng-container *ngIf="currentUser$ | async as currentUser; else loading">
 
-  <div class="perfil-content" *ngIf="currentUser">
-    <div class="info-card">
-      <div class="card-header">
-        <h2 class="card-title">
-          <span class="icon">👤</span>
-          Informações Pessoais
-        </h2>
+  <div class="perfil-container">
+    <div class="perfil-header">
+      <div class="profile-avatar-large">
+        <!-- Passamos 'currentUser.nomeCompleto' para a função -->
+        <span class="avatar-initials-large">{{ getUserInitials(currentUser.nomeCompleto) }}</span>
       </div>
+      <h1 class="perfil-title">Meu Perfil</h1>
+    </div>
 
-      <div class="card-body">
-        <div class="info-grid">
-          <div class="info-item">
-            <label class="info-label">Nome Completo</label>
-            <p class="info-value">{{ currentUser.nomeCompleto }}</p>
+    <!-- 
+      Agora todo o HTML abaixo tem acesso seguro à variável 'currentUser'
+    -->
+    <div class="perfil-content">
+      <div class="info-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="icon">👤</span>
+            Informações Pessoais
+          </h2>
+        </div>
+
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <label class="info-label">Nome Completo</label>
+              <p class="info-value">{{ currentUser.nomeCompleto }}</p>
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Email</label>
+              <p class="info-value">{{ currentUser.email }}</p>
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Tipo de Usuário</label>
+              <div class="badge-container">
+                <span class="user-type-badge" [class.professor]="isProfessor(currentUser)">
+                  {{ currentUser.tipoUsuario }}
+                </span>
+              </div>
+            </div>
+
+            <!-- INFO ALUNO: Passamos 'currentUser' para as funções helper -->
+            <div class="info-item" *ngIf="isAluno(currentUser) && asAluno(currentUser).escolaridade">
+              <label class="info-label">Escolaridade</label>
+              <p class="info-value">{{ asAluno(currentUser).escolaridade }}</p>
+            </div>
+
+            <div class="info-item" *ngIf="isAluno(currentUser) && asAluno(currentUser).interesse">
+              <label class="info-label">Meu Objetivo</label>
+              <p class="info-value">{{ getInteresseLabel(asAluno(currentUser).interesse) }}</p>
+            </div>
           </div>
 
-          <div class="info-item">
-            <label class="info-label">Email</label>
-            <p class="info-value">{{ currentUser.email }}</p>
+          <!-- INFO PROFESSOR: Passamos 'currentUser' para as funções helper -->
+          <div class="info-item full-width" *ngIf="isProfessor(currentUser) && asProfessor(currentUser).sobre">
+            <label class="info-label">Sobre</label>
+            <p class="info-value about-text">{{ asProfessor(currentUser).sobre }}</p>
           </div>
 
-          <div class="info-item">
-            <label class="info-label">Tipo de Usuário</label>
-            <div class="badge-container">
-              <span class="user-type-badge" [class.professor]="isProfessor()">
-                {{ currentUser.tipoUsuario }}
+          <!-- MATÉRIAS DO PROFESSOR -->
+          <div class="info-item full-width" *ngIf="isProfessor(currentUser) && asProfessor(currentUser).materias && asProfessor(currentUser).materias!.length > 0">
+            <label class="info-label">
+              <span class="icon">📚</span>
+              Matérias que Leciono
+            </label>
+            <div class="materias-badges">
+              <span class="materia-badge" *ngFor="let materia of asProfessor(currentUser).materias!">
+                <span class="materia-icon">{{ materia.icone || '•' }}</span>
+                {{ materia.nome }}
               </span>
             </div>
           </div>
 
-          <div class="info-item" *ngIf="isAluno() && getEscolaridade()">
-            <label class="info-label">Escolaridade</label>
-            <p class="info-value">{{ getEscolaridade() }}</p>
-          </div>
-
-          <div class="info-item" *ngIf="isAluno() && getInteresse()">
-            <label class="info-label">Meu Objetivo</label>
-            <p class="info-value">{{ getInteresseLabel() }}</p>
-          </div>
-        </div>
-
-        <div class="info-item full-width" *ngIf="isProfessor() && getSobre()">
-          <label class="info-label">Sobre</label>
-          <p class="info-value about-text">{{ getSobre() }}</p>
-        </div>
-
-        <!-- MATÉRIAS DO PROFESSOR -->
-        <div class="info-item full-width" *ngIf="isProfessor() && getMaterias().length > 0">
-          <label class="info-label">
-            <span class="icon">📚</span>
-            Matérias que Leciono
-          </label>
-          <div class="materias-badges">
-            <span class="materia-badge" *ngFor="let materia of getMaterias()">
-              <span class="materia-icon">{{ materia.icone }}</span>
-              {{ materia.nome }}
-            </span>
+          <!-- AVISO DE SEM MATÉRIAS -->
+          <div class="info-item full-width" *ngIf="isProfessor(currentUser) && (!asProfessor(currentUser).materias || asProfessor(currentUser).materias!.length === 0)">
+            <label class="info-label">
+              <span class="icon">⚠️</span>
+              Matérias que Leciono
+            </label>
+            <p class="info-value warning-text">Nenhuma matéria cadastrada. Edite seu perfil para adicionar.</p>
           </div>
         </div>
+      </div>
 
-        <div class="info-item full-width" *ngIf="isProfessor() && getMaterias().length === 0">
-          <label class="info-label">
-            <span class="icon">⚠️</span>
-            Matérias que Leciono
-          </label>
-          <p class="info-value warning-text">Nenhuma matéria cadastrada. Edite seu perfil para adicionar.</p>
+      <!-- STATS CARD -->
+      <div class="stats-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="icon">📊</span>
+            Estatísticas
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-icon">📚</div>
+              <div class="stat-content">
+                <p class="stat-value">0</p>
+                <p class="stat-label">Aulas {{ isProfessor(currentUser) ? 'Ministradas' : 'Realizadas' }}</p>
+              </div>
+            </div>
+            <!-- ... outros stats ... -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS CARD (Seu botão 'editarPerfil()' já está correto) -->
+      <div class="actions-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="icon">⚙️</span>
+            Ações
+          </h2>
+        </div>
+        <div class="card-body">
+          <button class="btn-action" (click)="editarPerfil()">
+            <span class="action-icon">✏️</span>
+            <span>Editar Perfil</span>
+          </button>
+          <!-- ... outros botões desabilitados ... -->
         </div>
       </div>
     </div>
 
-    <div class="stats-card">
-      <div class="card-header">
-        <h2 class="card-title">
-          <span class="icon">📊</span>
-          Estatísticas
-        </h2>
-      </div>
-
-      <div class="card-body">
-        <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-icon">📚</div>
-            <div class="stat-content">
-              <p class="stat-value">0</p>
-              <p class="stat-label">Aulas {{ currentUser.tipoUsuario === 'PROFESSOR' ? 'Ministradas' : 'Realizadas' }}
-              </p>
-            </div>
-          </div>
-
-          <div class="stat-item">
-            <div class="stat-icon">⭐</div>
-            <div class="stat-content">
-              <p class="stat-value">0.0</p>
-              <p class="stat-label">Avaliação Média</p>
-            </div>
-          </div>
-
-          <div class="stat-item">
-            <div class="stat-icon">🎯</div>
-            <div class="stat-content">
-              <p class="stat-value">0</p>
-              <p class="stat-label">{{ currentUser.tipoUsuario === 'PROFESSOR' ? 'Alunos' : 'Professores' }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="actions-card">
-      <div class="card-header">
-        <h2 class="card-title">
-          <span class="icon">⚙️</span>
-          Ações
-        </h2>
-      </div>
-
-      <div class="card-body">
-        <button class="btn-action" (click)="editarPerfil()">
-          <span class="action-icon">✏️</span>
-          <span>Editar Perfil</span>
-        </button>
-
-        <button class="btn-action" disabled>
-          <span class="action-icon">🔔</span>
-          <span>Notificações</span>
-          <span class="coming-soon">Em breve</span>
-        </button>
-      </div>
-    </div>
   </div>
+</ng-container>
 
-  <div class="loading-state" *ngIf="!currentUser">
+<!-- 
+  Este é o 'else' do *ngIf. 
+  Ele usa o seu CSS de 'loading-state' que já estava no HTML.
+-->
+<ng-template #loading>
+  <div class="loading-state">
     <div class="loading-spinner"></div>
     <p>Carregando perfil...</p>
   </div>
-</div>
+</ng-template>

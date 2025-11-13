@@ -27,9 +27,13 @@ export class ProfessorDetalheComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const professorId = +this.route.snapshot.params['id'];
+    const professorId = Number(this.route.snapshot.params['id']);
+    console.log('Professor ID:', professorId);
     if (professorId) {
       this.professor$ = this.professorService.getProfessorById(professorId);
+      this.professor$.subscribe(prof => {
+        console.log('Professor carregado:', prof);
+      });
     }
   }
 
@@ -49,8 +53,12 @@ export class ProfessorDetalheComponent implements OnInit {
 
     // Pega a primeira matéria do professor para simplificar
     const materiaId = professor.materias && professor.materias.length > 0 
-      ? professor.materias[0].id 
+      ? Number(professor.materias[0].id)
       : 1;
+
+    const materia = professor.materias && professor.materias.length > 0
+      ? professor.materias[0]
+      : { id: 1, nome: 'Matéria não especificada' };
 
     // Cria uma aula para amanhã às 14h (pode ser melhorado com um modal)
     const amanha = new Date();
@@ -58,15 +66,16 @@ export class ProfessorDetalheComponent implements OnInit {
     const dataAula = amanha.toISOString().split('T')[0];
 
     const novaAula = {
-      idProfessor: professor.id,
-      idAluno: usuario.id,
+      idProfessor: Number(professor.id),
+      idAluno: Number(usuario.id),
       idMateria: materiaId,
       dataAula: dataAula,
       horarioInicio: '14:00',
       horarioFim: '15:00',
       valorAula: professor.valorHora || 0,
       aluno: usuario, // Inclui objeto completo do aluno
-      professor: professor // Inclui objeto completo do professor
+      professor: professor, // Inclui objeto completo do professor
+      materia: materia // Inclui objeto completo da matéria
     };
 
     this.aulaService.solicitarAula(novaAula).subscribe({
@@ -83,7 +92,8 @@ export class ProfessorDetalheComponent implements OnInit {
 
   getInitials(nomeCompleto: string | undefined): string {
     if (!nomeCompleto) return '??';
-    const names = nomeCompleto.trim().split(' ');
+    const names = nomeCompleto.trim().split(' ').filter(n => n.length > 0);
+    if (names.length === 0) return '??';
     if (names.length === 1) return names[0].substring(0, 2).toUpperCase();
     return (names[0][0] + names[names.length - 1][0]).toUpperCase();
   }

@@ -17,18 +17,14 @@ export class ProfessorService {
   getProfessoresPorMateria(materiaId: number): Observable<Professor[]> {
     return this.http.get<Usuario[]>(`${this.apiUrl}?tipoUsuario=PROFESSOR`).pipe(
       map(usuarios => {
-        console.log('Todos professores:', usuarios);
-        console.log('Buscando matéria ID:', materiaId);
-        
         // Filtra apenas professores aprovados que têm a matéria desejada
         const professoresFiltrados = usuarios.filter(user => {
           const prof = user as Professor;
-          const temMateria = prof.materias?.some(m => m.id === materiaId);
-          console.log(`Professor ${prof.nomeCompleto}: aprovado=${prof.aprovado}, temMateria=${temMateria}`);
+          // Garante comparação correta de IDs (número com número)
+          const temMateria = prof.materias?.some(m => Number(m.id) === Number(materiaId));
           return prof.aprovado && temMateria;
         }) as Professor[];
         
-        console.log('Professores filtrados:', professoresFiltrados);
         return professoresFiltrados;
       })
     );
@@ -36,9 +32,9 @@ export class ProfessorService {
 
   // Busca um professor específico por ID
   getProfessorById(id: number): Observable<Professor | undefined> {
-    return this.http.get<Usuario>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.get<Usuario>(`${this.apiUrl}/${Number(id)}`).pipe(
       map(usuario => {
-        if (usuario.tipoUsuario === 'PROFESSOR') {
+        if (usuario && usuario.tipoUsuario === 'PROFESSOR') {
           return usuario as Professor;
         }
         return undefined;

@@ -17,12 +17,12 @@ export class RegisterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.registerForm = this.fb.group({
-    
-      tipoUsuario: ['ALUNO', [Validators.required]], 
+
+      tipoUsuario: ['ALUNO', [Validators.required]],
       nomeCompleto: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -35,13 +35,8 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this.authService.register(this.registerForm.value).subscribe({
-      next: (usuario) => {
-        console.log('Usuário cadastrado com sucesso:', usuario);
-      },
-      error: (err) => {
-        console.error('Erro ao cadastrar:', err);
-      }
-    });
+    // CORREÇÃO: Apenas chame o serviço.
+    // A lógica de 'alert' e 'navigate' já está dentro do authService.
+    this.authService.register(this.registerForm.value);
   }
 }

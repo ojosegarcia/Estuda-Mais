@@ -45,8 +45,6 @@ export class HomeComponent implements OnInit {
   }
 
   buscarPorMateria(materiaId: number): void {
-    console.log('Buscando por matéria com ID:', materiaId);
-    
     this.router.navigate(['/busca'], { queryParams: { materiaId: materiaId } });
   }
 }

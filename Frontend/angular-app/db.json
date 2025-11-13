@@ -31,8 +31,8 @@
       "password": "123456",
       "tipoUsuario": "PROFESSOR",
       "aprovado": true,
-      "sobre": "Doutora em Matemática pela USP com 10 anos de experiência em ensino superior e preparação para vestibulares.",
-      "metodologia": "Foco em resolução de exercícios práticos e teoria aplicada.",
+      "sobre": "Doutora em Matemática pela USP com 10 anos de experiência.",
+      "metodologia": "Foco em resolução de exercícios práticos.",
       "valorHora": 80,
       "telefone": "(11) 99999-1111",
       "ativo": true,
@@ -40,13 +40,11 @@
       "materias": [
         {
           "id": 1,
-          "nome": "Matemática",
-          "icone": "📐"
+          "nome": "Matemática"
         },
         {
           "id": 3,
-          "nome": "Vestibular",
-          "icone": "📚"
+          "nome": "Vestibular"
         }
       ]
     },
@@ -57,8 +55,8 @@
       "password": "123456",
       "tipoUsuario": "PROFESSOR",
       "aprovado": true,
-      "sobre": "Desenvolvedor Sênior e entusiasta de Angular, React e Node.js. 8 anos de mercado.",
-      "metodologia": "Projetos práticos do zero ao deploy.",
+      "sobre": "Desenvolvedor Sênior. 8 anos de mercado.",
+      "metodologia": "Projetos práticos.",
       "valorHora": 100,
       "telefone": "(11) 98888-2222",
       "ativo": true,
@@ -66,8 +64,7 @@
       "materias": [
         {
           "id": 4,
-          "nome": "Programação",
-          "icone": "💻"
+          "nome": "Programação"
         }
       ]
     },
@@ -78,8 +75,8 @@
       "password": "123456",
       "tipoUsuario": "PROFESSOR",
       "aprovado": true,
-      "sobre": "Professora de inglês com certificação TOEFL e intercâmbio de 2 anos na Inglaterra.",
-      "metodologia": "Conversação e imersão cultural.",
+      "sobre": "Professora de inglês com certificação TOEFL.",
+      "metodologia": "Conversação e imersão.",
       "valorHora": 70,
       "telefone": "(11) 97777-3333",
       "ativo": true,
@@ -87,51 +84,93 @@
       "materias": [
         {
           "id": 5,
-          "nome": "Inglês",
-          "icone": "🌎"
+          "nome": "Inglês"
         }
       ]
     },
     {
-      "id": 1762821046059,
-      "nomeCompleto": "Gabriel Correa De Oliveira",
-      "email": "Gabriel.Teste@gmail.com",
-      "password": "VenomAA12!",
+      "id": "1762977606914",
+      "nomeCompleto": "Gabriel Correa de Oliveira",
+      "email": "gabriel@email.com",
+      "password": "123456",
       "tipoUsuario": "ALUNO",
       "ativo": true,
-      "dataCadastro": "2025-11-11T00:30:46.059Z"
+      "dataCadastro": "2025-11-12T20:00:06.914Z"
+    },
+    {
+      "id": "1762977638624",
+      "nomeCompleto": "renato",
+      "email": "renato@email.com",
+      "password": "123456",
+      "tipoUsuario": "PROFESSOR",
+      "ativo": true,
+      "dataCadastro": "2025-11-12T20:00:38.624Z"
+    },
+    {
+      "id": "1762990249354",
+      "nomeCompleto": "Gabriel Correa de Oliveira",
+      "email": "gabrielcoliveira.contato@gmail.com",
+      "password": "123456",
+      "tipoUsuario": "ALUNO",
+      "ativo": true,
+      "dataCadastro": "2025-11-12T23:30:49.354Z",
+      "telefone": "11995082458",
+      "escolaridade": "Prefiro não dizer",
+      "interesse": "REFORCAR_CONHECIMENTO"
+    },
+    {
+      "id": "1762990622823",
+      "nomeCompleto": "Renato Luis",
+      "email": "renato2@email.com",
+      "password": "123456",
+      "tipoUsuario": "PROFESSOR",
+      "aprovado": true,
+      "ativo": true,
+      "dataCadastro": "2025-11-12T23:37:02.823Z",
+      "telefone": "",
+      "sobre": "O melhor professor ",
+      "metodologia": "Minhas aulas são boas",
+      "valorHora": 90,
+      "materias": [
+        {
+          "id": "4",
+          "nome": "Programação",
+          "icone": "💻",
+          "descricao": "JavaScript, Python, Angular"
+        }
+      ]
     }
   ],
   "materias": [
     {
       "id": "1",
       "nome": "Matemática",
-      "icone": "📐",
+      "icone": "🧮",
       "descricao": "Álgebra, Geometria, Cálculo"
     },
     {
       "id": "2",
       "nome": "Artes",
       "icone": "🎨",
-      "descricao": "História da Arte, Técnicas de Pintura"
+      "descricao": "História da Arte"
     },
     {
       "id": "3",
       "nome": "Vestibular",
       "icone": "📚",
-      "descricao": "Preparação para ENEM e Vestibulares"
+      "descricao": "Preparação para ENEM"
     },
     {
       "id": "4",
       "nome": "Programação",
       "icone": "💻",
-      "descricao": "JavaScript, Python, Java, Angular"
+      "descricao": "JavaScript, Python, Angular"
     },
     {
       "id": "5",
       "nome": "Inglês",
-      "icone": "🌎",
-      "descricao": "Conversação, Gramática, TOEFL"
+      "icone": "🌏",
+      "descricao": "Conversação, Gramática"
     }
   ],
   "aulas": [
@@ -145,7 +184,24 @@
       "horarioFim": "15:00",
       "statusAula": "SOLICITADA",
       "valorAula": 80,
-      "dataCriacao": "2025-11-10T10:00:00Z"
+      "dataCriacao": "2025-11-10T10:00:00Z",
+      "aluno": {
+        "id": 1,
+        "nomeCompleto": "João Aluno",
+        "email": "aluno@email.com",
+        "tipoUsuario": "ALUNO"
+      },
+      "professor": {
+        "id": 101,
+        "nomeCompleto": "Prof. Ana Silva",
+        "email": "ana@email.com",
+        "tipoUsuario": "PROFESSOR",
+        "valorHora": 80
+      },
+      "materia": {
+        "id": 1,
+        "nome": "Matemática"
+      }
     },
     {
       "id": "2",
@@ -156,9 +212,26 @@
       "horarioInicio": "10:00",
       "horarioFim": "11:00",
       "statusAula": "CONFIRMADA",
-      "linkReuniao": "https://meet.google.com/abc-defg-hij",
+      "linkReuniao": "https://meet.google.com/abc",
       "valorAula": 80,
-      "dataCriacao": "2025-11-09T14:30:00Z"
+      "dataCriacao": "2025-11-09T14:30:00Z",
+      "aluno": {
+        "id": 2,
+        "nomeCompleto": "Maria Estudante",
+        "email": "maria@email.com",
+        "tipoUsuario": "ALUNO"
+      },
+      "professor": {
+        "id": 101,
+        "nomeCompleto": "Prof. Ana Silva",
+        "email": "ana@email.com",
+        "tipoUsuario": "PROFESSOR",
+        "valorHora": 80
+      },
+      "materia": {
+        "id": 3,
+        "nome": "Vestibular"
+      }
     },
     {
       "id": "3",
@@ -170,7 +243,24 @@
       "horarioFim": "17:00",
       "statusAula": "RECUSADA",
       "valorAula": 100,
-      "dataCriacao": "2025-11-08T09:00:00Z"
+      "dataCriacao": "2025-11-08T09:00:00Z",
+      "aluno": {
+        "id": 1,
+        "nomeCompleto": "João Aluno",
+        "email": "aluno@email.com",
+        "tipoUsuario": "ALUNO"
+      },
+      "professor": {
+        "id": 102,
+        "nomeCompleto": "Prof. Bruno Gomes",
+        "email": "bruno@email.com",
+        "tipoUsuario": "PROFESSOR",
+        "valorHora": 100
+      },
+      "materia": {
+        "id": 4,
+        "nome": "Programação"
+      }
     },
     {
       "id": "4",
@@ -183,54 +273,128 @@
       "statusAula": "CONFIRMADA",
       "linkReuniao": "https://zoom.us/j/123456789",
       "valorAula": 70,
-      "dataCriacao": "2025-11-10T08:00:00Z"
-    },
-    {
-      "id": 1762821088710,
-      "idProfessor": "101",
-      "idAluno": 1762821046059,
-      "idMateria": 1,
-      "dataAula": "2025-11-12",
-      "horarioInicio": "14:00",
-      "horarioFim": "15:00",
-      "valorAula": 80,
+      "dataCriacao": "2025-11-10T08:00:00Z",
       "aluno": {
-        "id": 1762821046059,
-        "nomeCompleto": "Gabriel Correa De Oliveira",
-        "email": "Gabriel.Teste@gmail.com",
-        "password": "VenomAA12!",
-        "tipoUsuario": "ALUNO",
-        "ativo": true,
-        "dataCadastro": "2025-11-11T00:30:46.059Z"
+        "id": 2,
+        "nomeCompleto": "Maria Estudante",
+        "email": "maria@email.com",
+        "tipoUsuario": "ALUNO"
       },
       "professor": {
-        "id": "101",
-        "nomeCompleto": "Prof. Ana Silva",
-        "email": "ana@email.com",
+        "id": 103,
+        "nomeCompleto": "Prof. Carla Dias",
+        "email": "carla@email.com",
+        "tipoUsuario": "PROFESSOR",
+        "valorHora": 70
+      },
+      "materia": {
+        "id": 5,
+        "nome": "Inglês"
+      }
+    },
+    {
+      "id": "1763033005202",
+      "idProfessor": 1762990622823,
+      "idAluno": 1762990249354,
+      "idMateria": 4,
+      "dataAula": "2025-11-14",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "valorAula": 99,
+      "aluno": {
+        "id": "1762990249354",
+        "nomeCompleto": "Gabriel Correa de Oliveira",
+        "email": "gabrielcoliveira.contato@gmail.com",
+        "password": "123456",
+        "tipoUsuario": "ALUNO",
+        "ativo": true,
+        "dataCadastro": "2025-11-12T23:30:49.354Z",
+        "telefone": "11995082458",
+        "escolaridade": "Prefiro não dizer",
+        "interesse": "REFORCAR_CONHECIMENTO"
+      },
+      "professor": {
+        "id": "1762990622823",
+        "nomeCompleto": "renato",
+        "email": "renato2@email.com",
         "password": "123456",
         "tipoUsuario": "PROFESSOR",
         "aprovado": true,
-        "sobre": "Doutora em Matemática pela USP com 10 anos de experiência em ensino superior e preparação para vestibulares.",
-        "metodologia": "Foco em resolução de exercícios práticos e teoria aplicada.",
-        "valorHora": 80,
-        "telefone": "(11) 99999-1111",
         "ativo": true,
-        "dataCadastro": "2025-10-15T08:00:00Z",
+        "dataCadastro": "2025-11-12T23:37:02.823Z",
+        "telefone": "",
+        "sobre": "O melhor professor ",
+        "metodologia": "Minhas aulas são boas",
+        "valorHora": 99,
         "materias": [
           {
-            "id": 1,
-            "nome": "Matemática",
-            "icone": "📐"
-          },
-          {
-            "id": 3,
-            "nome": "Vestibular",
-            "icone": "📚"
+            "id": "4",
+            "nome": "Programação",
+            "icone": "💻",
+            "descricao": "JavaScript, Python, Angular"
           }
         ]
       },
+      "materia": {
+        "id": "4",
+        "nome": "Programação",
+        "icone": "💻",
+        "descricao": "JavaScript, Python, Angular"
+      },
       "statusAula": "SOLICITADA",
-      "dataCriacao": "2025-11-11T00:31:28.710Z"
+      "dataCriacao": "2025-11-13T11:23:25.202Z"
+    },
+    {
+      "id": "1763033200406",
+      "idProfessor": 1762990622823,
+      "idAluno": 1762990249354,
+      "idMateria": 4,
+      "dataAula": "2025-11-14",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "valorAula": 99,
+      "aluno": {
+        "id": "1762990249354",
+        "nomeCompleto": "Gabriel Correa de Oliveira",
+        "email": "gabrielcoliveira.contato@gmail.com",
+        "password": "123456",
+        "tipoUsuario": "ALUNO",
+        "ativo": true,
+        "dataCadastro": "2025-11-12T23:30:49.354Z",
+        "telefone": "11995082458",
+        "escolaridade": "Prefiro não dizer",
+        "interesse": "REFORCAR_CONHECIMENTO"
+      },
+      "professor": {
+        "id": "1762990622823",
+        "nomeCompleto": "Renato Luis ",
+        "email": "renato2@email.com",
+        "password": "123456",
+        "tipoUsuario": "PROFESSOR",
+        "aprovado": true,
+        "ativo": true,
+        "dataCadastro": "2025-11-12T23:37:02.823Z",
+        "telefone": "",
+        "sobre": "O melhor professor ",
+        "metodologia": "Minhas aulas são boas",
+        "valorHora": 99,
+        "materias": [
+          {
+            "id": "4",
+            "nome": "Programação",
+            "icone": "💻",
+            "descricao": "JavaScript, Python, Angular"
+          }
+        ]
+      },
+      "materia": {
+        "id": "4",
+        "nome": "Programação",
+        "icone": "💻",
+        "descricao": "JavaScript, Python, Angular"
+      },
+      "statusAula": "SOLICITADA",
+      "dataCriacao": "2025-11-13T11:26:40.406Z"
     }
   ]
 }

@@ -68,23 +68,17 @@ export class MyClassesComponent implements OnInit {
   // pois o BehaviorSubject no serviço fará isso automaticamente.
 
   confirmarAula(aulaId: number): void {
-    this.aulaService.aceitarAula(aulaId).subscribe(() => {
-      console.log('Aula confirmada!');
-    });
+    this.aulaService.aceitarAula(aulaId).subscribe();
   }
 
   cancelarAula(aulaId: number): void {
     if (confirm('Tem certeza que deseja cancelar esta aula?')) {
-      this.aulaService.cancelarAula(aulaId).subscribe(() => {
-        console.log('Aula cancelada!');
-      });
+      this.aulaService.cancelarAula(aulaId).subscribe();
     }
   }
 
   recusarAula(aulaId: number): void {
-    this.aulaService.recusarAula(aulaId).subscribe(() => {
-      console.log('Aula recusada!');
-    });
+    this.aulaService.recusarAula(aulaId).subscribe();
   }
 
   reagendarAula(aulaId: number): void {
@@ -121,5 +115,20 @@ export class MyClassesComponent implements OnInit {
   // Função para obter a cor do status
   getStatusClass(status: string): string {
     return `status-${status.toLowerCase()}`;
+  }
+  
+  // Função para obter o nome da matéria
+  getMateriaNome(aula: Aula): string {
+    return aula.materia?.nome || `Matéria ID: ${aula.idMateria}`;
+  }
+  
+  // Função para obter o nome do professor
+  getProfessorNome(aula: Aula): string {
+    return aula.professor?.nomeCompleto || `Professor ID: ${aula.idProfessor}`;
+  }
+  
+  // Função para obter o nome do aluno
+  getAlunoNome(aula: Aula): string {
+    return aula.aluno?.nomeCompleto || `Aluno ID: ${aula.idAluno}`;
   }
 }

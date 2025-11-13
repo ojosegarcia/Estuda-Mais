@@ -29,7 +29,7 @@
           <div class="card-header">
             <h3 class="class-subject">
               <span class="subject-icon">📚</span>
-              {{ 'Matéria ID: ' + aula.idMateria }}
+              {{ getMateriaNome(aula) }}
             </h3>
             <span class="status-badge" [ngClass]="getStatusClass(aula.statusAula)">
               {{ getStatusLabel(aula.statusAula) }}
@@ -39,7 +39,7 @@
           <div class="card-body">
             <div class="info-row">
               <span class="info-icon">👨‍🏫</span>
-              <span>{{ 'Professor ID: ' + aula.idProfessor }}</span>
+              <span>{{ getProfessorNome(aula) }}</span>
             </div>
             <div class="info-row">
               <span class="info-icon">📅</span>
@@ -78,12 +78,12 @@
         <div class="class-item" *ngFor="let aula of aulas" [ngClass]="getStatusClass(aula.statusAula)">
           <div class="item-left">
             <div class="student-avatar">
-              <span>A{{ aula.idAluno % 10 }}</span>
+              <span>{{ getIniciais(getAlunoNome(aula)) }}</span>
             </div>
             <div class="item-info">
-              <h4 class="student-name">{{ 'Aluno ID: ' + aula.idAluno }}</h4>
+              <h4 class="student-name">{{ getAlunoNome(aula) }}</h4>
               <p class="class-details">
-                <span class="subject-tag">📚 {{ 'Matéria ID: ' + aula.idMateria }}</span>
+                <span class="subject-tag">📚 {{ getMateriaNome(aula) }}</span>
                 <span class="separator">•</span>
                 <span>{{ formatarData(aula.dataAula) }} às {{ aula.horarioInicio }}</span>
               </p>
