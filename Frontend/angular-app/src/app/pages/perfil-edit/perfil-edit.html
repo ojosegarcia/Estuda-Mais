@@ -106,7 +106,64 @@
         </div>
         -->
       </div>
-    </div> <div class="form-actions">
+    </div>
+
+    <!-- NOVA SEÇÃO: Meus Horários de Atendimento -->
+    <div class="info-card" *ngIf="isProfessor()">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="icon">🕐</span>
+          Meus Horários de Atendimento
+        </h2>
+      </div>
+      <div class="card-body">
+        <p class="field-hint">Defina quando você está disponível para dar aulas.</p>
+        
+        <!-- Formulário para adicionar novo horário -->
+        <div class="disponibilidade-form" [formGroup]="disponibilidadeForm">
+          <div class="disponibilidade-inputs">
+            <div class="input-group">
+              <label for="diaSemana">Dia da Semana</label>
+              <select id="diaSemana" formControlName="diaSemana">
+                <option *ngFor="let dia of diasDaSemana" [value]="dia">{{ getDiaLabel(dia) }}</option>
+              </select>
+            </div>
+            
+            <div class="input-group">
+              <label for="horarioInicio">De</label>
+              <input type="time" id="horarioInicio" formControlName="horarioInicio">
+            </div>
+            
+            <div class="input-group">
+              <label for="horarioFim">Até</label>
+              <input type="time" id="horarioFim" formControlName="horarioFim">
+            </div>
+            
+            <button type="button" class="btn-secondary" (click)="adicionarDisponibilidade()">
+              ➕ Adicionar Horário
+            </button>
+          </div>
+        </div>
+
+        <!-- Lista de horários adicionados -->
+        <div class="disponibilidades-lista" *ngIf="disponibilidades.length > 0">
+          <h3 class="lista-titulo">Seus horários cadastrados:</h3>
+          <div class="disponibilidade-item" *ngFor="let disp of disponibilidades; let i = index">
+            <span class="disp-dia">{{ getDiaLabel(disp.diaSemana) }}</span>
+            <span class="disp-horario">{{ disp.horarioInicio }} - {{ disp.horarioFim }}</span>
+            <button type="button" class="btn-remove" (click)="removerDisponibilidade(i)" title="Remover">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <div class="empty-disponibilidades" *ngIf="disponibilidades.length === 0">
+          <p>Você ainda não cadastrou nenhum horário de atendimento.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
       <button type="button" (click)="cancelar()" class="btn-secondary">
         Cancelar
       </button>

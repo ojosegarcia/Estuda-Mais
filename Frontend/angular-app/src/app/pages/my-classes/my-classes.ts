@@ -64,21 +64,51 @@ export class MyClassesComponent implements OnInit {
   }
 
   // --- Métodos de Ação ---
-  // Agora eles chamam o serviço. Não precisamos recarregar a lista,
-  // pois o BehaviorSubject no serviço fará isso automaticamente.
 
   confirmarAula(aulaId: number): void {
-    this.aulaService.aceitarAula(aulaId).subscribe();
+    this.aulaService.aceitarAula(aulaId).subscribe({
+      next: () => {
+        console.log('✅ Aula confirmada com sucesso!');
+        alert('Aula confirmada com sucesso!');
+        this.carregarAulas(); // Recarrega para atualizar contadores
+      },
+      error: (err) => {
+        console.error('❌ Erro ao confirmar aula:', err);
+        alert('Erro ao confirmar aula. Tente novamente.');
+      }
+    });
+  }
+
+  recusarAula(aulaId: number): void {
+    if (confirm('Tem certeza que deseja recusar esta aula?')) {
+      this.aulaService.recusarAula(aulaId).subscribe({
+        next: () => {
+          console.log('✅ Aula recusada.');
+          alert('Aula recusada.');
+          this.carregarAulas(); // Recarrega para atualizar contadores
+        },
+        error: (err) => {
+          console.error('❌ Erro ao recusar aula:', err);
+          alert('Erro ao recusar aula. Tente novamente.');
+        }
+      });
+    }
   }
 
   cancelarAula(aulaId: number): void {
     if (confirm('Tem certeza que deseja cancelar esta aula?')) {
-      this.aulaService.cancelarAula(aulaId).subscribe();
+      this.aulaService.cancelarAula(aulaId).subscribe({
+        next: () => {
+          console.log('✅ Aula cancelada.');
+          alert('Aula cancelada com sucesso.');
+          this.carregarAulas(); // Recarrega para atualizar contadores
+        },
+        error: (err) => {
+          console.error('❌ Erro ao cancelar aula:', err);
+          alert('Erro ao cancelar aula. Tente novamente.');
+        }
+      });
     }
-  }
-
-  recusarAula(aulaId: number): void {
-    this.aulaService.recusarAula(aulaId).subscribe();
   }
 
   reagendarAula(aulaId: number): void {

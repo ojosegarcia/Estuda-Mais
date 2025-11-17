@@ -1,7 +1,8 @@
 ﻿export interface Disponibilidade {
   id: number;
-  diaSemana: string;
-  horarioInicio: string;
-  horarioFim: string;
+  idProfessor: number;
+  diaSemana: 'SEGUNDA' | 'TERCA' | 'QUARTA' | 'QUINTA' | 'SEXTA' | 'SABADO' | 'DOMINGO';
+  horarioInicio: string; // Formato: "HH:mm"
+  horarioFim: string;    // Formato: "HH:mm"
   ativo: boolean;
 }

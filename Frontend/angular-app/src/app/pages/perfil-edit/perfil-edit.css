@@ -366,3 +366,127 @@ textarea.about-text {
     padding: var(--spacing-md);
   }
 }
+
+/* ==================== DISPONIBILIDADES ==================== */
+.disponibilidade-form {
+  margin-bottom: var(--spacing-lg);
+}
+
+.disponibilidade-inputs {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: var(--spacing-md);
+  align-items: end;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.input-group select,
+.input-group input[type="time"] {
+  padding: 0.625rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--surface-light);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all var(--transition-base);
+}
+
+.input-group select:focus,
+.input-group input[type="time"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.disponibilidades-lista {
+  margin-top: var(--spacing-lg);
+}
+
+.lista-titulo {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.disponibilidade-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  transition: all var(--transition-base);
+}
+
+.disponibilidade-item:hover {
+  border-color: var(--border-light);
+  transform: translateX(4px);
+}
+
+.disp-dia {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.disp-horario {
+  font-family: 'Courier New', monospace;
+  color: var(--primary-color);
+  font-weight: 500;
+  margin-right: var(--spacing-md);
+}
+
+.btn-remove {
+  background: transparent;
+  border: none;
+  color: var(--danger-color);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  font-size: 1.2rem;
+}
+
+.btn-remove:hover {
+  background: rgba(239, 68, 68, 0.1);
+  transform: scale(1.1);
+}
+
+.empty-disponibilidades {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .disponibilidade-inputs {
+    grid-template-columns: 1fr;
+  }
+  
+  .disponibilidade-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .btn-remove {
+    align-self: flex-end;
+  }
+}

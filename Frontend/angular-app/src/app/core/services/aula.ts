@@ -1,10 +1,12 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, tap, switchMap } from 'rxjs/operators';
-import { Aula, StatusAula } from '../../shared/models'; 
+import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
+import { map, switchMap, catchError, tap } from 'rxjs/operators';
+import { Aula, StatusAula } from '../../shared/models';
 import { AuthService } from './auth';
-import { HttpClient } from '@angular/common/http';
+
+// 1. IMPORTE O 'HttpParams' (E O 'map' QUE VAI FALTAR DEPOIS)
+import { HttpClient, HttpParams } from '@angular/common/http'; 
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +15,8 @@ export class AulaService {
   private apiUrl = 'http://localhost:3000/aulas';
   private isBrowser: boolean;
 
-  // BehaviorSubject para que os componentes possam "ouvir" as mudanças nas aulas
-  private aulasSubject: BehaviorSubject<Aula[]>;
-  public aulas$: Observable<Aula[]>;
+  private aulasSubject: BehaviorSubject<Aula[]> = new BehaviorSubject<Aula[]>([]);
+  public aulas$: Observable<Aula[]> = this.aulasSubject.asObservable();
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -23,97 +24,112 @@ export class AulaService {
     private http: HttpClient
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
-    
-    // Carrega o estado inicial vazio (será preenchido quando getAulasPorUsuarioLogado for chamado)
-    this.aulasSubject = new BehaviorSubject<Aula[]>([]);
-    this.aulas$ = this.aulasSubject.asObservable();
+    this.carregarAulasIniciais();
   }
 
-  // --- MÉTODOS PRIVADOS ---
+  // --- MÉTODOS DE DADOS ---
 
-  // Recarrega todas as aulas do backend e atualiza o BehaviorSubject
-  private recarregarAulas(): Observable<Aula[]> {
-    return this.http.get<Aula[]>(this.apiUrl).pipe(
-      tap(aulas => this.aulasSubject.next(aulas))
-    );
+  private carregarAulasIniciais(): void {
+    const usuario = this.authService.getCurrentUser();
+    if (usuario) {
+      this.getAulasPorUsuarioLogado().subscribe(aulas => {
+        this.aulasSubject.next(aulas);
+      });
+    }
   }
 
-  // --- MÉTODOS PÚBLICOS (A API do Serviço) ---
-
-  /** Aluno solicita uma aula */
-  solicitarAula(novaAula: Omit<Aula, 'id' | 'statusAula' | 'dataCriacao'>): Observable<Aula> {
-    const aulaCompleta: Aula = {
-      ...novaAula,
-      id: Date.now(), // json-server aceita, ou pode gerar automaticamente
-      statusAula: 'SOLICITADA',
-      dataCriacao: new Date().toISOString()
-    };
-    
-    return this.http.post<Aula>(this.apiUrl, aulaCompleta).pipe(
-      tap(() => this.recarregarAulas().subscribe()) // Recarrega a lista após criar
-    );
-  }
-
-  /** Busca as aulas para o usuário logado (Aluno ou Professor) */
+  // === MÉTODO CORRIGIDO ===
   getAulasPorUsuarioLogado(): Observable<Aula[]> {
     const usuario = this.authService.getCurrentUser();
     if (!usuario) {
-      return this.http.get<Aula[]>(this.apiUrl); // Retorna todas se não houver usuário
+      return of([]);
     }
-    
-    let queryUrl = '';
+
+    // 2. Crie uma instância de HttpParams
+    let params = new HttpParams();
+
+    // 3. Adicione o filtro de ID (o .set() já converte para string)
     if (usuario.tipoUsuario === 'ALUNO') {
-      queryUrl = `${this.apiUrl}?idAluno=${usuario.id}`;
+      params = params.set('idAluno', usuario.id);
     } else {
-      queryUrl = `${this.apiUrl}?idProfessor=${usuario.id}`;
+      params = params.set('idProfessor', usuario.id);
     }
-    
-    return this.http.get<Aula[]>(queryUrl).pipe(
-      tap(aulas => this.aulasSubject.next(aulas)) // Atualiza o BehaviorSubject
+
+    // 4. Adicione os 'embeds' um por um usando .append()
+    // Isso cria a URL correta: ...&_embed=professor&_embed=aluno&_embed=materia
+    const embeds = ['professor', 'aluno', 'materia'];
+    embeds.forEach(embed => {
+      params = params.append('_embed', embed);
+    });
+
+    // 5. O 'return' agora funciona
+    return this.http.get<Aula[]>(this.apiUrl, { params: params });
+  }
+
+  /**
+   * Busca aulas de um professor em uma data específica.
+   */
+  getAulasPorProfessorEmData(professorId: number, data: string): Observable<Aula[]> {
+    // 6. CORREÇÃO DE TIPO AQUI TAMBÉM (para garantir)
+    // O json-server espera idProfessor=123&dataAula=2025-11-20
+    const params = new HttpParams()
+      .set('idProfessor', professorId.toString())
+      .set('dataAula', data);
+      
+    return this.http.get<Aula[]>(this.apiUrl, { params: params });
+  }
+
+  // --- MÉTODOS DE AÇÃO ---
+
+  /** (Item 9) Aluno solicita uma aula */
+  solicitarAula(aula: Omit<Aula, 'id' | 'status' | 'dataCriacao'>): Observable<Aula> {
+    const aulaCompleta: Omit<Aula, 'id'> = {
+      ...aula,
+      statusAula: 'SOLICITADA',
+      dataCriacao: new Date().toISOString()
+    };
+
+    return this.http.post<Aula>(this.apiUrl, aulaCompleta).pipe(
+      tap(novaAula => {
+        // Atualiza o BehaviorSubject
+        const aulasAtuais = this.aulasSubject.value;
+        this.aulasSubject.next([...aulasAtuais, novaAula]);
+      })
     );
   }
 
-  /** Atualiza o status de uma aula (usado por todos os métodos abaixo) */
+  /** Atualiza o status de uma aula (base para as ações) */
   private atualizarStatusAula(aulaId: number, novoStatus: StatusAula): Observable<Aula> {
-    // Busca a aula completa primeiro
-    return this.http.get<Aula>(`${this.apiUrl}/${aulaId}`).pipe(
-      switchMap(aula => {
-        const aulaAtualizada = { ...aula, statusAula: novoStatus };
-        return this.http.put<Aula>(`${this.apiUrl}/${aulaId}`, aulaAtualizada);
-      }),
-      tap(() => this.recarregarAulas().subscribe()) // Recarrega após atualizar
+    return this.http.patch<Aula>(`${this.apiUrl}/${aulaId}`, { statusAula: novoStatus }).pipe(
+      tap(aulaAtualizada => {
+        // Atualiza o BehaviorSubject
+        const aulasAtuais = this.aulasSubject.value;
+        const index = aulasAtuais.findIndex(a => a.id === aulaId);
+        if (index > -1) {
+          aulasAtuais[index] = aulaAtualizada;
+          this.aulasSubject.next([...aulasAtuais]);
+        }
+      })
     );
   }
 
-  /** Professor aceita uma aula */
+  /** (Item 11) Professor aceita uma aula */
   aceitarAula(aulaId: number): Observable<Aula> {
     return this.atualizarStatusAula(aulaId, 'CONFIRMADA');
   }
 
-  /** Professor recusa uma aula */
+  /** (Item 11) Professor recusa uma aula */
   recusarAula(aulaId: number): Observable<Aula> {
     return this.atualizarStatusAula(aulaId, 'RECUSADA');
   }
 
-  /** Aluno ou Professor cancela uma aula */
+  /** (Item 11) Aluno ou Professor cancela uma aula */
   cancelarAula(aulaId: number): Observable<Aula> {
     return this.atualizarStatusAula(aulaId, 'CANCELADA');
   }
 
-  /** Marca uma aula como realizada */
-  marcarComoRealizada(aulaId: number): Observable<Aula> {
+  /** (Item 12) Marca como realizada (para feedback) */
+  concluirAula(aulaId: number): Observable<Aula> {
     return this.atualizarStatusAula(aulaId, 'REALIZADA');
-  }
-
-  /** Busca todas as aulas */
-  getTodasAulas(): Observable<Aula[]> {
-    return this.http.get<Aula[]>(this.apiUrl).pipe(
-      tap(aulas => this.aulasSubject.next(aulas))
-    );
-  }
-
-  /** Busca uma aula específica por ID */
-  getAulaPorId(aulaId: number): Observable<Aula> {
-    return this.http.get<Aula>(`${this.apiUrl}/${aulaId}`);
   }
 }

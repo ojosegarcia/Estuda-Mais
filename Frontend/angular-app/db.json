@@ -139,6 +139,40 @@
           "descricao": "JavaScript, Python, Angular"
         }
       ]
+    },
+    {
+      "id": "1763164786398",
+      "nomeCompleto": "Lucas Cerri",
+      "email": "lucas@email.com",
+      "password": "123456",
+      "tipoUsuario": "ALUNO",
+      "ativo": true,
+      "dataCadastro": "2025-11-14T23:59:46.398Z",
+      "telefone": "",
+      "escolaridade": "Superior Incompleto",
+      "interesse": "APRENDER_NOVO"
+    },
+    {
+      "id": "1763164810423",
+      "nomeCompleto": "Sergio Salgado",
+      "email": "sergio@email.com",
+      "password": "123456",
+      "tipoUsuario": "PROFESSOR",
+      "ativo": true,
+      "dataCadastro": "2025-11-15T00:00:10.423Z",
+      "aprovado": true,
+      "telefone": "",
+      "sobre": "Ensinar é a minha vida",
+      "metodologia": "Presença vale nota ",
+      "valorHora": 99,
+      "materias": [
+        {
+          "id": "4",
+          "nome": "Programação",
+          "icone": "💻",
+          "descricao": "JavaScript, Python, Angular"
+        }
+      ]
     }
   ],
   "materias": [
@@ -341,7 +375,7 @@
         "icone": "💻",
         "descricao": "JavaScript, Python, Angular"
       },
-      "statusAula": "SOLICITADA",
+      "statusAula": "CANCELADA",
       "dataCriacao": "2025-11-13T11:23:25.202Z"
     },
     {
@@ -393,8 +427,238 @@
         "icone": "💻",
         "descricao": "JavaScript, Python, Angular"
       },
-      "statusAula": "SOLICITADA",
+      "statusAula": "CANCELADA",
       "dataCriacao": "2025-11-13T11:26:40.406Z"
+    },
+    {
+      "id": "1763165723910",
+      "idProfessor": 1763164810423,
+      "idAluno": 1763164786398,
+      "idMateria": 4,
+      "dataAula": "2025-11-18",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "valorAula": 99,
+      "aluno": {
+        "id": "1763164786398",
+        "nomeCompleto": "Lucas Cerri",
+        "email": "lucas@email.com",
+        "password": "123456",
+        "tipoUsuario": "ALUNO",
+        "ativo": true,
+        "dataCadastro": "2025-11-14T23:59:46.398Z",
+        "telefone": "",
+        "escolaridade": "Superior Incompleto",
+        "interesse": "APRENDER_NOVO"
+      },
+      "professor": {
+        "id": "1763164810423",
+        "nomeCompleto": "Sergio Salgado",
+        "email": "sergio@email.com",
+        "password": "123456",
+        "tipoUsuario": "PROFESSOR",
+        "ativo": true,
+        "dataCadastro": "2025-11-15T00:00:10.423Z",
+        "aprovado": true,
+        "telefone": "",
+        "sobre": "Ensinar é a minha vida",
+        "metodologia": "Presença vale nota ",
+        "valorHora": 99,
+        "materias": [
+          {
+            "id": "4",
+            "nome": "Programação",
+            "icone": "💻",
+            "descricao": "JavaScript, Python, Angular"
+          }
+        ]
+      },
+      "materia": {
+        "id": "4",
+        "nome": "Programação",
+        "icone": "💻",
+        "descricao": "JavaScript, Python, Angular"
+      },
+      "statusAula": "CANCELADA",
+      "dataCriacao": "2025-11-15T00:15:23.910Z"
+    },
+    {
+      "id": "1763165785811",
+      "idProfessor": 1763164810423,
+      "idAluno": 1762990249354,
+      "idMateria": 4,
+      "dataAula": "2025-11-18",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "valorAula": 99,
+      "aluno": {
+        "id": "1762990249354",
+        "nomeCompleto": "Gabriel Correa de Oliveira",
+        "email": "gabrielcoliveira.contato@gmail.com",
+        "password": "123456",
+        "tipoUsuario": "ALUNO",
+        "ativo": true,
+        "dataCadastro": "2025-11-12T23:30:49.354Z",
+        "telefone": "11995082458",
+        "escolaridade": "Prefiro não dizer",
+        "interesse": "REFORCAR_CONHECIMENTO"
+      },
+      "professor": {
+        "id": "1763164810423",
+        "nomeCompleto": "Sergio Salgado",
+        "email": "sergio@email.com",
+        "password": "123456",
+        "tipoUsuario": "PROFESSOR",
+        "ativo": true,
+        "dataCadastro": "2025-11-15T00:00:10.423Z",
+        "aprovado": true,
+        "telefone": "",
+        "sobre": "Ensinar é a minha vida",
+        "metodologia": "Presença vale nota ",
+        "valorHora": 99,
+        "materias": [
+          {
+            "id": "4",
+            "nome": "Programação",
+            "icone": "💻",
+            "descricao": "JavaScript, Python, Angular"
+          }
+        ]
+      },
+      "materia": {
+        "id": "4",
+        "nome": "Programação",
+        "icone": "💻",
+        "descricao": "JavaScript, Python, Angular"
+      },
+      "statusAula": "CANCELADA",
+      "dataCriacao": "2025-11-15T00:16:25.811Z"
+    },
+    {
+      "id": "cb41",
+      "idProfessor": "1763164810423",
+      "idAluno": "1762990249354",
+      "idMateria": "4",
+      "dataAula": "2025-11-17",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "valorAula": 99,
+      "aluno": {
+        "id": "1762990249354",
+        "nomeCompleto": "Gabriel Correa de Oliveira",
+        "email": "gabrielcoliveira.contato@gmail.com",
+        "password": "123456",
+        "tipoUsuario": "ALUNO",
+        "ativo": true,
+        "dataCadastro": "2025-11-12T23:30:49.354Z",
+        "telefone": "11995082458",
+        "escolaridade": "Prefiro não dizer",
+        "interesse": "REFORCAR_CONHECIMENTO"
+      },
+      "professor": {
+        "id": "1763164810423",
+        "nomeCompleto": "Sergio Salgado",
+        "email": "sergio@email.com",
+        "password": "123456",
+        "tipoUsuario": "PROFESSOR",
+        "ativo": true,
+        "dataCadastro": "2025-11-15T00:00:10.423Z",
+        "aprovado": true,
+        "telefone": "",
+        "sobre": "Ensinar é a minha vida",
+        "metodologia": "Presença vale nota ",
+        "valorHora": 99,
+        "materias": [
+          {
+            "id": "4",
+            "nome": "Programação",
+            "icone": "💻",
+            "descricao": "JavaScript, Python, Angular"
+          }
+        ]
+      },
+      "materia": {
+        "id": "4",
+        "nome": "Programação",
+        "icone": "💻",
+        "descricao": "JavaScript, Python, Angular"
+      },
+      "statusAula": "CONFIRMADA",
+      "dataCriacao": "2025-11-17T00:56:40.803Z"
+    }
+  ],
+  "disponibilidades": [
+    {
+      "id": "1",
+      "idProfessor": 101,
+      "diaSemana": "SEGUNDA",
+      "horarioInicio": "14:00",
+      "horarioFim": "18:00",
+      "ativo": true
+    },
+    {
+      "id": "2",
+      "idProfessor": 101,
+      "diaSemana": "QUARTA",
+      "horarioInicio": "09:00",
+      "horarioFim": "12:00",
+      "ativo": true
+    },
+    {
+      "id": "3",
+      "idProfessor": 102,
+      "diaSemana": "TERCA",
+      "horarioInicio": "14:00",
+      "horarioFim": "17:00",
+      "ativo": true
+    },
+    {
+      "id": "4",
+      "idProfessor": 102,
+      "diaSemana": "QUINTA",
+      "horarioInicio": "14:00",
+      "horarioFim": "17:00",
+      "ativo": true
+    },
+    {
+      "id": "5",
+      "idProfessor": 103,
+      "diaSemana": "SEGUNDA",
+      "horarioInicio": "08:00",
+      "horarioFim": "11:00",
+      "ativo": true
+    },
+    {
+      "id": "6",
+      "idProfessor": 103,
+      "diaSemana": "SEXTA",
+      "horarioInicio": "13:00",
+      "horarioFim": "16:00",
+      "ativo": true
+    },
+    {
+      "id": "38a1",
+      "idProfessor": 1763164810423,
+      "diaSemana": "SEGUNDA",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "ativo": true
+    },
+    {
+      "id": "9806",
+      "idProfessor": "1763164810423",
+      "diaSemana": "SEGUNDA",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "ativo": false
+    },
+    {
+      "id": "6400",
+      "idProfessor": "1763164810423",
+      "diaSemana": "SEGUNDA",
+      "horarioInicio": "16:00",
+      "horarioFim": "15:00",
+      "ativo": false
     }
   ]
 }

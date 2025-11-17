@@ -91,11 +91,20 @@ export class AuthService {
   // --- MÉTODOS DE SESSÃO (localStorage) ---
   
   private setSession(usuario: Usuario): void {
+    console.log('🔍 AuthService.setSession - Salvando na sessão:', {
+      id: usuario.id,
+      nomeCompleto: usuario.nomeCompleto,
+      tipoUsuario: usuario.tipoUsuario,
+      hasNomeCompleto: !!usuario.nomeCompleto
+    });
+    
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+      console.log('✅ localStorage atualizado');
     }
     this.isLoggedInSubject.next(true);
     this.currentUserSubject.next(usuario);
+    console.log('✅ BehaviorSubjects atualizados');
   }
 
   logout(): void {
@@ -127,12 +136,26 @@ export class AuthService {
   // O PerfilEditComponent vai chamar este método
   
   updateUserProfile(usuario: Usuario): Observable<Usuario> {
+    console.log('🔍 AuthService.updateUserProfile - Iniciando atualização:', {
+      id: usuario.id,
+      nomeCompleto: usuario.nomeCompleto,
+      tipoUsuario: usuario.tipoUsuario
+    });
+    
     return this.http.put<Usuario>(`${this.apiUrl}/${usuario.id}`, usuario).pipe(
       tap(usuarioAtualizado => {
+        console.log('✅ AuthService.updateUserProfile - Backend respondeu:', {
+          id: usuarioAtualizado.id,
+          nomeCompleto: usuarioAtualizado.nomeCompleto,
+          tipoUsuario: usuarioAtualizado.tipoUsuario
+        });
+        
         // Atualiza a sessão local com os novos dados
         this.setSession(usuarioAtualizado);
+        console.log('✅ AuthService.updateUserProfile - Sessão atualizada no localStorage e BehaviorSubject');
       }),
       catchError(err => {
+        console.error('❌ AuthService.updateUserProfile - Erro ao atualizar perfil:', err);
         alert('Erro ao atualizar o perfil. Tente novamente.');
         return throwError(() => err);
       })

@@ -202,6 +202,80 @@
   font-style: italic;
 }
 
+/* ==================== DISPONIBILIDADES ==================== */
+.disponibilidades-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.disponibilidade-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+}
+
+.disponibilidade-card:hover {
+  border-color: var(--primary-color);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+}
+
+.disp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.disp-dia {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.disp-horario {
+  font-family: 'Courier New', monospace;
+  color: var(--primary-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-agendar {
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.btn-agendar:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-agendar:active {
+  transform: translateY(0);
+}
+
+.empty-disponibilidades {
+  text-align: center;
+  padding: var(--spacing-lg);
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
 @media (max-width: 1024px) {
   .profile-body {
     grid-template-columns: 1fr;
@@ -277,4 +351,129 @@
     font-size: 0.75rem;
     padding: 4px 12px;
   }
+
+  /* ===================================== */
+/* === NOVOS ESTILOS PARA AGENDAMENTO === */
+/* ===================================== */
+
+/* Estilos para o Calendário e Slots */
+.date-picker {
+  margin-bottom: 1.5rem;
+}
+.date-picker label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.data-selecionada-info {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.data-selecionada-info .info-icon {
+  font-size: 1.25rem;
+}
+
+.data-selecionada-info .info-text {
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 0.95rem;
+}
+
+/* Reutiliza o estilo global de input */
+input[type="date"].info-value {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.horarios-container label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
+}
+
+.horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.horario-slot {
+  background: linear-gradient(135deg, var(--surface-light), var(--bg-dark));
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 1rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.horario-slot::before {
+  content: '🕒';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.horario-slot:hover {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+.horario-slot:hover::before {
+  opacity: 1;
+}
+
+.horario-slot:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.loading-slots, .empty-slots, .empty-disponibilidades {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 1rem;
+  background: var(--bg-dark);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color);
+}
 }

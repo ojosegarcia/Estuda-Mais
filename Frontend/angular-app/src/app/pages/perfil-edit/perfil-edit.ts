@@ -1,31 +1,41 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-// 1. Importe FormArray e FormControl
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { MateriaService } from '../../core/services/materia';
+import { DisponibilidadeService } from '../../core/services/disponibilidade';
 import { AulaService } from '../../core/services/aula';
-import { Professor, Usuario, Materia, Aluno } from '../../shared/models';
+import { Professor, Usuario, Materia, Aluno, Disponibilidade } from '../../shared/models';
 import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-perfil-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './perfil-edit.html',
   styleUrls: ['./perfil-edit.css']
 })
 export class PerfilEditComponent implements OnInit {
 
   currentUser: Usuario | null = null;
-  profileForm!: FormGroup;
+  profileForm!: FormGroup; // Formulário principal (Perfil, Matérias)
+  
+  // 3. NOVO FORMULÁRIO REATIVO para adicionar horários
+  disponibilidadeForm!: FormGroup;
+
   isLoading = true;
 
   todasMaterias: Materia[] = [];
-  materiasSelecionadas = new Set<number>();
-  materiasCustomizadas: string[] = []; // Para as tags de matérias customizadas
+  materiasSelecionadas = new Set<number>(); // Controla a UI de matérias
+  materiasCustomizadas: string[] = []; // Controla as tags customizadas
+  
+  disponibilidades: Disponibilidade[] = []; // Lista de horários já salvos
+  diasDaSemana = ['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO'];
+  
+  // 4. REMOVEMOS o 'novaDisponibilidade = { ... }'
 
+  // ... (opcoesEscolaridade e opcoesInteresse - sem mudanças) ...
   opcoesEscolaridade = [
     'Prefiro não dizer',
     'Ensino Fundamental Incompleto',
@@ -36,7 +46,6 @@ export class PerfilEditComponent implements OnInit {
     'Superior Completo',
     'Pós-graduado'
   ];
-  
   opcoesInteresse = [
     { value: 'APRENDER_NOVO', label: '🌟 Aprender algo novo' },
     { value: 'REFORCAR_CONHECIMENTO', label: '💪 Reforçar o que já sei' },
@@ -48,18 +57,30 @@ export class PerfilEditComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private materiaService: MateriaService,
+    private disponibilidadeService: DisponibilidadeService,
     private aulaService: AulaService,
-    // 2. Injete o PLATFORM_ID (necessário para o onSubmit)
     @Inject(PLATFORM_ID) private platformId: Object 
   ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     
+    // 5. CRIA o formulário de disponibilidade (antes de carregar os dados)
+    this.disponibilidadeForm = this.fb.group({
+      diaSemana: ['SEGUNDA', Validators.required],
+      horarioInicio: ['14:00', Validators.required],
+      horarioFim: ['15:00', Validators.required]
+    });
+
     if (this.isProfessor()) {
-      this.materiaService.getMaterias().subscribe(materias => {
+      // Carrega matérias e disponibilidades em paralelo
+      forkJoin({
+        materias: this.materiaService.getMaterias(),
+        disponibilidades: this.disponibilidadeService.getDisponibilidadesPorProfessor(this.currentUser!.id)
+      }).subscribe(({ materias, disponibilidades }) => {
         this.todasMaterias = materias;
-        this.initForm(); // Chama o initForm DEPOIS de ter as matérias
+        this.disponibilidades = disponibilidades.filter(d => d.ativo); // Filtra apenas ativos
+        this.initForm(); // Inicia o form principal DEPOIS de ter os dados
         this.isLoading = false;
       });
     } else {
@@ -74,24 +95,14 @@ export class PerfilEditComponent implements OnInit {
     if (this.isProfessor()) {
       const professor = this.currentUser as Professor;
       
-      // 3. CORREÇÃO: O Formulário do Professor agora inclui TODOS os campos do HTML
       this.profileForm = this.fb.group({
         nomeCompleto: [professor.nomeCompleto, Validators.required],
         telefone: [professor.telefone || ''],
         sobre: [professor.sobre || '', Validators.required],
         metodologia: [professor.metodologia || ''],
         valorHora: [professor.valorHora || 0, [Validators.required, Validators.min(1)]],
-        
-        // 4. CORREÇÃO: Cria o FormArray para os checkboxes
-        materiasBase: this.fb.array(
-          this.todasMaterias.map(materia => 
-            this.fb.control(
-              professor.materias?.some(m => Number(m.id) === Number(materia.id)) || false
-            )
-          )
-        ),
-        // 5. CORREÇÃO: Cria o FormControl para o input de nova matéria
-        materiaCustomInput: [''] 
+        // 6. REMOVEMOS o FormArray 'materiasBase'
+        // 7. REMOVEMOS o FormControl 'materiaCustomInput'
       });
       
       // Pre-popula o Set (lógica de clique) e a lista de tags (visual)
@@ -111,39 +122,29 @@ export class PerfilEditComponent implements OnInit {
     }
   }
 
-  // --- Lógica de Matérias do Professor ---
+  // --- Lógica de Matérias (Está correta e alinhada com o HTML) ---
   
-  // Helper para acessar o FormArray no HTML (caso precise)
-  get materiasBaseFormArray() {
-    return this.profileForm.get('materiasBase') as FormArray;
-  }
-
   isMateriaSelected(id: number): boolean {
-    // A lógica de clique (Set) é separada do FormArray, o que é ok
     return this.materiasSelecionadas.has(Number(id));
   }
 
   toggleMateria(id: number): void {
     const numId = Number(id);
-    const formControl = this.materiasBaseFormArray.at(
-      this.todasMaterias.findIndex(m => Number(m.id) === numId)
-    );
-
     if (this.materiasSelecionadas.has(numId)) {
       this.materiasSelecionadas.delete(numId);
-      formControl?.setValue(false); // Desmarca o checkbox no formulário
     } else {
       this.materiasSelecionadas.add(numId);
-      formControl?.setValue(true); // Marca o checkbox no formulário
     }
   }
 
-  adicionarMateriaCustom(): void {
-    const nomeMateria = this.profileForm.get('materiaCustomInput')?.value.trim();
+  // 8. O input de matéria customizada agora é TEMPLATE-DRIVEN (mais simples)
+  // Ele não está mais no profileForm
+  adicionarMateriaCustom(inputElement: HTMLInputElement): void {
+    const nomeMateria = inputElement.value.trim();
     if (nomeMateria && !this.materiasCustomizadas.includes(nomeMateria)) {
       this.materiasCustomizadas.push(nomeMateria);
     }
-    this.profileForm.get('materiaCustomInput')?.reset();
+    inputElement.value = ''; // Limpa o input
   }
 
   removerMateriaCustom(index: number): void {
@@ -155,7 +156,7 @@ export class PerfilEditComponent implements OnInit {
   isAluno(): boolean { return this.currentUser?.tipoUsuario === 'ALUNO'; }
   get f() { return this.profileForm.controls; }
 
-  // --- Lógica de Salvar ---
+  // --- Lógica de Salvar (onSubmit) ---
   onSubmit(): void {
     if (this.profileForm.invalid) {
       alert('Formulário inválido! Verifique os campos obrigatórios.');
@@ -171,13 +172,14 @@ export class PerfilEditComponent implements OnInit {
     const formValue = this.profileForm.value;
     let materiasParaSalvar: Materia[] = [];
 
+    // Lógica para salvar as matérias
     if (this.isProfessor()) {
-      // Pega as matérias selecionadas do Set (fonte da verdade)
+      // Pega as matérias selecionadas do Set
       materiasParaSalvar = this.todasMaterias.filter(materia => 
         this.materiasSelecionadas.has(Number(materia.id))
       );
       
-      // Pega as matérias customizadas (tags) - DESABILITADO mas mantém lógica
+      // Pega as matérias customizadas (tags)
       const materiasCustom = this.materiasCustomizadas.map((nome, i) => ({
         id: new Date().getTime() + i,
         nome: nome,
@@ -185,35 +187,15 @@ export class PerfilEditComponent implements OnInit {
       }));
       
       materiasParaSalvar = [...materiasParaSalvar, ...materiasCustom];
-
-      // Cancela aulas de matérias removidas
-      const professor = this.currentUser as Professor;
-      const materiasAntigas = professor.materias || [];
-      const materiaIdsNovos = new Set(materiasParaSalvar.map(m => Number(m.id)));
-      const materiasRemovidas = materiasAntigas.filter(m => !materiaIdsNovos.has(Number(m.id)));
-
-      if (materiasRemovidas.length > 0) {
-        this.cancelarAulasDeMaterias(materiasRemovidas.map(m => Number(m.id)), Number(professor.id));
-      }
     }
 
-    // Monta o objeto final para salvar
+    // Cria o objeto final para salvar
     const usuarioAtualizado: Usuario = { 
       ...this.currentUser, 
       ...formValue,
-      nomeCompleto: formValue.nomeCompleto?.trim(), // Remove espaços extras
       materias: this.isProfessor() ? materiasParaSalvar : undefined
     };
-
-    // Remove os campos de controle do formulário antes de salvar
-    delete (usuarioAtualizado as any).materiasBase;
-    delete (usuarioAtualizado as any).materiaCustomInput;
     
-    // Atualiza a sessão local
-    if (isPlatformBrowser(this.platformId)) {
-      this.authService.refreshCurrentUserSession(usuarioAtualizado);
-    }
-
     // Salva no db.json
     this.authService.updateUserProfile(usuarioAtualizado).subscribe({
       next: (usuarioSalvo) => {
@@ -227,24 +209,64 @@ export class PerfilEditComponent implements OnInit {
     });
   }
 
-  // Cancela aulas pendentes/confirmadas de matérias removidas
-  private cancelarAulasDeMaterias(materiaIds: number[], professorId: number): void {
-    this.aulaService.getTodasAulas().subscribe(aulas => {
-      const aulasParaCancelar = aulas.filter(aula => 
-        Number(aula.idProfessor) === Number(professorId) && 
-        materiaIds.includes(Number(aula.idMateria)) &&
-        (aula.statusAula === 'SOLICITADA' || aula.statusAula === 'CONFIRMADA')
-      );
+  // 9. REMOVEMOS a função 'cancelarAulasDeMaterias'
 
-      if (aulasParaCancelar.length > 0) {
-        const cancelamentos = aulasParaCancelar.map(aula => 
-          this.aulaService.cancelarAula(Number(aula.id))
-        );
-        forkJoin(cancelamentos).subscribe(() => {
-          console.log(`${aulasParaCancelar.length} aula(s) cancelada(s) devido à remoção de matérias.`);
+  // --- Gestão de Disponibilidades (Agora 100% Reativa) ---
+
+  adicionarDisponibilidade(): void {
+    if (!this.currentUser || this.disponibilidadeForm.invalid) return;
+
+    // Pega os valores do 'disponibilidadeForm'
+    const formValue = this.disponibilidadeForm.value;
+
+    const novaDisp: Omit<Disponibilidade, 'id'> = {
+      idProfessor: this.currentUser.id,
+      diaSemana: formValue.diaSemana as any,
+      horarioInicio: formValue.horarioInicio,
+      horarioFim: formValue.horarioFim,
+      ativo: true
+    };
+
+    this.disponibilidadeService.criarDisponibilidade(novaDisp).subscribe({
+      next: (dispCriada) => {
+        this.disponibilidades.push(dispCriada);
+        // Reseta o formulário de disponibilidade
+        this.disponibilidadeForm.reset({
+          diaSemana: 'SEGUNDA',
+          horarioInicio: '14:00',
+          horarioFim: '15:00'
         });
+      },
+      error: (err) => {
+        console.error('Erro ao adicionar disponibilidade:', err);
+        alert('Erro ao adicionar horário.');
       }
     });
+  }
+
+  removerDisponibilidade(index: number): void {
+    const disp = this.disponibilidades[index];
+    if (!disp.id) return;
+
+    const dispAtualizada = { ...disp, ativo: false };
+
+    this.disponibilidadeService.atualizarDisponibilidade(disp.id, dispAtualizada).subscribe({
+      next: () => {
+        this.disponibilidades.splice(index, 1);
+      },
+      error: (err) => {
+        console.error('Erro ao remover disponibilidade:', err);
+        alert('Erro ao remover horário.');
+      }
+    });
+  }
+
+  getDiaLabel(dia: string): string {
+    const labels: any = {
+      'SEGUNDA': 'Segunda-feira', 'TERCA': 'Terça-feira', 'QUARTA': 'Quarta-feira',
+      'QUINTA': 'Quinta-feira', 'SEXTA': 'Sexta-feira', 'SABADO': 'Sábado', 'DOMINGO': 'Domingo'
+    };
+    return labels[dia] || dia;
   }
 
   cancelar(): void {

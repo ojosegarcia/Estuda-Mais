@@ -14,7 +14,6 @@
     </div>
     <div class="profile-header-actions">
       <span class="profile-preco">R$ {{ professor.valorHora }}/hora</span>
-      <button class="btn-primary" (click)="agendarAula(professor)">Agendar Aula</button>
     </div>
   </header>
 
@@ -28,23 +27,64 @@
 
       <section>
         <h2>Experiência</h2>
-        <ul class="experiencia-lista">
+        <ul class="experiencia-lista" *ngIf="professor.experiencias && professor.experiencias.length > 0">
           <li *ngFor="let exp of professor.experiencias">
             <strong>{{ exp.cargo }}</strong> em {{ exp.instituicao }} ({{ exp.periodo }})
             <p>{{ exp.descricao }}</p>
           </li>
         </ul>
+        <p *ngIf="!professor.experiencias || professor.experiencias.length === 0">Nenhuma experiência cadastrada.</p>
       </section>
-
-      </div>
+    </div>
 
     <aside class="profile-sidebar">
       <section>
-        <h2>Disponibilidade</h2>
-        <p>(Em breve)</p>
+        <h2>📅 Agendar Aula</h2>
+        
+        <div class="date-picker">
+          <label for="data-aula">1️⃣ Escolha uma data:</label>
+          <input 
+            type="date" 
+            id="data-aula" 
+            class="info-value"
+            (change)="onDataSelecionada($event)"
+            [min]="today" >
+          
+          <div *ngIf="dataSelecionada" class="data-selecionada-info">
+            <span class="info-icon">📆</span>
+            <span class="info-text">{{ formatarData(dataSelecionada) }} ({{ getDiaLabel(getDiaDaSemana(dataSelecionada)) }})</span>
+          </div>
+        </div>
+        
+        <div class="horarios-container" *ngIf="dataSelecionada">
+          <label>2️⃣ Escolha um horário disponível:</label>
+
+          <div *ngIf="isLoadingSlots" class="loading-slots">
+            <p>⏳ Buscando horários disponíveis...</p>
+          </div>
+
+          <div *ngIf="!isLoadingSlots && slotsFiltrados.length > 0" class="horarios-grid">
+            <button 
+              *ngFor="let slot of slotsFiltrados"
+              class="horario-slot"
+              (click)="agendarSlot(slot)">
+              {{ slot }}
+            </button>
+          </div>
+
+          <div *ngIf="!isLoadingSlots && slotsFiltrados.length === 0" class="empty-slots">
+            <p>❌ Nenhum horário disponível para este dia.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Tente outra data ou entre em contato com o professor.</p>
+          </div>
+        </div>
+
+        <div class="empty-disponibilidades" *ngIf="!dataSelecionada && !isLoadingSlots">
+          <p>👆 Selecione uma data no calendário acima para ver os horários disponíveis.</p>
+        </div>
       </section>
+      
       <section>
-        <h2>Avaliações</h2>
+        <h2>⭐ Avaliações</h2>
         <p>(Em breve)</p>
       </section>
     </aside>
