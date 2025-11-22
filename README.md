@@ -5,7 +5,7 @@ Uma aplicação full-stack de agendamento de aulas particulares utilizando Sprin
 
 ## Tecnologias 
 **Backend**
-- Java 21
+- Java 17
 - Spring Boot 3.5.5
 - Spring Web
 - Spring Data JPA
