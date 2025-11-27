@@ -34,7 +34,6 @@ export class HomeComponent implements OnInit {
       this.materias = dados; 
     });
 
-    // Verifica se o perfil está completo
     if (!this.authService.isProfileComplete()) {
       this.showProfileModal = true;
     }

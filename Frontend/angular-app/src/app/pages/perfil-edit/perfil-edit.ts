@@ -19,23 +19,18 @@ import { forkJoin, of } from 'rxjs';
 export class PerfilEditComponent implements OnInit {
 
   currentUser: Usuario | null = null;
-  profileForm!: FormGroup; // Formulário principal (Perfil, Matérias)
+  profileForm!: FormGroup; 
   
-  // 3. NOVO FORMULÁRIO REATIVO para adicionar horários
   disponibilidadeForm!: FormGroup;
 
   isLoading = true;
 
   todasMaterias: Materia[] = [];
-  materiasSelecionadas = new Set<number>(); // Controla a UI de matérias
-  materiasCustomizadas: string[] = []; // Controla as tags customizadas
+  materiasSelecionadas = new Set<number>(); 
+  materiasCustomizadas: string[] = []; 
   
-  disponibilidades: Disponibilidade[] = []; // Lista de horários já salvos
+  disponibilidades: Disponibilidade[] = [];
   diasDaSemana = ['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO'];
-  
-  // 4. REMOVEMOS o 'novaDisponibilidade = { ... }'
-
-  // ... (opcoesEscolaridade e opcoesInteresse - sem mudanças) ...
   opcoesEscolaridade = [
     'Prefiro não dizer',
     'Ensino Fundamental Incompleto',
@@ -65,7 +60,6 @@ export class PerfilEditComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     
-    // 5. CRIA o formulário de disponibilidade (antes de carregar os dados)
     this.disponibilidadeForm = this.fb.group({
       diaSemana: ['SEGUNDA', Validators.required],
       horarioInicio: ['14:00', Validators.required],
@@ -73,14 +67,13 @@ export class PerfilEditComponent implements OnInit {
     });
 
     if (this.isProfessor()) {
-      // Carrega matérias e disponibilidades em paralelo
       forkJoin({
         materias: this.materiaService.getMaterias(),
         disponibilidades: this.disponibilidadeService.getDisponibilidadesPorProfessor(this.currentUser!.id)
       }).subscribe(({ materias, disponibilidades }) => {
         this.todasMaterias = materias;
-        this.disponibilidades = disponibilidades.filter(d => d.ativo); // Filtra apenas ativos
-        this.initForm(); // Inicia o form principal DEPOIS de ter os dados
+        this.disponibilidades = disponibilidades.filter(d => d.ativo); 
+        this.initForm(); 
         this.isLoading = false;
       });
     } else {
@@ -88,7 +81,6 @@ export class PerfilEditComponent implements OnInit {
       this.isLoading = false;
     }
   }
-
   initForm(): void {
     if (!this.currentUser) return;
 
@@ -101,15 +93,8 @@ export class PerfilEditComponent implements OnInit {
         sobre: [professor.sobre || '', Validators.required],
         metodologia: [professor.metodologia || ''],
         valorHora: [professor.valorHora || 0, [Validators.required, Validators.min(1)]],
-        // 6. REMOVEMOS o FormArray 'materiasBase'
-        // 7. REMOVEMOS o FormControl 'materiaCustomInput'
       });
-      
-      // Pre-popula o Set (lógica de clique) e a lista de tags (visual)
-      this.materiasSelecionadas = new Set(professor.materias?.map(m => Number(m.id)) || []);
-      this.materiasCustomizadas = professor.materias
-        ?.filter(m => !this.todasMaterias.some(base => Number(base.id) === Number(m.id)))
-        .map(m => m.nome) || [];
+            this.materiasSelecionadas = new Set(professor.materias?.map(m => Number(m.id)) || []);
         
     } else {
       const aluno = this.currentUser as Aluno;
@@ -122,8 +107,6 @@ export class PerfilEditComponent implements OnInit {
     }
   }
 
-  // --- Lógica de Matérias (Está correta e alinhada com o HTML) ---
-  
   isMateriaSelected(id: number): boolean {
     return this.materiasSelecionadas.has(Number(id));
   }
@@ -137,26 +120,10 @@ export class PerfilEditComponent implements OnInit {
     }
   }
 
-  // 8. O input de matéria customizada agora é TEMPLATE-DRIVEN (mais simples)
-  // Ele não está mais no profileForm
-  adicionarMateriaCustom(inputElement: HTMLInputElement): void {
-    const nomeMateria = inputElement.value.trim();
-    if (nomeMateria && !this.materiasCustomizadas.includes(nomeMateria)) {
-      this.materiasCustomizadas.push(nomeMateria);
-    }
-    inputElement.value = ''; // Limpa o input
-  }
-
-  removerMateriaCustom(index: number): void {
-    this.materiasCustomizadas.splice(index, 1);
-  }
-
-  // --- Helpers para o HTML ---
   isProfessor(): boolean { return this.currentUser?.tipoUsuario === 'PROFESSOR'; }
   isAluno(): boolean { return this.currentUser?.tipoUsuario === 'ALUNO'; }
   get f() { return this.profileForm.controls; }
 
-  // --- Lógica de Salvar (onSubmit) ---
   onSubmit(): void {
     if (this.profileForm.invalid) {
       alert('Formulário inválido! Verifique os campos obrigatórios.');
@@ -164,39 +131,27 @@ export class PerfilEditComponent implements OnInit {
     }
     if (!this.currentUser) return;
 
-    if (this.isProfessor() && this.materiasSelecionadas.size === 0 && this.materiasCustomizadas.length === 0) {
-      alert('Como professor, você deve selecionar ou adicionar pelo menos uma matéria.');
+    if (this.isProfessor() && this.materiasSelecionadas.size === 0) {
+      alert('Como professor, você deve selecionar pelo menos uma matéria.');
       return;
     }
 
     const formValue = this.profileForm.value;
     let materiasParaSalvar: Materia[] = [];
 
-    // Lógica para salvar as matérias
     if (this.isProfessor()) {
-      // Pega as matérias selecionadas do Set
+      // Pega apenas as matérias selecionadas do Set
       materiasParaSalvar = this.todasMaterias.filter(materia => 
         this.materiasSelecionadas.has(Number(materia.id))
       );
-      
-      // Pega as matérias customizadas (tags)
-      const materiasCustom = this.materiasCustomizadas.map((nome, i) => ({
-        id: new Date().getTime() + i,
-        nome: nome,
-        icone: '🆕'
-      }));
-      
-      materiasParaSalvar = [...materiasParaSalvar, ...materiasCustom];
     }
 
-    // Cria o objeto final para salvar
     const usuarioAtualizado: Usuario = { 
       ...this.currentUser, 
       ...formValue,
       materias: this.isProfessor() ? materiasParaSalvar : undefined
     };
     
-    // Salva no db.json
     this.authService.updateUserProfile(usuarioAtualizado).subscribe({
       next: (usuarioSalvo) => {
         alert('Perfil salvo com sucesso!');
@@ -209,14 +164,9 @@ export class PerfilEditComponent implements OnInit {
     });
   }
 
-  // 9. REMOVEMOS a função 'cancelarAulasDeMaterias'
-
-  // --- Gestão de Disponibilidades (Agora 100% Reativa) ---
-
   adicionarDisponibilidade(): void {
     if (!this.currentUser || this.disponibilidadeForm.invalid) return;
 
-    // Pega os valores do 'disponibilidadeForm'
     const formValue = this.disponibilidadeForm.value;
 
     const novaDisp: Omit<Disponibilidade, 'id'> = {
@@ -230,7 +180,6 @@ export class PerfilEditComponent implements OnInit {
     this.disponibilidadeService.criarDisponibilidade(novaDisp).subscribe({
       next: (dispCriada) => {
         this.disponibilidades.push(dispCriada);
-        // Reseta o formulário de disponibilidade
         this.disponibilidadeForm.reset({
           diaSemana: 'SEGUNDA',
           horarioInicio: '14:00',

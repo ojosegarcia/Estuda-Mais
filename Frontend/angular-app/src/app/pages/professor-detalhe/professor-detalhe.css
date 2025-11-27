@@ -329,6 +329,281 @@
   }
 }
 
+/* ===================================== */
+/* === NOVOS ESTILOS PARA AGENDAMENTO === */
+/* ===================================== */
+
+/* Container do Date Picker */
+.date-picker {
+  margin-bottom: 1.5rem;
+  padding: var(--spacing-md);
+  background: var(--surface-light);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.date-picker label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Estilização Avançada do Input Date */
+input[type="date"].info-value {
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+input[type="date"].info-value:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input[type="date"].info-value:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Estilização do calendário dropdown (Chrome/Edge) */
+input[type="date"].info-value::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  filter: invert(0.7);
+}
+
+input[type="date"].info-value:hover::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(200deg);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* Data Selecionada - Card de Confirmação */
+.data-selecionada-info {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  animation: slideInFromTop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.data-selecionada-info .info-icon {
+  font-size: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.data-selecionada-info .info-text {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+}
+
+/* Container dos Horários */
+.horarios-container {
+  padding: var(--spacing-md);
+  background: var(--surface-light);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  margin-top: var(--spacing-md);
+}
+
+.horarios-container label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Grid de Horários */
+.horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slots de Horário - Design Moderno */
+.horario-slot {
+  background: linear-gradient(145deg, var(--bg-dark), var(--surface-dark));
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Efeito de brilho ao passar o mouse */
+.horario-slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.horario-slot:hover::before {
+  left: 100%;
+}
+
+/* Ícone de relógio */
+.horario-slot::after {
+  content: '🕐';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.horario-slot:hover {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  border-color: #3b82f6;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+}
+
+.horario-slot:hover::after {
+  opacity: 1;
+}
+
+.horario-slot:active {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+/* Estados de Loading e Empty */
+.loading-slots {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  padding: var(--spacing-lg);
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border-color);
+  animation: pulse 1.5s infinite;
+}
+
+.empty-slots {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  padding: var(--spacing-lg);
+  background: rgba(239, 68, 68, 0.05);
+  border-radius: var(--radius-md);
+  border: 2px dashed rgba(239, 68, 68, 0.3);
+}
+
+.empty-slots p:first-child {
+  font-weight: 600;
+  color: #ef4444;
+  margin-bottom: var(--spacing-xs);
+}
+
+.empty-disponibilidades {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  padding: var(--spacing-xl);
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border-color);
+  font-style: italic;
+}
+
+/* Responsividade para Mobile */
+@media (max-width: 640px) {
+  .horarios-grid {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: var(--spacing-xs);
+  }
+
+  .horario-slot {
+    font-size: 1rem;
+    padding: var(--spacing-sm);
+    min-height: 48px;
+  }
+
+  .date-picker,
+  .horarios-container {
+    padding: var(--spacing-sm);
+  }
+}
+
 @media (max-width: 480px) {
   .profile-container {
     padding: var(--spacing-sm);
@@ -351,129 +626,4 @@
     font-size: 0.75rem;
     padding: 4px 12px;
   }
-
-  /* ===================================== */
-/* === NOVOS ESTILOS PARA AGENDAMENTO === */
-/* ===================================== */
-
-/* Estilos para o Calendário e Slots */
-.date-picker {
-  margin-bottom: 1.5rem;
-}
-.date-picker label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--text-secondary);
-}
-
-.data-selecionada-info {
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-  border: 2px solid rgba(59, 130, 246, 0.3);
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.data-selecionada-info .info-icon {
-  font-size: 1.25rem;
-}
-
-.data-selecionada-info .info-text {
-  font-weight: 600;
-  color: var(--primary-color);
-  font-size: 0.95rem;
-}
-
-/* Reutiliza o estilo global de input */
-input[type="date"].info-value {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
-  font-size: 1rem;
-}
-
-.horarios-container label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text-secondary);
-}
-
-.horarios-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-
-.horario-slot {
-  background: linear-gradient(135deg, var(--surface-light), var(--bg-dark));
-  border: 2px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 1rem 0.75rem;
-  border-radius: var(--radius-md, 8px);
-  text-align: center;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  overflow: hidden;
-}
-
-.horario-slot::before {
-  content: '🕒';
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 0.75rem;
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
-}
-
-.horario-slot:hover {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  border-color: var(--primary-color);
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: var(--shadow-lg);
-}
-
-.horario-slot:hover::before {
-  opacity: 1;
-}
-
-.horario-slot:active {
-  transform: translateY(-2px) scale(1.02);
-}
-
-.loading-slots, .empty-slots, .empty-disponibilidades {
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  padding: 1rem;
-  background: var(--bg-dark);
-  border-radius: var(--radius-md);
-  border: 1px dashed var(--border-color);
-}
 }

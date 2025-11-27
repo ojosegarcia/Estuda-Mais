@@ -30,4 +30,8 @@ export interface Aula {
   linkReuniao?: string;
   valorAula: number;
   dataCriacao: string;
+  
+  // Controle de exclusão independente
+  removidoPeloAluno?: boolean;
+  removidoPeloProfessor?: boolean;
 }

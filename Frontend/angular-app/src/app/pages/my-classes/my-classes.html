@@ -56,6 +56,18 @@
               ❌ Cancelar Aula
             </button>
           </div>
+          
+          <div class="card-footer" *ngIf="aula.statusAula === 'CONFIRMADA' && podeAcessarAula(aula)">
+            <button class="btn-primary btn-sm" (click)="acessarAula(aula)">
+              🔗 Acessar Aula
+            </button>
+          </div>
+          
+          <div class="card-footer" *ngIf="aula.statusAula === 'CANCELADA' || aula.statusAula === 'RECUSADA'">
+            <button class="btn-secondary btn-sm" (click)="excluirAula(aula.id)">
+              🗑️ Remover
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -96,16 +108,74 @@
             </span>
             
             <div class="action-buttons" *ngIf="aula.statusAula === 'SOLICITADA'">
-              <button class="btn-icon btn-success" (click)="confirmarAula(aula.id)" title="Confirmar Aula">✔️</button>
+              <button class="btn-icon btn-success" (click)="abrirModalAceitarAula(aula)" title="Aceitar Aula">✔️</button>
               <button class="btn-icon btn-danger" (click)="recusarAula(aula.id)" title="Recusar Aula">❌</button>
             </div>
 
             <div class="action-buttons" *ngIf="aula.statusAula === 'CONFIRMADA'">
               <button class="btn-icon btn-danger" (click)="cancelarAula(aula.id)" title="Cancelar Aula">❌</button>
             </div>
+            
+            <div class="action-buttons" *ngIf="aula.statusAula === 'CANCELADA' || aula.statusAula === 'RECUSADA'">
+              <button class="btn-icon btn-secondary" (click)="excluirAula(aula.id)" title="Remover Permanentemente">🗑️</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </ng-container>
+</div>
+
+<!-- Modal de Link da Reunião (Professor) -->
+<div class="modal-overlay" *ngIf="showLinkModal" (click)="fecharModalLink()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>🔗 Adicionar Link da Reunião</h2>
+      <button class="btn-close" (click)="fecharModalLink()">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-info">Para aceitar esta aula, você precisa fornecer o link da reunião online.</p>
+      
+      <div class="form-group">
+        <label for="linkReuniao">Link da Reunião *</label>
+        <input 
+          type="url" 
+          id="linkReuniao" 
+          class="form-control"
+          [(ngModel)]="linkReuniao"
+          [class.invalid]="linkInvalido"
+          placeholder="https://zoom.us/j/123456789 ou https://meet.google.com/xxx-yyyy-zzz"
+          (input)="linkInvalido = false">
+        <small class="form-hint">Cole aqui o link do Zoom, Google Meet, Microsoft Teams ou outra plataforma</small>
+        <small class="form-error" *ngIf="linkInvalido">❌ Link inválido! Use um link de videoconferência válido.</small>
+      </div>
+      
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="usarLinkPadrao">
+          <span>💾 Usar sempre este link nas próximas aulas</span>
+        </label>
+        <small class="form-hint">Marque esta opção se você sempre usa o mesmo link para suas aulas</small>
+      </div>
+      
+      <div class="link-examples">
+        <strong>Exemplos de links válidos:</strong>
+        <ul>
+          <li>🟦 Zoom: <code>https://zoom.us/j/123456789</code></li>
+          <li>🟩 Google Meet: <code>https://meet.google.com/abc-defg-hij</code></li>
+          <li>🟪 Microsoft Teams: <code>https://teams.microsoft.com/l/meetup-join/...</code></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="fecharModalLink()">Cancelar</button>
+      <button class="btn-primary" (click)="confirmarAceitacaoComLink()" [disabled]="!linkReuniao.trim()">
+        ✅ Aceitar Aula
+      </button>
+    </div>
+  </div>
 </div>

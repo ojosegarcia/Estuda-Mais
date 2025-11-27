@@ -1,29 +1,37 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router'; // Importe RouterLink
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router'; 
 import { Usuario } from '../../shared/models/usuarioModel';
-import { Aula } from '../../shared/models'; // Importe o model Aula
-import { AulaService } from '../../core/services/aula'; // Importe o AulaService
-import { AuthService } from '../../core/services/auth'; // Importe o AuthService
-import { Observable } from 'rxjs'; // Importe Observable
+import { Professor } from '../../shared/models/professorModel';
+import { Aula } from '../../shared/models'; 
+import { AulaService } from '../../core/services/aula';
+import { AuthService } from '../../core/services/auth';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-my-classes',
   standalone: true,
-  imports: [CommonModule, RouterLink], 
+  imports: [CommonModule, RouterLink, FormsModule], 
   templateUrl: './my-classes.html',
   styleUrls: ['./my-classes.css']
 })
 export class MyClassesComponent implements OnInit {
   currentUser: Usuario | null = null;
   isLoading = true;
-
-
   aulas$!: Observable<Aula[]>;
   
   totalAulas = 0;
   aulasConfirmadas = 0;
   aulasPendentes = 0;
+
+  // Modal de Link
+  showLinkModal = false;
+  aulaParaAceitar: Aula | null = null;
+  linkReuniao = '';
+  usarLinkPadrao = false;
+  linkInvalido = false;
 
   constructor(
     private router: Router,
@@ -34,6 +42,17 @@ export class MyClassesComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     this.carregarAulas();
+    this.carregarLinkPadrao();
+  }
+
+  carregarLinkPadrao(): void {
+    if (this.isProfessor() && this.currentUser) {
+      const professor = this.currentUser as Professor;
+      if (professor.linkPadraoAula && professor.usarLinkPadrao) {
+        this.linkReuniao = professor.linkPadraoAula;
+        this.usarLinkPadrao = true;
+      }
+    }
   }
 
   carregarAulas(): void {
@@ -43,7 +62,9 @@ export class MyClassesComponent implements OnInit {
     }
     
     this.isLoading = true;
-    this.aulas$ = this.aulaService.getAulasPorUsuarioLogado();
+    this.aulas$ = this.aulaService.getAulasPorUsuarioLogado().pipe(
+      map(aulas => this.ordenarAulasPorStatus(aulas))
+    );
 
     this.aulas$.subscribe(aulas => {
       if (this.isProfessor()) {
@@ -63,18 +84,92 @@ export class MyClassesComponent implements OnInit {
     return this.currentUser?.tipoUsuario === 'ALUNO';
   }
 
-  // --- Métodos de Ação ---
-
   confirmarAula(aulaId: number): void {
     this.aulaService.aceitarAula(aulaId).subscribe({
       next: () => {
         console.log('✅ Aula confirmada com sucesso!');
         alert('Aula confirmada com sucesso!');
-        this.carregarAulas(); // Recarrega para atualizar contadores
+        this.carregarAulas(); 
       },
       error: (err) => {
         console.error('❌ Erro ao confirmar aula:', err);
         alert('Erro ao confirmar aula. Tente novamente.');
+      }
+    });
+  }
+
+  /**
+   * Abre modal para professor inserir link antes de aceitar
+   */
+  abrirModalAceitarAula(aula: Aula): void {
+    this.aulaParaAceitar = aula;
+    this.showLinkModal = true;
+    this.linkInvalido = false;
+    
+    // Se tem link padrão configurado, preenche automaticamente
+    const professor = this.currentUser as Professor;
+    if (professor?.linkPadraoAula && professor?.usarLinkPadrao) {
+      this.linkReuniao = professor.linkPadraoAula;
+      this.usarLinkPadrao = true;
+    }
+  }
+
+  fecharModalLink(): void {
+    this.showLinkModal = false;
+    this.aulaParaAceitar = null;
+    this.linkReuniao = '';
+    this.usarLinkPadrao = false;
+    this.linkInvalido = false;
+  }
+
+  /**
+   * Valida se o link é válido (Zoom, Meet, Teams ou URL genérica)
+   */
+  validarLink(link: string): boolean {
+    if (!link || link.trim() === '') return false;
+    
+    const linkLower = link.toLowerCase();
+    const plataformasValidas = [
+      'zoom.us',
+      'meet.google.com',
+      'teams.microsoft.com',
+      'teams.live.com',
+      'http://',
+      'https://'
+    ];
+
+    return plataformasValidas.some(plataforma => linkLower.includes(plataforma));
+  }
+
+  /**
+   * Confirma aceitação da aula com o link fornecido
+   */
+  confirmarAceitacaoComLink(): void {
+    if (!this.aulaParaAceitar) return;
+
+    const linkTrimmed = this.linkReuniao.trim();
+
+    if (!this.validarLink(linkTrimmed)) {
+      this.linkInvalido = true;
+      alert('❌ Link inválido! Use um link de Zoom, Google Meet, Microsoft Teams ou URL válida (http/https).');
+      return;
+    }
+
+    this.aulaService.aceitarAulaComLink(this.aulaParaAceitar.id, linkTrimmed).subscribe({
+      next: () => {
+        console.log('✅ Aula aceita com link!');
+        alert('✅ Aula confirmada com sucesso! O aluno receberá o link da reunião.');
+        this.fecharModalLink();
+        this.carregarAulas();
+        
+        // TODO: Salvar link padrão se checkbox marcado
+        if (this.usarLinkPadrao) {
+          console.log('💾 Link padrão salvo para próximas aulas');
+        }
+      },
+      error: (err) => {
+        console.error('❌ Erro ao aceitar aula:', err);
+        alert('Erro ao aceitar aula. Tente novamente.');
       }
     });
   }
@@ -85,7 +180,7 @@ export class MyClassesComponent implements OnInit {
         next: () => {
           console.log('✅ Aula recusada.');
           alert('Aula recusada.');
-          this.carregarAulas(); // Recarrega para atualizar contadores
+          this.carregarAulas(); 
         },
         error: (err) => {
           console.error('❌ Erro ao recusar aula:', err);
@@ -101,7 +196,7 @@ export class MyClassesComponent implements OnInit {
         next: () => {
           console.log('✅ Aula cancelada.');
           alert('Aula cancelada com sucesso.');
-          this.carregarAulas(); // Recarrega para atualizar contadores
+          this.carregarAulas();
         },
         error: (err) => {
           console.error('❌ Erro ao cancelar aula:', err);
@@ -111,11 +206,63 @@ export class MyClassesComponent implements OnInit {
     }
   }
 
+  excluirAula(aulaId: number): void {
+    if (confirm('Tem certeza que deseja EXCLUIR permanentemente esta aula? Esta ação não pode ser desfeita.')) {
+      this.aulaService.excluirAula(aulaId).subscribe({
+        next: () => {
+          console.log('✅ Aula excluída permanentemente.');
+          alert('Aula removida com sucesso.');
+          this.carregarAulas();
+        },
+        error: (err) => {
+          console.error('❌ Erro ao excluir aula:', err);
+          alert('Erro ao excluir aula. Tente novamente.');
+        }
+      });
+    }
+  }
+
   reagendarAula(aulaId: number): void {
     alert(`Reagendar aula #${aulaId} - Funcionalidade em desenvolvimento`);
   }
 
-  // Adicione esta função para o avatar do professor
+  /**
+   * Abre o link da reunião em nova aba
+   */
+  acessarAula(aula: Aula): void {
+    if (!aula.linkReuniao) {
+      alert('❌ Link da reunião não disponível ainda.');
+      return;
+    }
+
+    // Abre em nova aba
+    window.open(aula.linkReuniao, '_blank');
+    console.log('🔗 Abrindo link da aula:', aula.linkReuniao);
+  }
+
+  /**
+   * Verifica se o botão "Acessar Aula" deve estar habilitado
+   */
+  podeAcessarAula(aula: Aula): boolean {
+    return aula.statusAula === 'CONFIRMADA' && !!aula.linkReuniao;
+  }
+
+  private ordenarAulasPorStatus(aulas: Aula[]): Aula[] {
+    const ordemPrioridade: { [key: string]: number } = {
+      'SOLICITADA': 1,
+      'CONFIRMADA': 2,
+      'REALIZADA': 3,
+      'RECUSADA': 4,
+      'CANCELADA': 5
+    };
+
+    return aulas.sort((a, b) => {
+      const prioridadeA = ordemPrioridade[a.statusAula] || 999;
+      const prioridadeB = ordemPrioridade[b.statusAula] || 999;
+      return prioridadeA - prioridadeB;
+    });
+  }
+
   getIniciais(nome: string): string {
     if (!nome) return '??';
     const names = nome.split(' ');
@@ -123,14 +270,12 @@ export class MyClassesComponent implements OnInit {
     return (names[0][0] + names[names.length - 1][0]).toUpperCase();
   }
 
-  // Função para formatar data (ex: 2025-11-15 -> 15/11/2025)
   formatarData(data: string): string {
     if (!data) return 'Data não informada';
     const [ano, mes, dia] = data.split('-');
     return `${dia}/${mes}/${ano}`;
   }
 
-  // Função para obter o label do status em português
   getStatusLabel(status: string): string {
     const labels: { [key: string]: string } = {
       'SOLICITADA': 'Aguardando',
@@ -142,22 +287,18 @@ export class MyClassesComponent implements OnInit {
     return labels[status] || status;
   }
 
-  // Função para obter a cor do status
   getStatusClass(status: string): string {
     return `status-${status.toLowerCase()}`;
   }
   
-  // Função para obter o nome da matéria
   getMateriaNome(aula: Aula): string {
     return aula.materia?.nome || `Matéria ID: ${aula.idMateria}`;
   }
   
-  // Função para obter o nome do professor
   getProfessorNome(aula: Aula): string {
     return aula.professor?.nomeCompleto || `Professor ID: ${aula.idProfessor}`;
   }
   
-  // Função para obter o nome do aluno
   getAlunoNome(aula: Aula): string {
     return aula.aluno?.nomeCompleto || `Aluno ID: ${aula.idAluno}`;
   }

@@ -1,24 +1,12 @@
-<!-- 
-  Este 'ng-container' é a correção principal.
-  1. Ele "ouve" o Observable 'currentUser$'
-  2. O 'async' pipe se inscreve e espera os dados.
-  3. Quando os dados chegam, ele os coloca na variável local 'currentUser'.
-  4. O *ngIf só renderiza o conteúdo quando 'currentUser' não é nulo.
--->
 <ng-container *ngIf="currentUser$ | async as currentUser; else loading">
 
   <div class="perfil-container">
     <div class="perfil-header">
       <div class="profile-avatar-large">
-        <!-- Passamos 'currentUser.nomeCompleto' para a função -->
         <span class="avatar-initials-large">{{ getUserInitials(currentUser.nomeCompleto) }}</span>
       </div>
       <h1 class="perfil-title">Meu Perfil</h1>
     </div>
-
-    <!-- 
-      Agora todo o HTML abaixo tem acesso seguro à variável 'currentUser'
-    -->
     <div class="perfil-content">
       <div class="info-card">
         <div class="card-header">
@@ -61,13 +49,11 @@
             </div>
           </div>
 
-          <!-- INFO PROFESSOR: Passamos 'currentUser' para as funções helper -->
           <div class="info-item full-width" *ngIf="isProfessor(currentUser) && asProfessor(currentUser).sobre">
             <label class="info-label">Sobre</label>
             <p class="info-value about-text">{{ asProfessor(currentUser).sobre }}</p>
           </div>
 
-          <!-- MATÉRIAS DO PROFESSOR -->
           <div class="info-item full-width" *ngIf="isProfessor(currentUser) && asProfessor(currentUser).materias && asProfessor(currentUser).materias!.length > 0">
             <label class="info-label">
               <span class="icon">📚</span>
@@ -81,7 +67,6 @@
             </div>
           </div>
 
-          <!-- AVISO DE SEM MATÉRIAS -->
           <div class="info-item full-width" *ngIf="isProfessor(currentUser) && (!asProfessor(currentUser).materias || asProfessor(currentUser).materias!.length === 0)">
             <label class="info-label">
               <span class="icon">⚠️</span>
@@ -92,7 +77,6 @@
         </div>
       </div>
 
-      <!-- STATS CARD -->
       <div class="stats-card">
         <div class="card-header">
           <h2 class="card-title">
@@ -109,12 +93,10 @@
                 <p class="stat-label">Aulas {{ isProfessor(currentUser) ? 'Ministradas' : 'Realizadas' }}</p>
               </div>
             </div>
-            <!-- ... outros stats ... -->
           </div>
         </div>
       </div>
 
-      <!-- ACTIONS CARD (Seu botão 'editarPerfil()' já está correto) -->
       <div class="actions-card">
         <div class="card-header">
           <h2 class="card-title">
@@ -127,7 +109,6 @@
             <span class="action-icon">✏️</span>
             <span>Editar Perfil</span>
           </button>
-          <!-- ... outros botões desabilitados ... -->
         </div>
       </div>
     </div>
@@ -135,10 +116,6 @@
   </div>
 </ng-container>
 
-<!-- 
-  Este é o 'else' do *ngIf. 
-  Ele usa o seu CSS de 'loading-state' que já estava no HTML.
--->
 <ng-template #loading>
   <div class="loading-state">
     <div class="loading-spinner"></div>

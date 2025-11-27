@@ -10,30 +10,23 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule], // Adicione RouterLink (seu HTML de ações vai precisar)
+  imports: [CommonModule], 
   templateUrl: './perfil.html',
   styleUrls: ['./perfil.css']
 })
 export class PerfilComponent implements OnInit {
 
-  // 1. Trocamos a variável simples por um Observable
+
   currentUser$: Observable<Usuario | null>;
 
   constructor(
     private authService: AuthService,
     private router: Router
   ) {
-    // 2. Recebemos o "fluxo" de usuário do AuthService (SSR-Safe)
     this.currentUser$ = this.authService.currentUser$;
   }
-
   ngOnInit(): void {
-    // 3. O ngOnInit fica limpo. O pipe 'async' no HTML cuidará da inscrição.
   }
-
-  // --- Funções Helper para o Template ---
-  // Elas agora recebem o usuário como parâmetro, vindo do pipe 'async'
-
   isAluno(user: Usuario): boolean {
     return user?.tipoUsuario === 'ALUNO';
   }
@@ -41,16 +34,12 @@ export class PerfilComponent implements OnInit {
   isProfessor(user: Usuario): boolean {
     return user?.tipoUsuario === 'PROFESSOR';
   }
-  
-  // Funções de "cast" para o HTML entender os tipos
-  asAluno(user: Usuario): Aluno {
+    asAluno(user: Usuario): Aluno {
     return user as Aluno;
   }
-  
   asProfessor(user: Usuario): Professor {
     return user as Professor;
   }
-
   getInteresseLabel(interesse: string | undefined): string {
     if (!interesse) return '';
     const labels: { [key: string]: string } = {
@@ -60,7 +49,6 @@ export class PerfilComponent implements OnInit {
     };
     return labels[interesse] || interesse;
   }
-
   getUserInitials(nome: string | undefined): string {
     if (!nome) return '??';
     const names = nome.trim().split(' ').filter(n => n.length > 0);
@@ -68,8 +56,6 @@ export class PerfilComponent implements OnInit {
     if (names.length === 1) return names[0].substring(0, 2).toUpperCase();
     return (names[0][0] + names[names.length - 1][0]).toUpperCase();
   }
-
-  // Ação para o botão de editar (está correta)
   editarPerfil(): void {
     this.router.navigate(['/perfil/editar']);
   }

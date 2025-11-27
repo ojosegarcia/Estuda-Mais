@@ -35,8 +35,6 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    // CORREÇÃO: Apenas chame o serviço.
-    // A lógica de 'alert' e 'navigate' já está dentro do authService.
     this.authService.register(this.registerForm.value);
   }
 }

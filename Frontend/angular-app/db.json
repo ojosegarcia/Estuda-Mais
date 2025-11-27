@@ -34,6 +34,8 @@
       "sobre": "Doutora em Matemática pela USP com 10 anos de experiência.",
       "metodologia": "Foco em resolução de exercícios práticos.",
       "valorHora": 80,
+      "linkPadraoAula": "https://meet.google.com/ana-matematica-2024",
+      "usarLinkPadrao": true,
       "telefone": "(11) 99999-1111",
       "ativo": true,
       "dataCadastro": "2025-10-15T08:00:00Z",
@@ -58,6 +60,8 @@
       "sobre": "Desenvolvedor Sênior. 8 anos de mercado.",
       "metodologia": "Projetos práticos.",
       "valorHora": 100,
+      "linkPadraoAula": "https://zoom.us/j/987654321?pwd=BrunoCodeAulas2024",
+      "usarLinkPadrao": true,
       "telefone": "(11) 98888-2222",
       "ativo": true,
       "dataCadastro": "2025-10-20T11:00:00Z",
@@ -78,6 +82,8 @@
       "sobre": "Professora de inglês com certificação TOEFL.",
       "metodologia": "Conversação e imersão.",
       "valorHora": 70,
+      "linkPadraoAula": "https://teams.microsoft.com/l/meetup-join/carla-english-class",
+      "usarLinkPadrao": false,
       "telefone": "(11) 97777-3333",
       "ativo": true,
       "dataCadastro": "2025-10-25T16:00:00Z",
@@ -216,9 +222,11 @@
       "dataAula": "2025-11-15",
       "horarioInicio": "14:00",
       "horarioFim": "15:00",
-      "statusAula": "SOLICITADA",
+      "statusAula": "RECUSADA",
       "valorAula": 80,
       "dataCriacao": "2025-11-10T10:00:00Z",
+      "removidoPeloAluno": false,
+      "removidoPeloProfessor": true,
       "aluno": {
         "id": 1,
         "nomeCompleto": "João Aluno",
@@ -235,36 +243,6 @@
       "materia": {
         "id": 1,
         "nome": "Matemática"
-      }
-    },
-    {
-      "id": "2",
-      "idProfessor": 101,
-      "idAluno": 2,
-      "idMateria": 3,
-      "dataAula": "2025-11-16",
-      "horarioInicio": "10:00",
-      "horarioFim": "11:00",
-      "statusAula": "CONFIRMADA",
-      "linkReuniao": "https://meet.google.com/abc",
-      "valorAula": 80,
-      "dataCriacao": "2025-11-09T14:30:00Z",
-      "aluno": {
-        "id": 2,
-        "nomeCompleto": "Maria Estudante",
-        "email": "maria@email.com",
-        "tipoUsuario": "ALUNO"
-      },
-      "professor": {
-        "id": 101,
-        "nomeCompleto": "Prof. Ana Silva",
-        "email": "ana@email.com",
-        "tipoUsuario": "PROFESSOR",
-        "valorHora": 80
-      },
-      "materia": {
-        "id": 3,
-        "nome": "Vestibular"
       }
     },
     {
@@ -431,110 +409,6 @@
       "dataCriacao": "2025-11-13T11:26:40.406Z"
     },
     {
-      "id": "1763165723910",
-      "idProfessor": 1763164810423,
-      "idAluno": 1763164786398,
-      "idMateria": 4,
-      "dataAula": "2025-11-18",
-      "horarioInicio": "14:00",
-      "horarioFim": "15:00",
-      "valorAula": 99,
-      "aluno": {
-        "id": "1763164786398",
-        "nomeCompleto": "Lucas Cerri",
-        "email": "lucas@email.com",
-        "password": "123456",
-        "tipoUsuario": "ALUNO",
-        "ativo": true,
-        "dataCadastro": "2025-11-14T23:59:46.398Z",
-        "telefone": "",
-        "escolaridade": "Superior Incompleto",
-        "interesse": "APRENDER_NOVO"
-      },
-      "professor": {
-        "id": "1763164810423",
-        "nomeCompleto": "Sergio Salgado",
-        "email": "sergio@email.com",
-        "password": "123456",
-        "tipoUsuario": "PROFESSOR",
-        "ativo": true,
-        "dataCadastro": "2025-11-15T00:00:10.423Z",
-        "aprovado": true,
-        "telefone": "",
-        "sobre": "Ensinar é a minha vida",
-        "metodologia": "Presença vale nota ",
-        "valorHora": 99,
-        "materias": [
-          {
-            "id": "4",
-            "nome": "Programação",
-            "icone": "💻",
-            "descricao": "JavaScript, Python, Angular"
-          }
-        ]
-      },
-      "materia": {
-        "id": "4",
-        "nome": "Programação",
-        "icone": "💻",
-        "descricao": "JavaScript, Python, Angular"
-      },
-      "statusAula": "CANCELADA",
-      "dataCriacao": "2025-11-15T00:15:23.910Z"
-    },
-    {
-      "id": "1763165785811",
-      "idProfessor": 1763164810423,
-      "idAluno": 1762990249354,
-      "idMateria": 4,
-      "dataAula": "2025-11-18",
-      "horarioInicio": "14:00",
-      "horarioFim": "15:00",
-      "valorAula": 99,
-      "aluno": {
-        "id": "1762990249354",
-        "nomeCompleto": "Gabriel Correa de Oliveira",
-        "email": "gabrielcoliveira.contato@gmail.com",
-        "password": "123456",
-        "tipoUsuario": "ALUNO",
-        "ativo": true,
-        "dataCadastro": "2025-11-12T23:30:49.354Z",
-        "telefone": "11995082458",
-        "escolaridade": "Prefiro não dizer",
-        "interesse": "REFORCAR_CONHECIMENTO"
-      },
-      "professor": {
-        "id": "1763164810423",
-        "nomeCompleto": "Sergio Salgado",
-        "email": "sergio@email.com",
-        "password": "123456",
-        "tipoUsuario": "PROFESSOR",
-        "ativo": true,
-        "dataCadastro": "2025-11-15T00:00:10.423Z",
-        "aprovado": true,
-        "telefone": "",
-        "sobre": "Ensinar é a minha vida",
-        "metodologia": "Presença vale nota ",
-        "valorHora": 99,
-        "materias": [
-          {
-            "id": "4",
-            "nome": "Programação",
-            "icone": "💻",
-            "descricao": "JavaScript, Python, Angular"
-          }
-        ]
-      },
-      "materia": {
-        "id": "4",
-        "nome": "Programação",
-        "icone": "💻",
-        "descricao": "JavaScript, Python, Angular"
-      },
-      "statusAula": "CANCELADA",
-      "dataCriacao": "2025-11-15T00:16:25.811Z"
-    },
-    {
       "id": "cb41",
       "idProfessor": "1763164810423",
       "idAluno": "1762990249354",
@@ -585,6 +459,116 @@
       },
       "statusAula": "CONFIRMADA",
       "dataCriacao": "2025-11-17T00:56:40.803Z"
+    },
+    {
+      "id": "6b5a",
+      "idProfessor": "101",
+      "idAluno": "1763164786398",
+      "idMateria": 1,
+      "dataAula": "2025-11-24",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "valorAula": 80,
+      "aluno": {
+        "id": "1763164786398",
+        "nomeCompleto": "Lucas Cerri",
+        "email": "lucas@email.com",
+        "password": "123456",
+        "tipoUsuario": "ALUNO",
+        "ativo": true,
+        "dataCadastro": "2025-11-14T23:59:46.398Z",
+        "telefone": "",
+        "escolaridade": "Superior Incompleto",
+        "interesse": "APRENDER_NOVO"
+      },
+      "professor": {
+        "id": "101",
+        "nomeCompleto": "Prof. Ana Silva",
+        "email": "ana@email.com",
+        "password": "123456",
+        "tipoUsuario": "PROFESSOR",
+        "aprovado": true,
+        "sobre": "Doutora em Matemática pela USP com 10 anos de experiência.",
+        "metodologia": "Foco em resolução de exercícios práticos.",
+        "valorHora": 80,
+        "linkPadraoAula": "https://meet.google.com/ana-matematica-2024",
+        "usarLinkPadrao": true,
+        "telefone": "(11) 99999-1111",
+        "ativo": true,
+        "dataCadastro": "2025-10-15T08:00:00Z",
+        "materias": [
+          {
+            "id": 1,
+            "nome": "Matemática"
+          },
+          {
+            "id": 3,
+            "nome": "Vestibular"
+          }
+        ]
+      },
+      "materia": {
+        "id": 1,
+        "nome": "Matemática"
+      },
+      "statusAula": "CANCELADA",
+      "dataCriacao": "2025-11-23T00:10:31.069Z",
+      "linkReuniao": "https://meet.google.com/ana-matematica-2024",
+      "removidoPeloAluno": true
+    },
+    {
+      "id": "10d7",
+      "idProfessor": "101",
+      "idAluno": "1763164786398",
+      "idMateria": 1,
+      "dataAula": "2025-11-24",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "valorAula": 80,
+      "aluno": {
+        "id": "1763164786398",
+        "nomeCompleto": "Lucas Cerri",
+        "email": "lucas@email.com",
+        "password": "123456",
+        "tipoUsuario": "ALUNO",
+        "ativo": true,
+        "dataCadastro": "2025-11-14T23:59:46.398Z",
+        "telefone": "",
+        "escolaridade": "Superior Incompleto",
+        "interesse": "APRENDER_NOVO"
+      },
+      "professor": {
+        "id": "101",
+        "nomeCompleto": "Prof. Ana Silva",
+        "email": "ana@email.com",
+        "password": "123456",
+        "tipoUsuario": "PROFESSOR",
+        "aprovado": true,
+        "sobre": "Doutora em Matemática pela USP com 10 anos de experiência.",
+        "metodologia": "Foco em resolução de exercícios práticos.",
+        "valorHora": 80,
+        "linkPadraoAula": "https://meet.google.com/ana-matematica-2024",
+        "usarLinkPadrao": true,
+        "telefone": "(11) 99999-1111",
+        "ativo": true,
+        "dataCadastro": "2025-10-15T08:00:00Z",
+        "materias": [
+          {
+            "id": 1,
+            "nome": "Matemática"
+          },
+          {
+            "id": 3,
+            "nome": "Vestibular"
+          }
+        ]
+      },
+      "materia": {
+        "id": 1,
+        "nome": "Matemática"
+      },
+      "statusAula": "SOLICITADA",
+      "dataCriacao": "2025-11-24T00:04:03.509Z"
     }
   ],
   "disponibilidades": [
@@ -659,6 +643,22 @@
       "horarioInicio": "16:00",
       "horarioFim": "15:00",
       "ativo": false
+    },
+    {
+      "id": "ee78",
+      "idProfessor": "1763164810423",
+      "diaSemana": "TERCA",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "ativo": true
+    },
+    {
+      "id": "41eb",
+      "idProfessor": "1763164810423",
+      "diaSemana": "QUARTA",
+      "horarioInicio": "14:00",
+      "horarioFim": "15:00",
+      "ativo": true
     }
   ]
 }

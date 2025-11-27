@@ -67,16 +67,11 @@
         <div class="info-item full-width">
           <p class="field-hint">Selecione pelo menos uma matéria que você ensina:</p>
           
-          <div class="materias-grid" formArrayName="materiasBase">
-            <div *ngFor="let materia of todasMaterias; let i = index" class="materia-checkbox-card"
+          <div class="materias-grid">
+            <div *ngFor="let materia of todasMaterias" class="materia-checkbox-card"
               [class.selected]="isMateriaSelected(materia.id)" (click)="toggleMateria(materia.id)">
               
-              <input type="checkbox" 
-                     [id]="'materia-' + materia.id" 
-                     [formControlName]="i"
-                     (click)="$event.stopPropagation()">
-              
-              <label [for]="'materia-' + materia.id" class="materia-label">
+              <label class="materia-label">
                 <span class="materia-icon">{{ materia.icone }}</span>
                 <span class="materia-nome">{{ materia.nome }}</span>
                 <span class="check-icon" *ngIf="isMateriaSelected(materia.id)">✓</span>
@@ -87,24 +82,6 @@
             {{ materiasSelecionadas.size }} matéria(s) selecionada(s)
           </p>
         </div>
-
-        <!-- Campo de matérias customizadas DESABILITADO temporariamente -->
-        <!--
-        <div class="info-item full-width">
-          <label class="info-label" for="materiaCustomInput">Adicionar outras matérias</label>
-          <p class="field-hint">Não encontrou? Adicione aqui (ex: "Alemão", "Cálculo IV").</p>
-          <div class="input-com-botao">
-            <input class="info-value" id="materiaCustomInput" formControlName="materiaCustomInput" (keydown.enter)="adicionarMateriaCustom(); $event.preventDefault()">
-            <button type="button" class="btn-secondary" (click)="adicionarMateriaCustom()">Adicionar</button>
-          </div>
-          <div class="tags-container" *ngIf="materiasCustomizadas.length > 0">
-            <span *ngFor="let nome of materiasCustomizadas; let i = index" class="tag">
-              {{ nome }}
-              <button typeGype="button" (click)="removerMateriaCustom(i)" title="Remover">&times;</button>
-            </span>
-          </div>
-        </div>
-        -->
       </div>
     </div>
 

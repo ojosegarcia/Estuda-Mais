@@ -11,6 +11,8 @@ export interface Professor extends Usuario {
   valorHora?: number;
   fotoCertificado?: string;
   aprovado: boolean;
+  linkPadraoAula?: string;
+  usarLinkPadrao?: boolean;
   materias?: Materia[];
   disponibilidades?: Disponibilidade[];
   experiencias?: ExperienciaProfissional[];
