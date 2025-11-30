@@ -25,15 +25,38 @@
         <p>{{ professor.sobre }}</p>
       </section>
 
+      <section *ngIf="professor.metodologia">
+        <h2>📖 Metodologia de Ensino</h2>
+        <p>{{ professor.metodologia }}</p>
+      </section>
+
       <section>
-        <h2>Experiência</h2>
-        <ul class="experiencia-lista" *ngIf="professor.experiencias && professor.experiencias.length > 0">
-          <li *ngFor="let exp of professor.experiencias">
-            <strong>{{ exp.cargo }}</strong> em {{ exp.instituicao }} ({{ exp.periodo }})
-            <p>{{ exp.descricao }}</p>
+        <h2>💼 Experiência Profissional</h2>
+        <ul class="experiencia-lista" *ngIf="experiencias && experiencias.length > 0">
+          <li *ngFor="let exp of experiencias" class="exp-item">
+            <strong class="exp-cargo">{{ exp.cargo }}</strong>
+            <span class="exp-instituicao">{{ exp.instituicao }}</span>
+            <span class="exp-periodo">{{ exp.periodo }}</span>
+            <p class="exp-descricao" *ngIf="exp.descricao">{{ exp.descricao }}</p>
           </li>
         </ul>
-        <p *ngIf="!professor.experiencias || professor.experiencias.length === 0">Nenhuma experiência cadastrada.</p>
+        <p class="empty-message" *ngIf="!experiencias || experiencias.length === 0">
+          📚 Este professor ainda não adicionou experiências profissionais.
+        </p>
+      </section>
+
+      <section>
+        <h2>🏆 Conquistas e Certificados</h2>
+        <ul class="conquista-lista" *ngIf="conquistas && conquistas.length > 0">
+          <li *ngFor="let conquista of conquistas" class="conquista-item">
+            <strong class="conquista-titulo">{{ conquista.tituloConquista }}</strong>
+            <span class="conquista-ano">{{ conquista.ano }}</span>
+            <p class="conquista-descricao" *ngIf="conquista.descricao">{{ conquista.descricao }}</p>
+          </li>
+        </ul>
+        <p class="empty-message" *ngIf="!conquistas || conquistas.length === 0">
+          🎯 Este professor ainda não adicionou conquistas ou certificados.
+        </p>
       </section>
     </div>
 

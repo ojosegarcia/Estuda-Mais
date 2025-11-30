@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface ConquistaRepository extends JpaRepository<Conquista, Long> {
     List<Conquista> findByProfessorId(Long professorId);
+    long countByProfessorId(Long professorId);
+    List<Conquista> findByProfessorIdOrderByAnoDesc(Long professorId);
 }

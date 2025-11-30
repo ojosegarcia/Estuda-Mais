@@ -1,0 +1,89 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditMode ? 'Editar Experiência' : 'Adicionar Experiência' }}</h2>
+      <button type="button" class="btn-close" (click)="onClose()" aria-label="Fechar">×</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        
+        <!-- Cargo -->
+        <div class="form-group">
+          <label for="cargo">Cargo / Função *</label>
+          <input 
+            type="text" 
+            id="cargo" 
+            formControlName="cargo"
+            class="form-control"
+            placeholder="Ex: Professor de Matemática"
+            [class.is-invalid]="form.get('cargo')?.invalid && form.get('cargo')?.touched">
+          <div class="invalid-feedback" *ngIf="form.get('cargo')?.hasError('required') && form.get('cargo')?.touched">
+            Cargo é obrigatório
+          </div>
+          <div class="invalid-feedback" *ngIf="form.get('cargo')?.hasError('minlength')">
+            Mínimo de 2 caracteres
+          </div>
+        </div>
+
+        <!-- Instituição -->
+        <div class="form-group">
+          <label for="instituicao">Instituição / Empresa *</label>
+          <input 
+            type="text" 
+            id="instituicao" 
+            formControlName="instituicao"
+            class="form-control"
+            placeholder="Ex: FATEC São Paulo"
+            [class.is-invalid]="form.get('instituicao')?.invalid && form.get('instituicao')?.touched">
+          <div class="invalid-feedback" *ngIf="form.get('instituicao')?.hasError('required') && form.get('instituicao')?.touched">
+            Instituição é obrigatória
+          </div>
+          <div class="invalid-feedback" *ngIf="form.get('instituicao')?.hasError('minlength')">
+            Mínimo de 2 caracteres
+          </div>
+        </div>
+
+        <!-- Período -->
+        <div class="form-group">
+          <label for="periodo">Período *</label>
+          <input 
+            type="text" 
+            id="periodo" 
+            formControlName="periodo"
+            class="form-control"
+            placeholder="Ex: Jan/2020 - Dez/2023 ou 2020 - Atual"
+            [class.is-invalid]="form.get('periodo')?.invalid && form.get('periodo')?.touched">
+          <div class="invalid-feedback" *ngIf="form.get('periodo')?.hasError('required') && form.get('periodo')?.touched">
+            Período é obrigatório
+          </div>
+          <small class="form-text">Formato livre. Ex: "Jan/2020 - Atual" ou "2020 - 2023"</small>
+        </div>
+
+        <!-- Descrição -->
+        <div class="form-group">
+          <label for="descricao">Descrição (opcional)</label>
+          <textarea 
+            id="descricao" 
+            formControlName="descricao"
+            class="form-control"
+            rows="4"
+            placeholder="Descreva suas principais atividades e conquistas..."
+            [class.is-invalid]="form.get('descricao')?.invalid && form.get('descricao')?.touched"></textarea>
+          <small class="form-text">{{ form.get('descricao')?.value?.length || 0 }}/1000 caracteres</small>
+          <div class="invalid-feedback" *ngIf="form.get('descricao')?.hasError('maxlength')">
+            Máximo de 1000 caracteres
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          {{ isEditMode ? 'Salvar Alterações' : 'Adicionar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

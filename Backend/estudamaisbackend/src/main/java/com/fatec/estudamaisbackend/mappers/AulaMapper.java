@@ -14,10 +14,10 @@ public interface AulaMapper {
     @Mapping(source = "professor.id", target = "idProfessor")
     @Mapping(source = "aluno.id", target = "idAluno")
     @Mapping(source = "materia.id", target = "idMateria")
-    @Mapping(target = "statusAula", expression = "java(aula.getStatus() != null ? aula.getStatus().name() : null)")
-    @Mapping(source = "meetingLink", target = "linkReuniao")
-    @Mapping(source = "classValue", target = "valorAula")
-    @Mapping(source = "createdAt", target = "dataCriacao")
+    @Mapping(target = "statusAula", expression = "java(aula.getStatusAula() != null ? aula.getStatusAula().name() : null)")
+    @Mapping(source = "linkReuniao", target = "linkReuniao")
+    @Mapping(source = "valorAula", target = "valorAula")
+    @Mapping(source = "dataCriacao", target = "dataCriacao")
     AulaDTO toDto(Aula aula);
 
     List<AulaDTO> toDtoList(List<Aula> aulas);

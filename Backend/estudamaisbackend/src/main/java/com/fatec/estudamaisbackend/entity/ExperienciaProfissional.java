@@ -2,28 +2,35 @@ package com.fatec.estudamaisbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "professional_experiences")
+@Table(name = "experiencia_profissional")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExperienciaProfissional extends EntidadeBase {
+public class ExperienciaProfissional {
 
-    @Column(name = "position", nullable = false)
-    private String position;
-
-    @Column(name = "institution", nullable = false)
-    private String institution;
-
-    @Column(name = "period", nullable = false)
-    private String period;
-
-    @Column(name = "description")
-    private String description;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_experiencia")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id", nullable = false)
+    @JoinColumn(name = "id_professor", nullable = false) // Corrigido de teacher_id para id_professor
+    @JsonIgnore // Evita loop infinito ao serializar o Professor
     private Professor professor;
+
+    @Column(name = "cargo", nullable = false) // Corrigido de position para cargo
+    private String cargo;
+
+    @Column(name = "empresa_instituicao", nullable = false) // Corrigido de institution para empresa_instituicao
+    private String instituicao;
+
+    @Column(name = "periodo", nullable = false) // Mantido, mas garantindo mapeamento
+    private String periodo;
+
+    @Column(name = "descricao") // Corrigido de description para descricao
+    private String descricao;
 }

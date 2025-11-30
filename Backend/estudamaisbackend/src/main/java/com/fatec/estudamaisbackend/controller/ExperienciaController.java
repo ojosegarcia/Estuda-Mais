@@ -7,14 +7,12 @@ import com.fatec.estudamaisbackend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Optional;
 
-/**
- * CRUD básico para experiências profissionais.
- */
 @RestController
-@RequestMapping("/api/experiencias")
-@CrossOrigin
+@RequestMapping("/api/professores/{professorId}/experiencias")
+@CrossOrigin(origins = "*")
 public class ExperienciaController {
 
     @Autowired
@@ -23,59 +21,70 @@ public class ExperienciaController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @GetMapping
+    public ResponseEntity<?> listar(@PathVariable Long professorId) {
+        List<ExperienciaProfissional> experiencias = experienciaRepository.findByProfessorIdOrderByIdDesc(professorId);
+        return ResponseEntity.ok(experiencias);
+    }
+
     @PostMapping
-    public ResponseEntity<?> criar(@RequestBody ExperienciaRequest req) {
-        Optional<?> opt = usuarioRepository.findById(req.getProfessorId());
-        if (opt.isEmpty() || !(opt.get() instanceof Professor)) return ResponseEntity.badRequest().body("Professor inválido");
+    public ResponseEntity<?> criar(@PathVariable Long professorId, @RequestBody ExperienciaRequest req) {
+        Optional<?> opt = usuarioRepository.findById(professorId);
+        
+        if (opt.isEmpty() || !(opt.get() instanceof Professor)) {
+            return ResponseEntity.badRequest().body("Professor inválido ou não encontrado.");
+        }
+        
         Professor p = (Professor) opt.get();
 
         ExperienciaProfissional e = new ExperienciaProfissional();
         e.setProfessor(p);
-        e.setPosition(req.getPosition());
-        e.setInstitution(req.getInstitution());
-        e.setPeriod(req.getPeriod());
-        e.setDescription(req.getDescription());
+        e.setCargo(req.getCargo());
+        e.setInstituicao(req.getInstituicao());
+        e.setPeriodo(req.getPeriodo());
+        e.setDescricao(req.getDescricao());
 
         ExperienciaProfissional salvo = experienciaRepository.save(e);
         return ResponseEntity.ok(salvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody ExperienciaRequest req) {
+    public ResponseEntity<?> atualizar(@PathVariable Long professorId, @PathVariable Long id, @RequestBody ExperienciaRequest req) {
         Optional<ExperienciaProfissional> opt = experienciaRepository.findById(id);
         if (opt.isEmpty()) return ResponseEntity.notFound().build();
+        
         ExperienciaProfissional e = opt.get();
-        if (req.getPosition() != null) e.setPosition(req.getPosition());
-        if (req.getInstitution() != null) e.setInstitution(req.getInstitution());
-        if (req.getPeriod() != null) e.setPeriod(req.getPeriod());
-        if (req.getDescription() != null) e.setDescription(req.getDescription());
+        
+        if (req.getCargo() != null) e.setCargo(req.getCargo());
+        if (req.getInstituicao() != null) e.setInstituicao(req.getInstituicao());
+        if (req.getPeriodo() != null) e.setPeriodo(req.getPeriodo());
+        if (req.getDescricao() != null) e.setDescricao(req.getDescricao());
+        
         experienciaRepository.save(e);
         return ResponseEntity.ok(e);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable Long id) {
+    public ResponseEntity<?> deletar(@PathVariable Long professorId, @PathVariable Long id) {
         if (!experienciaRepository.existsById(id)) return ResponseEntity.notFound().build();
         experienciaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
+    // DTO Interno
     public static class ExperienciaRequest {
-        private Long professorId;
-        private String position;
-        private String institution;
-        private String period;
-        private String description;
+        private String cargo;
+        private String instituicao;
+        private String periodo;
+        private String descricao;
 
-        public Long getProfessorId() { return professorId; }
-        public void setProfessorId(Long professorId) { this.professorId = professorId; }
-        public String getPosition() { return position; }
-        public void setPosition(String position) { this.position = position; }
-        public String getInstitution() { return institution; }
-        public void setInstitution(String institution) { this.institution = institution; }
-        public String getPeriod() { return period; }
-        public void setPeriod(String period) { this.period = period; }
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
+        public String getCargo() { return cargo; }
+        public void setCargo(String cargo) { this.cargo = cargo; }
+        public String getInstituicao() { return instituicao; }
+        public void setInstituicao(String instituicao) { this.instituicao = instituicao; }
+        public String getPeriodo() { return periodo; }
+        public void setPeriodo(String periodo) { this.periodo = periodo; }
+        public String getDescricao() { return descricao; }
+        public void setDescricao(String descricao) { this.descricao = descricao; }
     }
 }

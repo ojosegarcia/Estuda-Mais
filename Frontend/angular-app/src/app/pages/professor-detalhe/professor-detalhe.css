@@ -598,6 +598,7 @@ input[type="date"].info-value:hover::-webkit-calendar-picker-indicator {
     min-height: 48px;
   }
 
+
   .date-picker,
   .horarios-container {
     padding: var(--spacing-sm);
@@ -627,3 +628,76 @@ input[type="date"].info-value:hover::-webkit-calendar-picker-indicator {
     padding: 4px 12px;
   }
 }
+
+/* === EXPERIÊNCIAS E CONQUISTAS === */
+
+.experiencia-lista,
+.conquista-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.exp-item,
+.conquista-item {
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.exp-item:hover,
+.conquista-item:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+}
+
+.exp-cargo,
+.conquista-titulo {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.exp-instituicao {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.exp-periodo,
+.conquista-ano {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.exp-descricao,
+.conquista-descricao {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin: 8px 0 0 0;
+}
+
+.empty-message {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+  font-style: italic;
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color);
+}
+

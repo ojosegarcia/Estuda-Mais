@@ -4,13 +4,14 @@ import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { switchMap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MateriaService {
 
-  private apiUrl = 'http://localhost:3000/materias';
+  private apiUrl = `${environment.apiUrl}/api/materias`;
 
   constructor(private http: HttpClient) { }
 

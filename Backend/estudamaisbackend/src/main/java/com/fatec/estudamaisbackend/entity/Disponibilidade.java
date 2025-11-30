@@ -2,34 +2,39 @@ package com.fatec.estudamaisbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "availabilities")
+@Table(name = "disponibilidade")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Disponibilidade extends EntidadeBase {
+public class Disponibilidade {
 
-    @Column(name = "day_of_week", nullable = false)
-    private String dayOfWeek;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_disponibilidade") 
+    private Long id;
 
-    @Column(name = "start_time", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-    private LocalTime startTime;
-
-    @Column(name = "end_time", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-    private LocalTime endTime;
-
-    @Column(name = "active")
-    private Boolean active = true;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_professor")
+    @JsonIgnore 
     private Professor professor;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dia_semana")
+    private DiaSemana diaSemana;
+
+    @JsonFormat(pattern = "HH:mm")
+    @Column(name = "horario_inicio")
+    private LocalTime horarioInicio;
+
+    @JsonFormat(pattern = "HH:mm")
+    @Column(name = "horario_fim")
+    private LocalTime horarioFim;
+
+    private Boolean ativo;
 }

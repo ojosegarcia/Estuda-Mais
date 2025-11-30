@@ -1,2 +1,0 @@
-ALTER TABLE usuarios
-  ADD COLUMN IF NOT EXISTS atualizado_em TIMESTAMP;

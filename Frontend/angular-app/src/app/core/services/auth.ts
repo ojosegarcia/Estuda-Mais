@@ -2,16 +2,17 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { map, catchError, tap, switchMap } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Usuario, Aluno, Professor } from '../../shared/models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:3000/usuarios';
+  private apiUrl = `${environment.apiUrl}/api/usuarios`;
   private isLoggedInSubject: BehaviorSubject<boolean>;
   public isLoggedIn$: Observable<boolean>;
   private currentUserSubject: BehaviorSubject<Usuario | null>;
@@ -32,55 +33,48 @@ export class AuthService {
   register(dadosCadastro: any): void {
     const { nomeCompleto, email, password, tipoUsuario } = dadosCadastro;
 
-    const novoUsuario: Usuario = {
-      id: new Date().getTime(),
+    const payload = {
       nomeCompleto,
       email: email.toLowerCase(),
       password,
-      tipoUsuario,
-      ativo: true,
-      dataCadastro: new Date().toISOString(),
-      ...(tipoUsuario === 'PROFESSOR' && { aprovado: true })
+      tipoUsuario
     };
 
-    this.http.get<Usuario[]>(`${this.apiUrl}?email=${email.toLowerCase()}`).pipe(
-      switchMap(usuarios => {
-        if (usuarios.length > 0) {
-          alert('Este email já está cadastrado!');
-          return throwError(() => new Error('Email já existe'));
+    // Usar endpoint de registro do backend
+    this.http.post<Usuario>(`${environment.apiUrl}/api/auth/register`, payload)
+      .subscribe({
+        next: (usuario) => {
+          console.log('Cadastro criado com sucesso!', usuario);
+          alert('Cadastro criado com sucesso!');
+          this.router.navigate(['/auth/login']);
+        },
+        error: (err) => {
+          console.error('Erro no cadastro:', err);
+          if (err.status === 409) {
+            alert('Este email já está cadastrado!');
+          } else {
+            alert('Erro ao cadastrar. Tente novamente.');
+          }
         }
-        return this.http.post<Usuario>(this.apiUrl, novoUsuario);
-      })
-    ).subscribe({
-      next: () => {
-        alert('Cadastro criado com sucesso!');
-        this.router.navigate(['/auth/login']);
-      },
-      error: (err) => {
-        if (err.message !== 'Email já existe') {
-          alert('Erro ao cadastrar. Tente novamente.');
-        }
-      }
-    });
+      });
   }
 
   login(dadosLogin: any): void {
     const { email, password } = dadosLogin;
 
-    this.http.get<Usuario[]>(`${this.apiUrl}?email=${email}&password=${password}`)
-      .pipe(
-        map(usuarios => {
-          if (usuarios.length > 0) return usuarios[0];
-          throw new Error('Usuário ou senha inválidos');
-        })
-      )
+    // Usar endpoint POST de auth
+    const payload = { email, password };
+    this.http.post<Usuario>(`${environment.apiUrl}/api/auth/login`, payload)
       .subscribe({
         next: (usuario) => {
           console.log('Login bem sucedido!', usuario);
           this.setSession(usuario);
           this.router.navigate(['/home']);
         },
-        error: (err) => alert(err.message)
+        error: (err) => {
+          console.error('Erro no login:', err);
+          alert('Usuário ou senha inválidos');
+        }
       });
   }
   private setSession(usuario: Usuario): void {
@@ -125,14 +119,13 @@ export class AuthService {
     return this.isLoggedInSubject.value;
   }
 
-  updateUserProfile(usuario: Usuario): Observable<Usuario> {
+  updateUserProfile(payload: any, usuarioId: number): Observable<Usuario> {
     console.log('🔍 AuthService.updateUserProfile - Iniciando atualização:', {
-      id: usuario.id,
-      nomeCompleto: usuario.nomeCompleto,
-      tipoUsuario: usuario.tipoUsuario
+      id: usuarioId,
+      payload
     });
 
-    return this.http.put<Usuario>(`${this.apiUrl}/${usuario.id}`, usuario).pipe(
+    return this.http.put<Usuario>(`${this.apiUrl}/${usuarioId}`, payload).pipe(
       tap(usuarioAtualizado => {
         console.log('✅ AuthService.updateUserProfile - Backend respondeu:', {
           id: usuarioAtualizado.id,

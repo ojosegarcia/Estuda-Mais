@@ -2,25 +2,29 @@ package com.fatec.estudamaisbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "conquistas")
+@Table(name = "conquista")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Conquista extends EntidadeBase {
+public class Conquista {
 
-    @Column(name = "titulo_conquista", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_conquista") 
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "id_professor")
+    @JsonIgnore
+    private Professor professor;
+
+    @Column(name = "titulo_conquista")
     private String tituloConquista;
 
-    @Column(name = "ano", nullable = false)
     private Integer ano;
-
-    @Column(name = "descricao")
     private String descricao;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "professor_id", nullable = false)
-    private Professor professor;
 }

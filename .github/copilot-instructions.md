@@ -1,8 +1,16 @@
 # Estuda Mais - Frontend Development Guidelines
 
+> **⚠️ IMPORTANTE:** Este projeto está em processo de migração do backend mock (db.json) para o backend real (Spring Boot + PostgreSQL).  
+> **📚 Documentação completa:** Veja `README_MIGRACAO.md` na raiz do projeto para o plano completo.
+
 ## Architecture Overview
 
 **Full-stack tutoring platform** built with Angular 20.2.0 and Spring Boot 3.5.5 backend. Frontend uses **standalone components** (no NgModules for features) with SSR support via `@angular/ssr`.
+
+### Current State (Migration in Progress)
+- **Frontend:** Angular 20 usando `db.json` mock (json-server)
+- **Backend:** Spring Boot 80% implementado, aguardando migração
+- **Target:** Migrar 100% das funcionalidades para backend real
 
 ### Project Structure
 - `Frontend/angular-app/src/app/` - Main application code

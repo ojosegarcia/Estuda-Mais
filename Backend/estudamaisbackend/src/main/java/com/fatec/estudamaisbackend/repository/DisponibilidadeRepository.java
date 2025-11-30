@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface DisponibilidadeRepository extends JpaRepository<Disponibilidade, Long> {
     List<Disponibilidade> findByProfessorId(Long professorId);
+    List<Disponibilidade> findByProfessorIdAndAtivo(Long professorId, Boolean ativo);
 }

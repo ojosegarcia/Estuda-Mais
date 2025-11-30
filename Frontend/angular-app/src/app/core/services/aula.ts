@@ -4,13 +4,14 @@ import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
 import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import { Aula, StatusAula } from '../../shared/models';
 import { AuthService } from './auth';
-import { HttpClient, HttpParams } from '@angular/common/http'; 
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../../environments/environment'; 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AulaService {
-  private apiUrl = 'http://localhost:3000/aulas';
+  private apiUrl = `${environment.apiUrl}/api/aulas`;
   private isBrowser: boolean;
 
   private aulasSubject: BehaviorSubject<Aula[]> = new BehaviorSubject<Aula[]>([]);
@@ -155,49 +156,19 @@ export class AulaService {
       return throwError(() => new Error('Usuário não autenticado'));
     }
 
-    // Primeiro, busca a aula atual para verificar o estado
-    return this.http.get<Aula>(`${this.apiUrl}/${aulaId}`).pipe(
-      switchMap(aula => {
-        const ehProfessor = usuario.tipoUsuario === 'PROFESSOR';
-        const ehAluno = usuario.tipoUsuario === 'ALUNO';
+    // Usa a lógica do backend: envia usuarioId e tipoUsuario como query params
+    // O backend decide se faz soft delete ou delete permanente
+    const params = new HttpParams()
+      .set('usuarioId', usuario.id.toString())
+      .set('tipoUsuario', usuario.tipoUsuario);
 
-        // Verifica se o outro lado já removeu
-        const alunoJaRemoveu = aula.removidoPeloAluno || false;
-        const professorJaRemoveu = aula.removidoPeloProfessor || false;
-
-        // Se AMBOS já removeram, deleta permanentemente
-        if ((ehProfessor && alunoJaRemoveu) || (ehAluno && professorJaRemoveu)) {
-          console.log('🗑️ Ambos removeram. Deletando permanentemente...');
-          return this.http.delete<void>(`${this.apiUrl}/${aulaId}`).pipe(
-            tap(() => {
-              const aulasAtuais = this.aulasSubject.value;
-              const novasAulas = aulasAtuais.filter(a => a.id !== aulaId);
-              this.aulasSubject.next(novasAulas);
-              console.log('✅ Aula excluída permanentemente do banco:', aulaId);
-            })
-          );
-        }
-
-        // Caso contrário, apenas marca como removido pelo usuário atual
-        const atualizacao: Partial<Aula> = {};
-        if (ehProfessor) {
-          atualizacao.removidoPeloProfessor = true;
-          console.log('👨‍🏫 Professor removeu a aula da sua visualização');
-        } else if (ehAluno) {
-          atualizacao.removidoPeloAluno = true;
-          console.log('👨‍🎓 Aluno removeu a aula da sua visualização');
-        }
-
-        return this.http.patch<Aula>(`${this.apiUrl}/${aulaId}`, atualizacao).pipe(
-          tap(() => {
-            // Remove apenas da visualização local do usuário atual
-            const aulasAtuais = this.aulasSubject.value;
-            const novasAulas = aulasAtuais.filter(a => a.id !== aulaId);
-            this.aulasSubject.next(novasAulas);
-            console.log('✅ Aula removida da visualização:', aulaId);
-          }),
-          map(() => void 0) // Converte Observable<Aula> para Observable<void>
-        );
+    return this.http.delete<void>(`${this.apiUrl}/${aulaId}`, { params }).pipe(
+      tap(() => {
+        // Remove da visualização local
+        const aulasAtuais = this.aulasSubject.value;
+        const novasAulas = aulasAtuais.filter(a => a.id !== aulaId);
+        this.aulasSubject.next(novasAulas);
+        console.log('✅ Aula removida:', aulaId);
       }),
       catchError(err => {
         console.error('❌ Erro ao excluir aula:', err);

@@ -1,25 +1,19 @@
 package com.fatec.estudamaisbackend.controller;
 
-
-import com.fatec.estudamaisbackend.entity.*;
-import com.fatec.estudamaisbackend.repository.FeedbackRepository;
+import com.fatec.estudamaisbackend.entity.Aula;
+import com.fatec.estudamaisbackend.entity.Feedback;
 import com.fatec.estudamaisbackend.repository.AulaRepository;
+import com.fatec.estudamaisbackend.repository.FeedbackRepository;
 import com.fatec.estudamaisbackend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-/**
- * Endpoints para feedbacks:
- * - POST /api/feedbacks
- * - GET  /api/feedbacks/{id}
- * - GET  /api/feedbacks/aula/{aulaId}
- */
 @RestController
 @RequestMapping("/api/feedbacks")
-@CrossOrigin
 public class FeedbackController {
 
     @Autowired
@@ -33,44 +27,56 @@ public class FeedbackController {
 
     @PostMapping
     public ResponseEntity<?> criar(@RequestBody FeedbackRequest req) {
+        // 1. Validar se a Aula existe
         Optional<Aula> optAula = aulaRepository.findById(req.getIdAula());
-        if (optAula.isEmpty()) return ResponseEntity.badRequest().body("Aula inválida");
-
+        if (optAula.isEmpty()) {
+            return ResponseEntity.badRequest().body("Aula inválida (ID não encontrado).");
+        }
         Aula aula = optAula.get();
+
+        // 2. Verificar se já existe feedback para esta aula (Regra 1:1)
         if (feedbackRepository.findByAulaId(aula.getId()).isPresent()) {
-            return ResponseEntity.status(409).body("Feedback já existe para esta aula");
+            return ResponseEntity.status(409).body("Já existe um feedback para esta aula.");
         }
 
-        Optional<Usuario> optAluno = usuarioRepository.findById(req.getIdAluno());
-        Optional<Usuario> optProfessor = usuarioRepository.findById(req.getIdProfessor());
-        if (optAluno.isEmpty() || optProfessor.isEmpty()) return ResponseEntity.badRequest().body("Aluno/professor inválidos");
+        // 3. Validar IDs de usuários
+        boolean alunoExiste = usuarioRepository.existsById(req.getIdAluno());
+        boolean profExiste = usuarioRepository.existsById(req.getIdProfessor());
 
+        if (!alunoExiste || !profExiste) {
+            return ResponseEntity.badRequest().body("ID de Aluno ou Professor inválido.");
+        }
+
+        // 4. Criar e salvar
         Feedback feedback = new Feedback();
         feedback.setAula(aula);
-        feedback.setAluno((Aluno) optAluno.get());
-        feedback.setProfessor((Professor) optProfessor.get());
+        feedback.setIdAluno(req.getIdAluno());
+        feedback.setIdProfessor(req.getIdProfessor());
         feedback.setNota(req.getNota());
         feedback.setComentarioPrivado(req.getComentarioPrivado());
         feedback.setComentarioPublico(req.getComentarioPublico());
-        feedback.setDataFeedback(LocalDateTime.now());
         feedback.setRecomenda(req.getRecomenda());
+        feedback.setDataFeedback(LocalDateTime.now());
 
         Feedback salvo = feedbackRepository.save(feedback);
-        return ResponseEntity.ok(salvo);
+        return ResponseEntity.status(201).body(salvo);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscar(@PathVariable Long id) {
-        Optional<Feedback> opt = feedbackRepository.findById(id);
-        return opt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return feedbackRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/aula/{aulaId}")
     public ResponseEntity<?> porAula(@PathVariable Long aulaId) {
-        Optional<Feedback> opt = feedbackRepository.findByAulaId(aulaId);
-        return opt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return feedbackRepository.findByAulaId(aulaId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
+    // DTO interno para simplificar
     public static class FeedbackRequest {
         private Long idAula;
         private Long idAluno;
@@ -78,7 +84,7 @@ public class FeedbackController {
         private Integer nota;
         private String comentarioPrivado;
         private String comentarioPublico;
-        private Boolean recomenda = true;
+        private Boolean recomenda;
 
         public Long getIdAula() { return idAula; }
         public void setIdAula(Long idAula) { this.idAula = idAula; }

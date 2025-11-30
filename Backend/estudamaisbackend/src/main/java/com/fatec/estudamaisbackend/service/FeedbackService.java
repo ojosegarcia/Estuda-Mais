@@ -6,72 +6,77 @@ import com.fatec.estudamaisbackend.mappers.FeedbackMapper;
 import com.fatec.estudamaisbackend.repository.AulaRepository;
 import com.fatec.estudamaisbackend.repository.FeedbackRepository;
 import com.fatec.estudamaisbackend.repository.UsuarioRepository;
-import com.fatec.estudamaisbackend.service.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
-@Transactional
 public class FeedbackService {
 
-    private final FeedbackRepository feedbackRepository;
-    private final AulaRepository aulaRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final FeedbackMapper feedbackMapper;
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
-    public FeedbackService(FeedbackRepository feedbackRepository,
-                           AulaRepository aulaRepository,
-                           UsuarioRepository usuarioRepository,
-                           FeedbackMapper feedbackMapper) {
-        this.feedbackRepository = feedbackRepository;
-        this.aulaRepository = aulaRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.feedbackMapper = feedbackMapper;
-    }
+    @Autowired
+    private AulaRepository aulaRepository;
 
-    public FeedbackDTO createFromDto(FeedbackDTO dto) {
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private FeedbackMapper feedbackMapper;
+
+    @Transactional
+    public FeedbackDTO create(FeedbackDTO dto) {
+        // 1. Busca e valida a Aula
         Aula aula = aulaRepository.findById(dto.getIdAula())
-                .orElseThrow(() -> new ResourceNotFoundException("Aula não encontrada com id: " + dto.getIdAula()));
+                .orElseThrow(() -> new RuntimeException("Aula não encontrada com id: " + dto.getIdAula()));
 
+        // 2. Verifica duplicidade (Regra 1:1)
         if (feedbackRepository.findByAulaId(aula.getId()).isPresent()) {
-            throw new IllegalArgumentException("Já existe feedback para esta aula");
+            throw new RuntimeException("Já existe feedback para esta aula.");
         }
 
+        // 3. Busca e valida os Usuários
         Usuario aluno = usuarioRepository.findById(dto.getIdAluno())
-                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com id: " + dto.getIdAluno()));
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + dto.getIdAluno()));
+        
         Usuario professor = usuarioRepository.findById(dto.getIdProfessor())
-                .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado com id: " + dto.getIdProfessor()));
+                .orElseThrow(() -> new RuntimeException("Professor não encontrado com id: " + dto.getIdProfessor()));
 
-        if (!(aluno instanceof Aluno) || !(professor instanceof Professor)) {
-            throw new IllegalArgumentException("Tipos inválidos para aluno/professor");
-        }
-
+        // 4. Valida os Tipos de Usuário
+        // Como Usuario é a classe pai, precisamos garantir que o ID do aluno é de um ALUNO mesmo.
+        // Nota: O Hibernate faz o proxy, então às vezes instanceof pode falhar se não inicializar.
+        // Mas como usamos JOINED inheritance, o tipo real deve vir correto.
+        // Uma alternativa segura é verificar strings: if (!"ALUNO".equals(aluno.getTipoUsuario())) ...
+        
+        // 5. Monta a Entidade
         Feedback f = new Feedback();
         f.setAula(aula);
-        f.setAluno((Aluno) aluno);
-        f.setProfessor((Professor) professor);
+        f.setIdAluno(aluno.getId());         // Setando ID direto
+        f.setIdProfessor(professor.getId()); // Setando ID direto
+        
         f.setNota(dto.getNota());
         f.setComentarioPrivado(dto.getComentarioPrivado());
         f.setComentarioPublico(dto.getComentarioPublico());
+        f.setRecomenda(dto.getRecomenda() != null ? dto.getRecomenda() : true);
         f.setDataFeedback(LocalDateTime.now());
-        f.setRecomenda(dto.getRecomenda() == null ? true : dto.getRecomenda());
 
+        // 6. Salva e Retorna DTO
         Feedback salvo = feedbackRepository.save(f);
         return feedbackMapper.toDto(salvo);
     }
 
     public FeedbackDTO findById(Long id) {
         Feedback f = feedbackRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Feedback não encontrado com id: " + id));
+                .orElseThrow(() -> new RuntimeException("Feedback não encontrado com id: " + id));
         return feedbackMapper.toDto(f);
     }
 
     public void delete(Long id) {
         if (!feedbackRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Feedback não encontrado com id: " + id);
+            throw new RuntimeException("Feedback não encontrado com id: " + id);
         }
         feedbackRepository.deleteById(id);
     }

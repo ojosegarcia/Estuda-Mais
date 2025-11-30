@@ -3,30 +3,25 @@ package com.fatec.estudamaisbackend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
-@Table(name = "materias")
+@Table(name = "materia")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Materia extends EntidadeBase {
+public class Materia {
 
-    @Column(name = "nome", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_materia") // <--- CORREÇÃO
+    private Long id;
+
+    @Column(name = "nome_materia")
     private String nome;
 
-    @Column(name = "descricao")
+    @Column(name = "descricao_materia")
     private String descricao;
 
-    @Column(name = "icone")
+    @Column(name = "icone_materia")
     private String icone;
-
-    // lista de professores (evitar serializar to prevent cycles)
-    @ManyToMany(mappedBy = "materias")
-    @JsonIgnore
-    private List<Professor> professores = new ArrayList<>();
 }

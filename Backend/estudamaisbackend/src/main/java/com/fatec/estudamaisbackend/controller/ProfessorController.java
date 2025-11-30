@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping({"/api/professores", "/professores"})
-@CrossOrigin
 public class ProfessorController {
 
     private final ProfessorService professorService;
@@ -56,6 +55,19 @@ public class ProfessorController {
         try {
             professorService.delete(id);
             return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PatchMapping("/{id}/aprovar")
+    public ResponseEntity<Professor> aprovar(@PathVariable Long id) {
+        try {
+            Professor professor = professorService.findById(id);
+            professor.setAprovado(true);
+            Professor updated = professorService.update(id, professor);
+            System.out.println("✅ Professor ID=" + id + " aprovado com sucesso!");
+            return ResponseEntity.ok(updated);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.notFound().build();
         }

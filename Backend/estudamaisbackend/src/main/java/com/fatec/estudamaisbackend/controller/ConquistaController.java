@@ -7,13 +7,14 @@ import com.fatec.estudamaisbackend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * CRUD para conquistas do professor.
  */
 @RestController
-@RequestMapping("/api/conquistas")
+@RequestMapping("/api/professores/{professorId}/conquistas")
 @CrossOrigin
 public class ConquistaController {
 
@@ -23,9 +24,15 @@ public class ConquistaController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @GetMapping
+    public ResponseEntity<?> listar(@PathVariable Long professorId) {
+        List<Conquista> conquistas = conquistaRepository.findByProfessorIdOrderByAnoDesc(professorId);
+        return ResponseEntity.ok(conquistas);
+    }
+
     @PostMapping
-    public ResponseEntity<?> criar(@RequestBody ConquistaRequest req) {
-        Optional<?> opt = usuarioRepository.findById(req.getProfessorId());
+    public ResponseEntity<?> criar(@PathVariable Long professorId, @RequestBody ConquistaRequest req) {
+        Optional<?> opt = usuarioRepository.findById(professorId);
         if (opt.isEmpty() || !(opt.get() instanceof Professor)) return ResponseEntity.badRequest().body("Professor inválido");
         Professor p = (Professor) opt.get();
 
@@ -40,7 +47,7 @@ public class ConquistaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody ConquistaRequest req) {
+    public ResponseEntity<?> atualizar(@PathVariable Long professorId, @PathVariable Long id, @RequestBody ConquistaRequest req) {
         Optional<Conquista> opt = conquistaRepository.findById(id);
         if (opt.isEmpty()) return ResponseEntity.notFound().build();
         Conquista c = opt.get();
@@ -52,20 +59,17 @@ public class ConquistaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable Long id) {
+    public ResponseEntity<?> deletar(@PathVariable Long professorId, @PathVariable Long id) {
         if (!conquistaRepository.existsById(id)) return ResponseEntity.notFound().build();
         conquistaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     public static class ConquistaRequest {
-        private Long professorId;
         private String tituloConquista;
         private Integer ano;
         private String descricao;
 
-        public Long getProfessorId() { return professorId; }
-        public void setProfessorId(Long professorId) { this.professorId = professorId; }
         public String getTituloConquista() { return tituloConquista; }
         public void setTituloConquista(String tituloConquista) { this.tituloConquista = tituloConquista; }
         public Integer getAno() { return ano; }

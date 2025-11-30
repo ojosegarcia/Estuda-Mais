@@ -468,11 +468,164 @@ textarea.about-text {
   transform: scale(1.1);
 }
 
+
 .empty-disponibilidades {
   text-align: center;
   padding: var(--spacing-xl);
   color: var(--text-secondary);
   font-style: italic;
+}
+
+/* ==================== EXPERIÊNCIA E FORMAÇÃO ==================== */
+
+.subsection {
+  margin-bottom: var(--spacing-xl);
+}
+
+.subsection:last-child {
+  margin-bottom: 0;
+}
+
+.subsection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.subsection-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.btn-add {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-add:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.btn-add:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Experiências Lista */
+.experiencias-lista,
+.conquistas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.experiencia-item,
+.conquista-item {
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.experiencia-item:hover,
+.conquista-item:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+}
+
+.exp-info,
+.conquista-info {
+  flex: 1;
+}
+
+.exp-cargo,
+.conquista-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.exp-instituicao {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0 0 4px 0;
+  font-weight: 500;
+}
+
+.exp-periodo,
+.conquista-ano {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin: 0 0 8px 0;
+}
+
+.exp-descricao,
+.conquista-descricao {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.exp-actions,
+.conquista-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-edit,
+.btn-delete {
+  background: none;
+  border: 1px solid var(--border-color);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-edit:hover {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+}
+
+.btn-delete:hover {
+  background: #ffebee;
+  border-color: #dc3545;
+}
+
+.empty-list {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+  font-style: italic;
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color);
+}
+
+.empty-list p {
+  margin: 0;
 }
 
 @media (max-width: 768px) {
@@ -489,4 +642,26 @@ textarea.about-text {
   .btn-remove {
     align-self: flex-end;
   }
+
+  .subsection-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
+  .experiencia-item,
+  .conquista-item {
+    flex-direction: column;
+  }
+
+  .exp-actions,
+  .conquista-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }
+

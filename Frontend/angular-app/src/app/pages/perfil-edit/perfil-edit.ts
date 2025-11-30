@@ -6,13 +6,17 @@ import { AuthService } from '../../core/services/auth';
 import { MateriaService } from '../../core/services/materia';
 import { DisponibilidadeService } from '../../core/services/disponibilidade';
 import { AulaService } from '../../core/services/aula';
-import { Professor, Usuario, Materia, Aluno, Disponibilidade } from '../../shared/models';
+import { ExperienciaService } from '../../core/services/experiencia.service';
+import { ConquistaService } from '../../core/services/conquista.service';
+import { Professor, Usuario, Materia, Aluno, Disponibilidade, ExperienciaProfissional, Conquista } from '../../shared/models';
 import { forkJoin, of } from 'rxjs';
+import { ExperienciaFormModalComponent } from '../../shared/components/experiencia-form-modal/experiencia-form-modal';
+import { ConquistaFormModalComponent } from '../../shared/components/conquista-form-modal/conquista-form-modal';
 
 @Component({
   selector: 'app-perfil-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ExperienciaFormModalComponent, ConquistaFormModalComponent],
   templateUrl: './perfil-edit.html',
   styleUrls: ['./perfil-edit.css']
 })
@@ -30,6 +34,15 @@ export class PerfilEditComponent implements OnInit {
   materiasCustomizadas: string[] = []; 
   
   disponibilidades: Disponibilidade[] = [];
+  experiencias: ExperienciaProfissional[] = [];
+  conquistas: Conquista[] = [];
+
+  // Controle de modais
+  showExperienciaModal = false;
+  showConquistaModal = false;
+  experienciaEditando: ExperienciaProfissional | null = null;
+  conquistaEditando: Conquista | null = null;
+  
   diasDaSemana = ['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO'];
   opcoesEscolaridade = [
     'Prefiro não dizer',
@@ -54,6 +67,8 @@ export class PerfilEditComponent implements OnInit {
     private materiaService: MateriaService,
     private disponibilidadeService: DisponibilidadeService,
     private aulaService: AulaService,
+    private experienciaService: ExperienciaService,
+    private conquistaService: ConquistaService,
     @Inject(PLATFORM_ID) private platformId: Object 
   ) {}
 
@@ -69,8 +84,14 @@ export class PerfilEditComponent implements OnInit {
     if (this.isProfessor()) {
       forkJoin({
         materias: this.materiaService.getMaterias(),
-        disponibilidades: this.disponibilidadeService.getDisponibilidadesPorProfessor(this.currentUser!.id)
-      }).subscribe(({ materias, disponibilidades }) => {
+        disponibilidades: this.disponibilidadeService.getDisponibilidadesPorProfessor(this.currentUser!.id),
+        experiencias: this.experienciaService.listar(this.currentUser!.id),
+        conquistas: this.conquistaService.listar(this.currentUser!.id)
+      }).subscribe(({ materias, disponibilidades, experiencias, conquistas }) => {
+        this.todasMaterias = materias;
+        this.disponibilidades = disponibilidades.filter(d => d.ativo);
+        this.experiencias = experiencias;
+        this.conquistas = conquistas;
         this.todasMaterias = materias;
         this.disponibilidades = disponibilidades.filter(d => d.ativo); 
         this.initForm(); 
@@ -87,6 +108,9 @@ export class PerfilEditComponent implements OnInit {
     if (this.isProfessor()) {
       const professor = this.currentUser as Professor;
       
+      console.log('🔍 INIT FORM - Professor completo:', professor);
+      console.log('🔍 INIT FORM - professor.materias:', professor.materias);
+      
       this.profileForm = this.fb.group({
         nomeCompleto: [professor.nomeCompleto, Validators.required],
         telefone: [professor.telefone || ''],
@@ -94,7 +118,9 @@ export class PerfilEditComponent implements OnInit {
         metodologia: [professor.metodologia || ''],
         valorHora: [professor.valorHora || 0, [Validators.required, Validators.min(1)]],
       });
-            this.materiasSelecionadas = new Set(professor.materias?.map(m => Number(m.id)) || []);
+      
+      this.materiasSelecionadas = new Set(professor.materias?.map(m => Number(m.id)) || []);
+      console.log('🔍 INIT FORM - materiasSelecionadas inicializada:', this.materiasSelecionadas);
         
     } else {
       const aluno = this.currentUser as Aluno;
@@ -137,22 +163,21 @@ export class PerfilEditComponent implements OnInit {
     }
 
     const formValue = this.profileForm.value;
-    let materiasParaSalvar: Materia[] = [];
 
-    if (this.isProfessor()) {
-      // Pega apenas as matérias selecionadas do Set
-      materiasParaSalvar = this.todasMaterias.filter(materia => 
-        this.materiasSelecionadas.has(Number(materia.id))
-      );
-    }
-
-    const usuarioAtualizado: Usuario = { 
-      ...this.currentUser, 
-      ...formValue,
-      materias: this.isProfessor() ? materiasParaSalvar : undefined
+    // Prepara o payload para enviar ao backend
+    const payload: any = {
+      ...formValue
     };
+
+    // Se for professor, adiciona os IDs das matérias
+    if (this.isProfessor()) {
+      payload.materiaIds = Array.from(this.materiasSelecionadas);
+      console.log('🔍 FRONTEND - materiasSelecionadas (Set):', this.materiasSelecionadas);
+      console.log('🔍 FRONTEND - materiaIds (Array):', payload.materiaIds);
+      console.log('🔍 FRONTEND - Payload completo:', payload);
+    }
     
-    this.authService.updateUserProfile(usuarioAtualizado).subscribe({
+    this.authService.updateUserProfile(payload, this.currentUser.id).subscribe({
       next: (usuarioSalvo) => {
         alert('Perfil salvo com sucesso!');
         this.router.navigate(['/perfil']);
@@ -216,6 +241,143 @@ export class PerfilEditComponent implements OnInit {
       'QUINTA': 'Quinta-feira', 'SEXTA': 'Sexta-feira', 'SABADO': 'Sábado', 'DOMINGO': 'Domingo'
     };
     return labels[dia] || dia;
+  }
+
+  // === EXPERIÊNCIAS PROFISSIONAIS ===
+
+  abrirModalExperiencia(experiencia: ExperienciaProfissional | null = null): void {
+    if (this.experiencias.length >= 5 && !experiencia) {
+      alert('Você já atingiu o limite de 5 experiências profissionais.');
+      return;
+    }
+    this.experienciaEditando = experiencia;
+    this.showExperienciaModal = true;
+  }
+
+  fecharModalExperiencia(): void {
+    this.showExperienciaModal = false;
+    this.experienciaEditando = null;
+  }
+
+  salvarExperiencia(data: Partial<ExperienciaProfissional>): void {
+    if (!this.currentUser) return;
+
+    if (data.id) {
+      // Atualizar
+      this.experienciaService.atualizar(this.currentUser.id, data.id, data).subscribe({
+        next: (atualizada: ExperienciaProfissional) => {
+          const index = this.experiencias.findIndex(e => e.id === data.id);
+          if (index !== -1) {
+            this.experiencias[index] = atualizada;
+          }
+          this.fecharModalExperiencia();
+          alert('Experiência atualizada com sucesso!');
+        },
+        error: (err: any) => {
+          console.error('Erro ao atualizar experiência:', err);
+          alert('Erro ao atualizar experiência.');
+        }
+      });
+    } else {
+      // Criar
+      this.experienciaService.criar(this.currentUser.id, data).subscribe({
+        next: (nova: ExperienciaProfissional) => {
+          this.experiencias.unshift(nova); // Adiciona no início (mais recentes primeiro)
+          this.fecharModalExperiencia();
+          alert('Experiência adicionada com sucesso!');
+        },
+        error: (err: any) => {
+          console.error('Erro ao adicionar experiência:', err);
+          alert(err.error?.message || 'Erro ao adicionar experiência.');
+        }
+      });
+    }
+  }
+
+  deletarExperiencia(id: number): void {
+    if (!this.currentUser) return;
+    if (!confirm('Tem certeza que deseja remover esta experiência?')) return;
+
+    this.experienciaService.deletar(this.currentUser.id, id).subscribe({
+      next: () => {
+        this.experiencias = this.experiencias.filter(e => e.id !== id);
+        alert('Experiência removida com sucesso!');
+      },
+      error: (err: any) => {
+        console.error('Erro ao deletar experiência:', err);
+        alert('Erro ao remover experiência.');
+      }
+    });
+  }
+
+  // === CONQUISTAS / CERTIFICADOS ===
+
+  abrirModalConquista(conquista: Conquista | null = null): void {
+    if (this.conquistas.length >= 5 && !conquista) {
+      alert('Você já atingiu o limite de 5 conquistas/certificados.');
+      return;
+    }
+    this.conquistaEditando = conquista;
+    this.showConquistaModal = true;
+  }
+
+  fecharModalConquista(): void {
+    this.showConquistaModal = false;
+    this.conquistaEditando = null;
+  }
+
+  salvarConquista(data: Partial<Conquista>): void {
+    if (!this.currentUser) return;
+
+    if (data.id) {
+      // Atualizar
+      this.conquistaService.atualizar(this.currentUser.id, data.id, data).subscribe({
+        next: (atualizada: Conquista) => {
+          const index = this.conquistas.findIndex(c => c.id === data.id);
+          if (index !== -1) {
+            this.conquistas[index] = atualizada;
+          }
+          // Re-ordenar por ano (mais recentes primeiro)
+          this.conquistas.sort((a, b) => b.ano - a.ano);
+          this.fecharModalConquista();
+          alert('Conquista atualizada com sucesso!');
+        },
+        error: (err: any) => {
+          console.error('Erro ao atualizar conquista:', err);
+          alert('Erro ao atualizar conquista.');
+        }
+      });
+    } else {
+      // Criar
+      this.conquistaService.criar(this.currentUser.id, data).subscribe({
+        next: (nova: Conquista) => {
+          this.conquistas.push(nova);
+          this.conquistas.sort((a, b) => b.ano - a.ano); // Ordenar por ano
+          this.fecharModalConquista();
+          alert('Conquista adicionada com sucesso!');
+        },
+        error: (err: any) => {
+          console.error('Erro ao adicionar conquista:', err);
+          alert(err.error?.message || 'Erro ao adicionar conquista.');
+        }
+      });
+    }
+  }
+
+  deletarConquista(id: number): void {
+    if (!this.currentUser) return;
+    if (!confirm('Tem certeza que deseja remover esta conquista?')) return;
+
+    this.conquistaService.deletar(this.currentUser.id, id).subscribe({
+      next: () => {
+        this.conquistas = this.conquistas.filter(c => c.id !== id);
+        alert('Conquista removida com sucesso!');
+      },
+      error: (err: any) => {
+        console.error('Erro ao deletar conquista:', err);
+        alert('Erro ao remover conquista.');
+      }
+    });
   }
 
   cancelar(): void {

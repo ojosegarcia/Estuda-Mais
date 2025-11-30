@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Professor, Disponibilidade, Aluno, Aula } from '../../shared/models';
+import { Professor, Disponibilidade, Aluno, Aula, ExperienciaProfissional, Conquista } from '../../shared/models';
 import { ProfessorService } from '../../core/services/professor';
 import { DisponibilidadeService } from '../../core/services/disponibilidade';
 import { AulaService } from '../../core/services/aula';
 import { AuthService } from '../../core/services/auth';
+import { ExperienciaService } from '../../core/services/experiencia.service';
+import { ConquistaService } from '../../core/services/conquista.service';
 import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -24,6 +26,8 @@ export class ProfessorDetalheComponent implements OnInit {
   alunoLogado: Aluno | null = null;
   
   horariosRecorrentes: Disponibilidade[] = [];
+  experiencias: ExperienciaProfissional[] = [];
+  conquistas: Conquista[] = [];
   
   dataSelecionada: string | null = null;
   slotsFiltrados: string[] = []; 
@@ -37,7 +41,9 @@ export class ProfessorDetalheComponent implements OnInit {
     private professorService: ProfessorService,
     private disponibilidadeService: DisponibilidadeService,
     private aulaService: AulaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private experienciaService: ExperienciaService,
+    private conquistaService: ConquistaService
   ) {
     this.today = new Date().toISOString().split('T')[0];
   }
@@ -56,6 +62,15 @@ export class ProfessorDetalheComponent implements OnInit {
       
       this.disponibilidadeService.getDisponibilidadesPorProfessor(this.professorId).subscribe(disps => {
         this.horariosRecorrentes = disps.filter(d => d.ativo); 
+      });
+
+      // Carregar experiências e conquistas
+      this.experienciaService.listar(this.professorId).subscribe(exps => {
+        this.experiencias = exps;
+      });
+
+      this.conquistaService.listar(this.professorId).subscribe(conqs => {
+        this.conquistas = conqs;
       });
     }
   }

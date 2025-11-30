@@ -9,7 +9,9 @@ import com.fatec.estudamaisbackend.repository.AulaRepository;
 import com.fatec.estudamaisbackend.repository.MateriaRepository;
 import com.fatec.estudamaisbackend.repository.UsuarioRepository;
 import com.fatec.estudamaisbackend.entity.Usuario;
+import com.fatec.estudamaisbackend.service.AulaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,17 +19,26 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * AulaController corrigido para usar os tipos reais da entidade:
- * - status com enum StatusAula
- * - classValue como Double (usando setClassValue(Double))
+ * AulaController - Gerencia o agendamento e ciclo de vida das aulas
+ * Segue padrão REST do frontend Angular
  */
 @RestController
 @RequestMapping("/api/aulas")
-@CrossOrigin
+@CrossOrigin(
+    origins = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS},
+    allowedHeaders = "*",
+    allowCredentials = "false"
+)
 public class AulaController {
+
+    @Autowired
+    private AulaService aulaService;
 
     @Autowired
     private AulaRepository aulaRepository;
@@ -38,72 +49,196 @@ public class AulaController {
     @Autowired
     private MateriaRepository materiaRepository;
 
+    /**
+     * GET /api/aulas - Lista aulas com filtros opcionais
+     * Query params: idAluno, idProfessor, dataAula
+     * Aplica filtro de soft delete (removidoPeloAluno/removidoPeloProfessor)
+     */
+    @GetMapping
+    public ResponseEntity<List<Aula>> listarAulas(
+            @RequestParam(required = false) Long idAluno,
+            @RequestParam(required = false) Long idProfessor,
+            @RequestParam(required = false) String dataAula) {
+
+        List<Aula> aulas;
+
+        // Busca por professor e data (para verificar slots ocupados)
+        if (idProfessor != null && dataAula != null) {
+            LocalDate data = LocalDate.parse(dataAula);
+            aulas = aulaService.findByProfessorIdAndDataAula(idProfessor, data);
+        }
+        // Busca por aluno (filtra as que ele não removeu)
+        else if (idAluno != null) {
+            aulas = aulaRepository.findByAlunoIdAndRemovidoPeloAluno(idAluno, false);
+        }
+        // Busca por professor (filtra as que ele não removeu)
+        else if (idProfessor != null) {
+            aulas = aulaRepository.findByProfessorIdAndRemovidoPeloProfessor(idProfessor, false);
+        }
+        // Lista todas (sem filtro de soft delete)
+        else {
+            aulas = aulaRepository.findAll();
+        }
+
+        return ResponseEntity.ok(aulas);
+    }
+
+    /**
+     * GET /api/aulas/{id} - Busca aula por ID
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Aula> buscarPorId(@PathVariable Long id) {
+        try {
+            Aula aula = aulaService.findById(id);
+            return ResponseEntity.ok(aula);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * POST /api/aulas - Solicita uma nova aula
+     * Aplica validações:
+     * - Não permitir agendar no passado
+     * - Verificar conflito de horário
+     * - Validar se professor trabalha no dia/horário
+     */
     @PostMapping
     public ResponseEntity<?> solicitarAula(@RequestBody AulaRequest request) {
-        Optional<Usuario> optProf = usuarioRepository.findById(request.getIdProfessor());
-        Optional<Usuario> optAluno = usuarioRepository.findById(request.getIdAluno());
-        Optional<Materia> optMat = materiaRepository.findById(request.getIdMateria());
-
-        if (optProf.isEmpty() || optAluno.isEmpty() || optMat.isEmpty()) {
-            return ResponseEntity.badRequest().body("professor/aluno/materia inválidos");
-        }
-
-        if (!(optProf.get() instanceof Professor) || !(optAluno.get() instanceof Aluno)) {
-            return ResponseEntity.badRequest().body("tipo de usuário inválido para professor/aluno");
-        }
-
-        Aula aula = new Aula();
-        aula.setProfessor((Professor) optProf.get());
-        aula.setAluno((Aluno) optAluno.get());
-        aula.setMateria(optMat.get());
-
-        // parse date/time
         try {
-            aula.setDataAula(LocalDate.parse(request.getDataAula()));
-            aula.setHorarioInicio(LocalTime.parse(request.getHorarioInicio()));
-            aula.setHorarioFim(LocalTime.parse(request.getHorarioFim()));
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("formato de data/hora inválido. dataAula yyyy-MM-dd, horario HH:mm");
+            // Validar entidades
+            Optional<Usuario> optProf = usuarioRepository.findById(request.getIdProfessor());
+            Optional<Usuario> optAluno = usuarioRepository.findById(request.getIdAluno());
+            Optional<Materia> optMat = materiaRepository.findById(request.getIdMateria());
+
+            if (optProf.isEmpty() || optAluno.isEmpty() || optMat.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Professor, aluno ou matéria não encontrados"));
+            }
+
+            if (!(optProf.get() instanceof Professor) || !(optAluno.get() instanceof Aluno)) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Tipo de usuário inválido"));
+            }
+
+            // Parse data/hora
+            LocalDate dataAula = LocalDate.parse(request.getDataAula());
+            LocalTime horarioInicio = LocalTime.parse(request.getHorarioInicio());
+            LocalTime horarioFim = LocalTime.parse(request.getHorarioFim());
+
+            // VALIDAÇÕES DE NEGÓCIO
+            aulaService.validarAgendamento(
+                request.getIdProfessor(),
+                dataAula,
+                horarioInicio,
+                horarioFim
+            );
+
+            // Criar aula
+            Aula aula = new Aula();
+            aula.setProfessor((Professor) optProf.get());
+            aula.setAluno((Aluno) optAluno.get());
+            aula.setMateria(optMat.get());
+            aula.setDataAula(dataAula);
+            aula.setHorarioInicio(horarioInicio);
+            aula.setHorarioFim(horarioFim);
+            aula.setStatusAula(StatusAula.SOLICITADA);
+            aula.setValorAula(request.getValorAula());
+            aula.setLinkReuniao(request.getLinkReuniao());
+            aula.setDataCriacao(LocalDateTime.now());
+            aula.setRemovidoPeloAluno(false);
+            aula.setRemovidoPeloProfessor(false);
+
+            Aula salvo = aulaRepository.save(aula);
+            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Erro ao criar aula: " + e.getMessage()));
         }
-
-        // Use enum StatusAula (entidade espera StatusAula, não String)
-        aula.setStatus(StatusAula.SOLICITADA);
-
-        // entidade espera Double no setter setClassValue(Double) => use request.getValorAula() diretamente
-        if (request.getValorAula() != null) {
-            aula.setClassValue(request.getValorAula());
-        }
-
-        aula.setMeetingLink(request.getLinkReuniao());
-        aula.setCreatedAt(LocalDateTime.now());
-
-        Aula salvo = aulaRepository.save(aula);
-        return ResponseEntity.ok(salvo);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Aula> buscar(@PathVariable Long id) {
-        Optional<Aula> opt = aulaRepository.findById(id);
-        return opt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    /**
+     * PATCH /api/aulas/{id} - Atualização parcial
+     * Usado para: atualizar status, link, flags de remoção
+     */
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        try {
+            Aula aula = aulaService.findById(id);
+            Aula atualizacoes = new Aula();
+
+            // Processa cada campo enviado
+            if (updates.containsKey("statusAula")) {
+                atualizacoes.setStatusAula(StatusAula.valueOf((String) updates.get("statusAula")));
+            }
+            if (updates.containsKey("linkReuniao")) {
+                atualizacoes.setLinkReuniao((String) updates.get("linkReuniao"));
+            }
+            if (updates.containsKey("removidoPeloAluno")) {
+                atualizacoes.setRemovidoPeloAluno((Boolean) updates.get("removidoPeloAluno"));
+            }
+            if (updates.containsKey("removidoPeloProfessor")) {
+                atualizacoes.setRemovidoPeloProfessor((Boolean) updates.get("removidoPeloProfessor"));
+            }
+
+            Aula atualizada = aulaService.atualizarParcial(id, atualizacoes);
+            return ResponseEntity.ok(atualizada);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
+
+    /**
+     * PUT /api/aulas/{id}/aceitar-com-link - Aceita aula com link obrigatório
+     * Validações:
+     * - Link obrigatório
+     * - Link deve conter plataforma válida (Zoom, Meet, Teams)
+     */
+    @PutMapping("/{id}/aceitar-com-link")
+    public ResponseEntity<?> aceitarComLink(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            String linkReuniao = body.get("linkReuniao");
+            Aula aulaAtualizada = aulaService.aceitarAulaComLink(id, linkReuniao);
+            return ResponseEntity.ok(aulaAtualizada);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erro ao aceitar aula: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * DELETE /api/aulas/{id} - Remove aula com soft delete
+     * - 1ª remoção: marca flag removidoPeloAluno/removidoPeloProfessor
+     * - 2ª remoção (quando ambos removeram): DELETE permanente
+     * 
+     * Requer query param: usuarioId e tipoUsuario
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removerAula(
+            @PathVariable Long id,
+            @RequestParam Long usuarioId,
+            @RequestParam String tipoUsuario) {
+        try {
+            aulaService.removerAulaPorUsuario(id, usuarioId, tipoUsuario);
+            return ResponseEntity.ok(Map.of("message", "Aula removida com sucesso"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ========== ENDPOINTS LEGADOS (mantidos para compatibilidade) ==========
 
     @GetMapping("/aluno/{alunoId}")
     public ResponseEntity<List<Aula>> aulasDoAluno(@PathVariable Long alunoId) {
-        return ResponseEntity.ok(aulaRepository.findByAlunoId(alunoId));
+        return ResponseEntity.ok(aulaRepository.findByAlunoIdAndRemovidoPeloAluno(alunoId, false));
     }
 
     @GetMapping("/professor/{professorId}")
     public ResponseEntity<List<Aula>> aulasDoProfessor(@PathVariable Long professorId) {
-        return ResponseEntity.ok(aulaRepository.findByProfessorId(professorId));
-    }
-
-    private ResponseEntity<?> atualizarStatus(Long id, StatusAula novoStatus) {
-        Optional<Aula> opt = aulaRepository.findById(id);
-        if (opt.isEmpty()) return ResponseEntity.notFound().build();
-        Aula aula = opt.get();
-        aula.setStatus(novoStatus);
-        aulaRepository.save(aula);
-        return ResponseEntity.ok(aula);
+        return ResponseEntity.ok(aulaRepository.findByProfessorIdAndRemovidoPeloProfessor(professorId, false));
     }
 
     @PutMapping("/{id}/aceitar")
@@ -126,7 +261,19 @@ public class AulaController {
         return atualizarStatus(id, StatusAula.REALIZADA);
     }
 
-    // Request DTO for creating an Aula
+    private ResponseEntity<?> atualizarStatus(Long id, StatusAula novoStatus) {
+        try {
+            Aula aula = aulaService.findById(id);
+            aula.setStatusAula(novoStatus);
+            aulaRepository.save(aula);
+            return ResponseEntity.ok(aula);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // ========== DTOs ==========
+
     public static class AulaRequest {
         private Long idProfessor;
         private Long idAluno;

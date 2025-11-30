@@ -1,7 +1,7 @@
 package com.fatec.estudamaisbackend.mappers;
 
-import com.fatec.estudamaisbackend.entity.Feedback;
 import com.fatec.estudamaisbackend.dtos.FeedbackDTO;
+import com.fatec.estudamaisbackend.entity.Feedback;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -9,14 +9,13 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface FeedbackMapper {
 
+    // Entidade -> DTO
     @Mapping(source = "aula.id", target = "idAula")
-    @Mapping(source = "aluno.id", target = "idAluno")
-    @Mapping(source = "professor.id", target = "idProfessor")
+    // idAluno e idProfessor são mapeados automaticamente (Long -> Long)
     FeedbackDTO toDto(Feedback f);
 
-    // DTO -> Entity: ignore nested relations (service resolves them)
-    @Mapping(target = "aula", ignore = true)
-    @Mapping(target = "aluno", ignore = true)
-    @Mapping(target = "professor", ignore = true)
+    // DTO -> Entidade
+    @Mapping(target = "aula", ignore = true) // O Service busca a aula pelo ID
+    @Mapping(target = "id", ignore = true)   // ID é gerado pelo banco
     Feedback toEntity(FeedbackDTO dto);
 }

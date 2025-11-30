@@ -30,35 +30,42 @@ public class DisponibilidadeService {
     }
 
     public DisponibilidadeDTO create(Long professorId, DisponibilidadeDTO dto) {
-        var opt = usuarioRepository.findById(professorId);
+        Optional<?> opt = usuarioRepository.findById(professorId);
         if (opt.isEmpty() || !(opt.get() instanceof Professor)) {
             throw new ResourceNotFoundException("Professor não encontrado com id: " + professorId);
         }
         Professor p = (Professor) opt.get();
+        
         Disponibilidade d = disponibilidadeMapper.toEntity(dto);
         d.setProfessor(p);
+        
         Disponibilidade salvo = disponibilidadeRepository.save(d);
         return disponibilidadeMapper.toDto(salvo);
     }
 
+    @Transactional(readOnly = true)
     public DisponibilidadeDTO findById(Long id) {
         Disponibilidade d = disponibilidadeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Disponibilidade não encontrada com id: " + id));
         return disponibilidadeMapper.toDto(d);
     }
 
-    public List<Disponibilidade> findByProfessorId(Long professorId) {
-        return disponibilidadeRepository.findByProfessorId(professorId);
+    @Transactional(readOnly = true)
+    public List<DisponibilidadeDTO> findByProfessorId(Long professorId) {
+        List<Disponibilidade> lista = disponibilidadeRepository.findByProfessorId(professorId);
+        return disponibilidadeMapper.toDtoList(lista);
     }
 
     public DisponibilidadeDTO update(Long id, DisponibilidadeDTO dto) {
         Disponibilidade existing = disponibilidadeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Disponibilidade não encontrada com id: " + id));
-        // update simple fields via mapper -> entity, then set professor preserved
-        existing.setDayOfWeek(dto.getDiaSemana());
-        existing.setStartTime(dto.getHorarioInicio());
-        existing.setEndTime(dto.getHorarioFim());
-        existing.setActive(dto.getAtivo());
+        
+        // Atualiza campos simples
+        existing.setDiaSemana(dto.getDiaSemana());
+        existing.setHorarioInicio(dto.getHorarioInicio()); // Corrigido de setHoraInicio
+        existing.setHorarioFim(dto.getHorarioFim());       // Corrigido de setHoraFim
+        existing.setAtivo(dto.getAtivo());
+        
         Disponibilidade salvo = disponibilidadeRepository.save(existing);
         return disponibilidadeMapper.toDto(salvo);
     }

@@ -1,23 +1,26 @@
 package com.fatec.estudamaisbackend.mappers;
 
-import com.fatec.estudamaisbackend.entity.ExperienciaProfissional;
 import com.fatec.estudamaisbackend.dtos.ExperienciaProfissionalDTO;
+import com.fatec.estudamaisbackend.entity.ExperienciaProfissional;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ExperienciaProfissionalMapper {
 
-    @Mapping(source = "position", target = "cargo")
-    @Mapping(source = "institution", target = "instituicao")
-    @Mapping(source = "period", target = "periodo")
-    @Mapping(source = "description", target = "descricao")
+    // Entidade -> DTO
+    // MapStruct mapeia cargo->cargo, instituicao->instituicao automaticamente.
+    // Só precisamos ajudar no relacionamento do Professor:
+    @Mapping(source = "professor.id", target = "idProfessor")
     ExperienciaProfissionalDTO toDto(ExperienciaProfissional e);
 
-    @Mapping(source = "cargo", target = "position")
-    @Mapping(source = "instituicao", target = "institution")
-    @Mapping(source = "periodo", target = "period")
-    @Mapping(source = "descricao", target = "description")
+    // DTO -> Entidade
+    @Mapping(target = "professor", ignore = true) // O Service define o professor
+    @Mapping(target = "id", ignore = true)        // O Banco gera o ID
     ExperienciaProfissional toEntity(ExperienciaProfissionalDTO dto);
+
+    List<ExperienciaProfissionalDTO> toDtoList(List<ExperienciaProfissional> lista);
 }

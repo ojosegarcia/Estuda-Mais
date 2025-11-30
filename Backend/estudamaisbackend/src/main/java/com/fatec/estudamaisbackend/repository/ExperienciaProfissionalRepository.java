@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface ExperienciaProfissionalRepository extends JpaRepository<ExperienciaProfissional, Long> {
     List<ExperienciaProfissional> findByProfessorId(Long professorId);
+    long countByProfessorId(Long professorId);
+    List<ExperienciaProfissional> findByProfessorIdOrderByIdDesc(Long professorId);
 }

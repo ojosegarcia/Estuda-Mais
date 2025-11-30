@@ -140,6 +140,76 @@
       </div>
     </div>
 
+    <!-- NOVA SEÇÃO: Experiência e Formação -->
+    <div class="info-card" *ngIf="isProfessor()">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="icon">🎓</span>
+          Experiência e Formação
+        </h2>
+      </div>
+      <div class="card-body">
+        <p class="field-hint">Adicione suas experiências profissionais e conquistas/certificados (máximo 5 de cada).</p>
+        
+        <!-- Experiências Profissionais -->
+        <div class="subsection">
+          <div class="subsection-header">
+            <h3 class="subsection-title">💼 Experiências Profissionais</h3>
+            <button type="button" class="btn-add" (click)="abrirModalExperiencia()" [disabled]="experiencias.length >= 5">
+              ➕ Adicionar
+            </button>
+          </div>
+
+          <div class="experiencias-lista" *ngIf="experiencias.length > 0">
+            <div class="experiencia-item" *ngFor="let exp of experiencias">
+              <div class="exp-info">
+                <h4 class="exp-cargo">{{ exp.cargo }}</h4>
+                <p class="exp-instituicao">{{ exp.instituicao }}</p>
+                <p class="exp-periodo">{{ exp.periodo }}</p>
+                <p class="exp-descricao" *ngIf="exp.descricao">{{ exp.descricao }}</p>
+              </div>
+              <div class="exp-actions">
+                <button type="button" class="btn-edit" (click)="abrirModalExperiencia(exp)" title="Editar">✏️</button>
+                <button type="button" class="btn-delete" (click)="deletarExperiencia(exp.id)" title="Remover">🗑️</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-list" *ngIf="experiencias.length === 0">
+            <p>📚 Você ainda não adicionou experiências profissionais.</p>
+          </div>
+        </div>
+
+        <!-- Conquistas / Certificados -->
+        <div class="subsection">
+          <div class="subsection-header">
+            <h3 class="subsection-title">🏆 Conquistas / Certificados</h3>
+            <button type="button" class="btn-add" (click)="abrirModalConquista()" [disabled]="conquistas.length >= 5">
+              ➕ Adicionar
+            </button>
+          </div>
+
+          <div class="conquistas-lista" *ngIf="conquistas.length > 0">
+            <div class="conquista-item" *ngFor="let conquista of conquistas">
+              <div class="conquista-info">
+                <h4 class="conquista-titulo">{{ conquista.tituloConquista }}</h4>
+                <p class="conquista-ano">{{ conquista.ano }}</p>
+                <p class="conquista-descricao" *ngIf="conquista.descricao">{{ conquista.descricao }}</p>
+              </div>
+              <div class="conquista-actions">
+                <button type="button" class="btn-edit" (click)="abrirModalConquista(conquista)" title="Editar">✏️</button>
+                <button type="button" class="btn-delete" (click)="deletarConquista(conquista.id)" title="Remover">🗑️</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-list" *ngIf="conquistas.length === 0">
+            <p>🎯 Você ainda não adicionou conquistas ou certificados.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="form-actions">
       <button type="button" (click)="cancelar()" class="btn-secondary">
         Cancelar
@@ -149,4 +219,21 @@
       </button>
     </div>
 
-  </form> </div> ```
+  </form>
+
+  <!-- Modais -->
+  <app-experiencia-form-modal 
+    [isOpen]="showExperienciaModal"
+    [experiencia]="experienciaEditando"
+    (save)="salvarExperiencia($event)"
+    (close)="fecharModalExperiencia()">
+  </app-experiencia-form-modal>
+
+  <app-conquista-form-modal 
+    [isOpen]="showConquistaModal"
+    [conquista]="conquistaEditando"
+    (save)="salvarConquista($event)"
+    (close)="fecharModalConquista()">
+  </app-conquista-form-modal>
+
+</div>```

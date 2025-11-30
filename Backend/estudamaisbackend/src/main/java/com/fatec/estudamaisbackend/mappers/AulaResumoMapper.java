@@ -15,7 +15,7 @@ public interface AulaResumoMapper {
     @Mapping(source = "dataAula", target = "dataAula")
     @Mapping(source = "horarioInicio", target = "horarioInicio")
     @Mapping(source = "horarioFim", target = "horarioFim")
-    @Mapping(target = "statusAula", expression = "java(aula.getStatus() != null ? aula.getStatus().name() : null)")
-    @Mapping(source = "classValue", target = "valorAula")
+    @Mapping(target = "statusAula", expression = "java(aula.getStatusAula() != null ? aula.getStatusAula().name() : null)")
+    @Mapping(source = "valorAula", target = "valorAula")
     AulaResumoDTO toDto(Aula aula);
 }

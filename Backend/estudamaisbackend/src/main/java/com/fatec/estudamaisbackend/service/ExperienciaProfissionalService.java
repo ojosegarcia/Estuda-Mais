@@ -29,17 +29,22 @@ public class ExperienciaProfissionalService {
     }
 
     public ExperienciaProfissionalDTO create(Long professorId, ExperienciaProfissionalDTO dto) {
-        var opt = usuarioRepository.findById(professorId);
+        Optional<?> opt = usuarioRepository.findById(professorId);
+        
         if (opt.isEmpty() || !(opt.get() instanceof Professor)) {
             throw new ResourceNotFoundException("Professor não encontrado com id: " + professorId);
         }
+        
         Professor p = (Professor) opt.get();
+        
         ExperienciaProfissional e = experienciaMapper.toEntity(dto);
         e.setProfessor(p);
+        
         ExperienciaProfissional salvo = experienciaRepository.save(e);
         return experienciaMapper.toDto(salvo);
     }
 
+    @Transactional(readOnly = true)
     public ExperienciaProfissionalDTO findById(Long id) {
         ExperienciaProfissional e = experienciaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Experiência não encontrada com id: " + id));
@@ -49,10 +54,13 @@ public class ExperienciaProfissionalService {
     public ExperienciaProfissionalDTO update(Long id, ExperienciaProfissionalDTO dto) {
         ExperienciaProfissional existing = experienciaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Experiência não encontrada com id: " + id));
-        if (dto.getCargo() != null) existing.setPosition(dto.getCargo());
-        if (dto.getInstituicao() != null) existing.setInstitution(dto.getInstituicao());
-        if (dto.getPeriodo() != null) existing.setPeriod(dto.getPeriodo());
-        if (dto.getDescricao() != null) existing.setDescription(dto.getDescricao());
+        
+        // Atualiza campos usando os setters em português (corrigido)
+        if (dto.getCargo() != null) existing.setCargo(dto.getCargo());
+        if (dto.getInstituicao() != null) existing.setInstituicao(dto.getInstituicao());
+        if (dto.getPeriodo() != null) existing.setPeriodo(dto.getPeriodo());
+        if (dto.getDescricao() != null) existing.setDescricao(dto.getDescricao());
+        
         ExperienciaProfissional salvo = experienciaRepository.save(existing);
         return experienciaMapper.toDto(salvo);
     }

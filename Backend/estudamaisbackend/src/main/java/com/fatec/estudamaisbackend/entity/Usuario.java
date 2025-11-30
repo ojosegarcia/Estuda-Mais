@@ -2,58 +2,51 @@ package com.fatec.estudamaisbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
-
+import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo_usuario", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class Usuario extends EntidadeBase {
+public class Usuario {
 
-    @Column(name = "nome_completo", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario") // <--- AQUI ESTAVA O ERRO!
+    private Long id;
+
+    @Column(name = "nome_completo")
     private String nomeCompleto;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
-
-    @Column(name = "senha", nullable = false)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "telefone")
     private String telefone;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "data_nascimento")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dataNascimento;
 
-    // Frontend uses "sexo"
-    @Column(name = "genero")
-    @JsonProperty("sexo")
-    private String genero;
+    private String sexo;
 
-    // Frontend uses "fotoPerfil"
-    @Column(name = "imagem_perfil")
-    @JsonProperty("fotoPerfil")
-    private String imagemPerfil;
+    @Column(name = "foto_perfil")
+    private String fotoPerfil;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "data_cadastro")
+    private LocalDateTime dataCadastro;
 
-    @JsonProperty("dataCadastro")
-    public java.time.LocalDateTime getDataCadastro() {
-        return this.getCriadoEm();
-    }
-
-    @Column(name = "ativo")
     private Boolean ativo = true;
 
-    // discriminator value provided by subclasses (ALUNO / PROFESSOR)
+    @Column(name = "tipo_usuario", insertable = false, updatable = false)
+    private String tipoUsuario;
 }

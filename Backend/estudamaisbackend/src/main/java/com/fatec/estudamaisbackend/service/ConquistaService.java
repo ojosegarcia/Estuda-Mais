@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ConquistaService {
 
+    private static final int MAX_CONQUISTAS = 5;
+
     private final ConquistaRepository conquistaRepository;
     private final UsuarioRepository usuarioRepository;
     private final ConquistaMapper conquistaMapper;
@@ -31,6 +33,13 @@ public class ConquistaService {
         if (opt.isEmpty() || !(opt.get() instanceof Professor)) {
             throw new ResourceNotFoundException("Professor não encontrado com id: " + professorId);
         }
+        
+        // ✅ Validação: máximo 5 conquistas por professor
+        long count = conquistaRepository.countByProfessorId(professorId);
+        if (count >= MAX_CONQUISTAS) {
+            throw new RuntimeException("Professor já possui o máximo de " + MAX_CONQUISTAS + " conquistas");
+        }
+        
         Professor p = (Professor) opt.get();
         Conquista c = conquistaMapper.toEntity(dto);
         c.setProfessor(p);
@@ -59,5 +68,12 @@ public class ConquistaService {
             throw new ResourceNotFoundException("Conquista não encontrada com id: " + id);
         }
         conquistaRepository.deleteById(id);
+    }
+
+    public java.util.List<ConquistaDTO> findByProfessorId(Long professorId) {
+        return conquistaRepository.findByProfessorIdOrderByAnoDesc(professorId)
+                .stream()
+                .map(conquistaMapper::toDto)
+                .collect(java.util.stream.Collectors.toList());
     }
 }

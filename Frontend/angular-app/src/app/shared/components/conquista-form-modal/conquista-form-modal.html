@@ -1,0 +1,76 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditMode ? 'Editar Conquista' : 'Adicionar Conquista / Certificado' }}</h2>
+      <button type="button" class="btn-close" (click)="onClose()" aria-label="Fechar">×</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        
+        <!-- Título -->
+        <div class="form-group">
+          <label for="tituloConquista">Título *</label>
+          <input 
+            type="text" 
+            id="tituloConquista" 
+            formControlName="tituloConquista"
+            class="form-control"
+            placeholder="Ex: Mestrado em Matemática Aplicada"
+            [class.is-invalid]="form.get('tituloConquista')?.invalid && form.get('tituloConquista')?.touched">
+          <div class="invalid-feedback" *ngIf="form.get('tituloConquista')?.hasError('required') && form.get('tituloConquista')?.touched">
+            Título é obrigatório
+          </div>
+          <div class="invalid-feedback" *ngIf="form.get('tituloConquista')?.hasError('minlength')">
+            Mínimo de 2 caracteres
+          </div>
+        </div>
+
+        <!-- Ano -->
+        <div class="form-group">
+          <label for="ano">Ano *</label>
+          <input 
+            type="number" 
+            id="ano" 
+            formControlName="ano"
+            class="form-control"
+            [min]="1900"
+            [max]="2100"
+            placeholder="Ex: 2023"
+            [class.is-invalid]="form.get('ano')?.invalid && form.get('ano')?.touched">
+          <div class="invalid-feedback" *ngIf="form.get('ano')?.hasError('required') && form.get('ano')?.touched">
+            Ano é obrigatório
+          </div>
+          <div class="invalid-feedback" *ngIf="form.get('ano')?.hasError('min') || form.get('ano')?.hasError('max')">
+            Ano deve estar entre 1900 e 2100
+          </div>
+          <small class="form-text">Pode incluir certificações em andamento com ano futuro</small>
+        </div>
+
+        <!-- Descrição -->
+        <div class="form-group">
+          <label for="descricao">Descrição (opcional)</label>
+          <textarea 
+            id="descricao" 
+            formControlName="descricao"
+            class="form-control"
+            rows="4"
+            placeholder="Instituição, detalhes adicionais..."
+            [class.is-invalid]="form.get('descricao')?.invalid && form.get('descricao')?.touched"></textarea>
+          <small class="form-text">{{ form.get('descricao')?.value?.length || 0 }}/1000 caracteres</small>
+          <div class="invalid-feedback" *ngIf="form.get('descricao')?.hasError('maxlength')">
+            Máximo de 1000 caracteres
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          {{ isEditMode ? 'Salvar Alterações' : 'Adicionar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
