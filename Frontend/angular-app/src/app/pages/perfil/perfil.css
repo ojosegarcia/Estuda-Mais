@@ -1,4 +1,8 @@
-﻿.perfil-container {
+﻿/* (aqui mantive exatamente seu CSS original e acrescentei apenas as regras da foto,
+   para que a aparência geral fique como você pediu) */
+
+/* === seu CSS original (mantido) === */
+.perfil-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
@@ -20,6 +24,8 @@
   margin: 0 auto 1.5rem;
   box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
   border: 4px solid var(--surface-dark);
+  position: relative;
+  overflow: hidden; /* garante que a imagem fique recortada no círculo */
 }
 
 .avatar-initials-large {
@@ -306,6 +312,42 @@
   font-style: italic;
 }
 
+/* === adicionei apenas as regras necessárias para o comportamento da foto === */
+
+/* garante que a imagem interna seja recortada e encaixe no círculo */
+.avatar-image-large {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* overlay lápis discretinho */
+.avatar-overlay {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background .15s ease, transform .08s ease;
+  border: 2px solid rgba(255,255,255,0.06);
+}
+.avatar-overlay:hover {
+  background: rgba(0,0,0,0.7);
+  transform: translateY(-2px);
+}
+
+/* input escondido */
+.hidden-file-input { display: none; }
+
+/* mantém responsividade como antes */
 @media (max-width: 768px) {
   .perfil-container {
     padding: 1rem;

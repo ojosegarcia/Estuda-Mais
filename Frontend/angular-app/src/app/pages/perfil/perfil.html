@@ -2,11 +2,36 @@
 
   <div class="perfil-container">
     <div class="perfil-header">
-      <div class="profile-avatar-large">
-        <span class="avatar-initials-large">{{ getUserInitials(currentUser.nomeCompleto) }}</span>
+      <div class="profile-avatar-large" aria-hidden="false">
+        <!-- preview local se existir, senao usa foto do backend, senao iniciais -->
+        <ng-container *ngIf="previewUrl; else fotoUsuario">
+          <img [src]="previewUrl" alt="Preview" class="avatar-image-large" />
+        </ng-container>
+
+        <ng-template #fotoUsuario>
+          <ng-container *ngIf="currentUser?.fotoPerfil; else initialsTpl">
+            <img [src]="currentUser?.fotoPerfil" alt="Foto de perfil" class="avatar-image-large" />
+          </ng-container>
+          <ng-template #initialsTpl>
+            <span class="avatar-initials-large">{{ getUserInitials(currentUser?.nomeCompleto) }}</span>
+          </ng-template>
+        </ng-template>
+
+        <!-- overlay lápis para trocar foto -->
+        <div class="avatar-overlay" role="button" title="Editar foto" (click)="fileInput.click()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill="currentColor"/>
+            <path d="M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+          </svg>
+        </div>
+
+        <!-- hidden file input disparado pelo overlay -->
+        <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden-file-input" />
       </div>
+
       <h1 class="perfil-title">Meu Perfil</h1>
     </div>
+
     <div class="perfil-content">
       <div class="info-card">
         <div class="card-header">
@@ -20,54 +45,57 @@
           <div class="info-grid">
             <div class="info-item">
               <label class="info-label">Nome Completo</label>
-              <p class="info-value">{{ currentUser.nomeCompleto }}</p>
+              <p class="info-value">{{ currentUser?.nomeCompleto }}</p>
             </div>
 
             <div class="info-item">
               <label class="info-label">Email</label>
-              <p class="info-value">{{ currentUser.email }}</p>
+              <p class="info-value">{{ currentUser?.email }}</p>
             </div>
 
             <div class="info-item">
               <label class="info-label">Tipo de Usuário</label>
               <div class="badge-container">
                 <span class="user-type-badge" [class.professor]="isProfessor(currentUser)">
-                  {{ currentUser.tipoUsuario }}
+                  {{ currentUser?.tipoUsuario }}
                 </span>
               </div>
             </div>
 
-            <!-- INFO ALUNO: Passamos 'currentUser' para as funções helper -->
-            <div class="info-item" *ngIf="isAluno(currentUser) && asAluno(currentUser).escolaridade">
+            <!-- INFO ALUNO -->
+            <div class="info-item" *ngIf="isAluno(currentUser) && asAluno(currentUser)?.escolaridade">
               <label class="info-label">Escolaridade</label>
-              <p class="info-value">{{ asAluno(currentUser).escolaridade }}</p>
+              <p class="info-value">{{ asAluno(currentUser)?.escolaridade }}</p>
             </div>
 
-            <div class="info-item" *ngIf="isAluno(currentUser) && asAluno(currentUser).interesse">
+            <div class="info-item" *ngIf="isAluno(currentUser) && asAluno(currentUser)?.interesse">
               <label class="info-label">Meu Objetivo</label>
-              <p class="info-value">{{ getInteresseLabel(asAluno(currentUser).interesse) }}</p>
+              <p class="info-value">{{ getInteresseLabel(asAluno(currentUser)?.interesse) }}</p>
             </div>
           </div>
 
-          <div class="info-item full-width" *ngIf="isProfessor(currentUser) && asProfessor(currentUser).sobre">
+          <div class="info-item full-width" *ngIf="isProfessor(currentUser) && asProfessor(currentUser)?.sobre">
             <label class="info-label">Sobre</label>
-            <p class="info-value about-text">{{ asProfessor(currentUser).sobre }}</p>
+            <p class="info-value about-text">{{ asProfessor(currentUser)?.sobre }}</p>
           </div>
 
-          <div class="info-item full-width" *ngIf="isProfessor(currentUser) && asProfessor(currentUser).materias && asProfessor(currentUser).materias!.length > 0">
+          <!-- safe-check: usa (length || 0) para evitar 'possibly undefined' -->
+          <div class="info-item full-width"
+               *ngIf="isProfessor(currentUser) && ((asProfessor(currentUser)?.materias?.length || 0) > 0)">
             <label class="info-label">
               <span class="icon">📚</span>
               Matérias que Leciono
             </label>
             <div class="materias-badges">
-              <span class="materia-badge" *ngFor="let materia of asProfessor(currentUser).materias!">
-                <span class="materia-icon">{{ materia.icone || '•' }}</span>
-                {{ materia.nome }}
+              <span class="materia-badge" *ngFor="let materia of asProfessor(currentUser)?.materias || []">
+                <span class="materia-icon">{{ materia?.icone || '•' }}</span>
+                {{ materia?.nome }}
               </span>
             </div>
           </div>
 
-          <div class="info-item full-width" *ngIf="isProfessor(currentUser) && (!asProfessor(currentUser).materias || asProfessor(currentUser).materias!.length === 0)">
+          <div class="info-item full-width"
+               *ngIf="isProfessor(currentUser) && ((asProfessor(currentUser)?.materias?.length || 0) === 0)">
             <label class="info-label">
               <span class="icon">⚠️</span>
               Matérias que Leciono
@@ -109,6 +137,30 @@
             <span class="action-icon">✏️</span>
             <span>Editar Perfil</span>
           </button>
+
+          <!-- botão e formulário de alterar senha -->
+          <div style="margin-top:1rem;">
+            <button class="btn-action btn-link" (click)="showChangePassword = !showChangePassword">
+              {{ showChangePassword ? 'Cancelar' : 'Alterar senha' }}
+            </button>
+
+            <div *ngIf="showChangePassword" style="margin-top:0.75rem;">
+              <form (ngSubmit)="changePassword()" #pwdForm="ngForm">
+                <div style="display:flex;flex-direction:column;gap:0.5rem;max-width:360px;">
+                  <input name="newPassword" type="password" [(ngModel)]="passwordModel.newPassword" placeholder="Nova senha" required minlength="6" />
+                  <input name="confirmPassword" type="password" [(ngModel)]="passwordModel.confirmPassword" placeholder="Confirmar nova senha" required />
+                  <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button class="btn-action" type="submit" [disabled]="changingPassword">
+                      {{ changingPassword ? 'Salvando...' : 'Salvar nova senha' }}
+                    </button>
+                    <div *ngIf="passwordError" class="error" style="align-self:center;">{{ passwordError }}</div>
+                    <div *ngIf="passwordSuccess" class="success" style="align-self:center;">{{ passwordSuccess }}</div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

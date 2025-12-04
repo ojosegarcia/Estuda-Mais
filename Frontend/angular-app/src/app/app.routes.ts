@@ -44,9 +44,14 @@ export const routes: Routes = [
         component: ProfessorDetalheComponent
       },
       {
-      path: 'perfil/editar', 
-      component: PerfilEditComponent
-    },
+        path: 'perfil/editar',
+        component: PerfilEditComponent
+      },
+      // Rota para detalhe da aula (carrega componente standalone)
+      {
+        path: 'aulas/:id',
+        loadComponent: () => import('./pages/aula-detail/aula-detail.component').then(m => m.AulaDetailComponent)
+      }
     ]
   },
   {

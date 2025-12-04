@@ -1,0 +1,34 @@
+<div *ngIf="loading">Carregando...</div>
+
+<div *ngIf="error" class="error">{{error}}</div>
+
+<div *ngIf="!loading && aula">
+  <h2>Detalhe da Aula</h2>
+
+  <p><strong>ID:</strong> {{aula.id}}</p>
+  <p><strong>Matéria:</strong> {{aula.materia?.nome || aula.idMateria}}</p>
+  <p><strong>Professor:</strong> {{aula.professor?.nomeCompleto || aula.idProfessor}}</p>
+  <p><strong>Aluno:</strong> {{aula.aluno?.nomeCompleto || aula.idAluno}}</p>
+  <p><strong>Data:</strong> {{aula.dataAula}}</p>
+  <p><strong>Horário:</strong> {{aula.horarioInicio}} - {{aula.horarioFim}}</p>
+  <p><strong>Status:</strong> {{aula.statusAula}}</p>
+
+  <div class="actions">
+    <button class="btn btn-primary"
+            (click)="concluirAula()"
+            [disabled]="!podeConcluir() || isConcluding">
+      {{ isConcluding ? 'Aguardando...' : 'Marcar como realizada' }}
+    </button>
+  </div>
+
+  <!-- Exibir link de reunião, se existir -->
+  <div *ngIf="aula.linkReuniao">
+    <p><strong>Link da reunião:</strong> <a [href]="aula.linkReuniao" target="_blank">Entrar na aula</a></p>
+  </div>
+
+  <!-- Feedback: somente se realizada -->
+  <section *ngIf="aula.statusAula === 'REALIZADA'">
+    <h3>Feedback</h3>
+    <app-feedback [aula]="aula" [aulaId]="aula.id"></app-feedback>
+  </section>
+</div>

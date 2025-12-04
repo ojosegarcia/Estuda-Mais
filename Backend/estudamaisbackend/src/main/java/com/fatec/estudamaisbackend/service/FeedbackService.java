@@ -33,37 +33,38 @@ public class FeedbackService {
         Aula aula = aulaRepository.findById(dto.getIdAula())
                 .orElseThrow(() -> new RuntimeException("Aula não encontrada com id: " + dto.getIdAula()));
 
+        // 1.1 Verifica status REALIZADA
+        if (aula.getStatusAula() != StatusAula.REALIZADA) {
+            throw new RuntimeException("Feedback só pode ser enviado para aulas com status REALIZADA");
+        }
+
         // 2. Verifica duplicidade (Regra 1:1)
         if (feedbackRepository.findByAulaId(aula.getId()).isPresent()) {
             throw new RuntimeException("Já existe feedback para esta aula.");
         }
 
-        // 3. Busca e valida os Usuários
-        Usuario aluno = usuarioRepository.findById(dto.getIdAluno())
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + dto.getIdAluno()));
-        
-        Usuario professor = usuarioRepository.findById(dto.getIdProfessor())
-                .orElseThrow(() -> new RuntimeException("Professor não encontrado com id: " + dto.getIdProfessor()));
+        // 3. Busca e valida os Usuários (IDs enviados no DTO)
+        // Garantir que o autor informado é participante da aula
+        boolean autorEhAluno = dto.getIdAluno() != null && aula.getAluno() != null && dto.getIdAluno().equals(aula.getAluno().getId());
+        boolean autorEhProfessor = dto.getIdProfessor() != null && aula.getProfessor() != null && dto.getIdProfessor().equals(aula.getProfessor().getId());
 
-        // 4. Valida os Tipos de Usuário
-        // Como Usuario é a classe pai, precisamos garantir que o ID do aluno é de um ALUNO mesmo.
-        // Nota: O Hibernate faz o proxy, então às vezes instanceof pode falhar se não inicializar.
-        // Mas como usamos JOINED inheritance, o tipo real deve vir correto.
-        // Uma alternativa segura é verificar strings: if (!"ALUNO".equals(aluno.getTipoUsuario())) ...
-        
-        // 5. Monta a Entidade
+        if (!autorEhAluno && !autorEhProfessor) {
+            throw new RuntimeException("Apenas participantes da aula (aluno ou professor) podem enviar feedback.");
+        }
+
+        // 4. Monta a Entidade
         Feedback f = new Feedback();
         f.setAula(aula);
-        f.setIdAluno(aluno.getId());         // Setando ID direto
-        f.setIdProfessor(professor.getId()); // Setando ID direto
-        
+        if (autorEhAluno) f.setIdAluno(dto.getIdAluno());
+        if (autorEhProfessor) f.setIdProfessor(dto.getIdProfessor());
+
         f.setNota(dto.getNota());
         f.setComentarioPrivado(dto.getComentarioPrivado());
         f.setComentarioPublico(dto.getComentarioPublico());
         f.setRecomenda(dto.getRecomenda() != null ? dto.getRecomenda() : true);
         f.setDataFeedback(LocalDateTime.now());
 
-        // 6. Salva e Retorna DTO
+        // 5. Salva e Retorna DTO
         Feedback salvo = feedbackRepository.save(f);
         return feedbackMapper.toDto(salvo);
     }

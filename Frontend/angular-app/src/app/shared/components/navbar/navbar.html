@@ -11,8 +11,14 @@
       </button>
 
       <div class="user-menu-wrapper">
+        <!-- Avatar: mostra imagem se existir, senão as iniciais -->
         <button class="user-avatar" (click)="toggleUserMenu()" [class.active]="isUserMenuOpen()">
-          <span class="avatar-initials">{{ getUserInitials() }}</span>
+          <ng-container *ngIf="currentUser?.fotoPerfil; else initialsTpl">
+            <img [src]="currentUser?.fotoPerfil" alt="avatar" class="avatar-img" />
+          </ng-container>
+          <ng-template #initialsTpl>
+            <span class="avatar-initials">{{ getUserInitials(currentUser?.nomeCompleto) }}</span>
+          </ng-template>
         </button>
 
         <div class="user-dropdown" *ngIf="isUserMenuOpen()">

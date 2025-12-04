@@ -1,0 +1,20 @@
+<div class="feedback-widget">
+  <div *ngIf="existingFeedback">
+    <p><strong>Nota:</strong> {{existingFeedback.nota}}</p>
+    <p *ngIf="existingFeedback.comentarioPublico"><strong>Comentário:</strong> {{existingFeedback.comentarioPublico}}</p>
+    <p><small>Enviado em: {{existingFeedback.dataFeedback}}</small></p>
+  </div>
+
+  <div *ngIf="!existingFeedback">
+    <form [formGroup]="feedbackForm" (ngSubmit)="submit()">
+      <label>Nota</label>
+      <input type="number" formControlName="nota" min="1" max="5" />
+      <label>Comentário público</label>
+      <textarea formControlName="comentarioPublico"></textarea>
+      <label>Comentário privado</label>
+      <textarea formControlName="comentarioPrivado"></textarea>
+      <label><input type="checkbox" formControlName="recomenda" /> Recomenda</label>
+      <button type="submit" [disabled]="feedbackForm.invalid || !canSubmit()">Enviar</button>
+    </form>
+  </div>
+</div>
