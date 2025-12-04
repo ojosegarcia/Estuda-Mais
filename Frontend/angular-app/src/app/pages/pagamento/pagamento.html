@@ -1,0 +1,81 @@
+<div class="pagamento-wrap">
+  <div class="pagamento-card" *ngIf="!loading && aula; else loadingTpl">
+    <div class="left">
+      <div class="professor">
+        <div class="avatar">{{ getIniciais(aula.professor?.nomeCompleto) }}</div>
+        <div class="prof-info">
+          <div class="prof-name">{{ aula.professor?.nomeCompleto || 'Professor' }}</div>
+          <div class="prof-sub">{{ aula.materia?.nome || 'Matéria' }}</div>
+        </div>
+      </div>
+
+      <div class="aula-details">
+        <div class="row">
+          <span class="label">Data</span>
+          <span class="value">{{ formatarData(aula.dataAula) }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Horário</span>
+          <span class="value">{{ aula.horarioInicio }} • {{ aula.horarioFim }}</span>
+        </div>
+        <div class="row total-row">
+          <span class="label">Total</span>
+          <span class="amount">R$ {{ (aula.valorAula || 0) | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="note">
+          Esta é uma simulação de pagamento — nenhuma cobrança será realizada.
+        </div>
+      </div>
+    </div>
+
+    <form class="right" (ngSubmit)="confirmarPagamento()">
+      <h3 class="form-title">Pagamento</h3>
+
+      <div class="input-group">
+        <label class="floating">
+          <input type="text" [(ngModel)]="nomeAluno" name="nomeAluno" required [disabled]="processing" />
+          <span>Nome no cartão</span>
+        </label>
+      </div>
+
+      <div class="input-group">
+        <label class="floating">
+          <input type="text" [(ngModel)]="cartao" name="cartao" maxlength="19" placeholder="0000 0000 0000 0000"
+                 [disabled]="processing" />
+          <span>Número do cartão</span>
+        </label>
+   
+      </div>
+
+      <div class="row split">
+        <label class="floating small">
+          <input type="text" [(ngModel)]="validade" name="validade" placeholder="MM/AA" [disabled]="processing" />
+          <span>Validade</span>
+        </label>
+
+        <label class="floating small">
+          <input type="text" [(ngModel)]="cvv" name="cvv" maxlength="4" [disabled]="processing" />
+          <span>CVV</span>
+        </label>
+      </div>
+
+    
+
+      <div class="actions">
+        <button type="submit" class="btn-primary" [disabled]="processing" aria-label="confirmar pagamento">
+          <span *ngIf="!processing">Confirmar pagamento</span>
+          <span *ngIf="processing" class="spinner" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancelar()" [disabled]="processing">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="loading-panel">
+      <div class="spinner big"></div>
+      <div class="loading-text">Carregando dados da aula...</div>
+    </div>
+  </ng-template>
+</div>

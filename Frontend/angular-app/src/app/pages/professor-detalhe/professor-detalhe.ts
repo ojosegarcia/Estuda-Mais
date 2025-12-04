@@ -179,8 +179,8 @@ export class ProfessorDetalheComponent implements OnInit {
     this.aulaService.solicitarAula(novaAula).subscribe({
       next: (aulaCriada) => {
         console.log('✅ Aula criada com sucesso:', aulaCriada);
-        alert('Solicitação de aula enviada com sucesso! Aguarde a confirmação do professor.');
-        this.router.navigate(['/minhas-aulas']);
+        // navegar para tela de pagamento fictícia, passando a aula no navigation state
+        this.router.navigate(['/pagamento'], { state: { aula: aulaCriada } });
       },
       error: (err) => {
         console.error('❌ Erro ao solicitar aula:', err);

@@ -43,6 +43,11 @@ export const routes: Routes = [
         path: 'professor-detalhe/:id',
         component: ProfessorDetalheComponent
       },
+      // Adicione este objeto dentro do children: [ ... ] (no mesmo nível de outras rotas)
+{
+  path: 'pagamento',
+  loadComponent: () => import('./pages/pagamento/pagamento').then(m => m.PagamentoComponent)
+},
       {
         path: 'perfil/editar',
         component: PerfilEditComponent
