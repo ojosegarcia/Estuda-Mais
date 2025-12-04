@@ -24,6 +24,10 @@ public class UpdateUsuarioDTO {
     private String sexo;
     
     private String fotoPerfil; // Não obrigatório
+
+    // ADICIONADO: campo opcional para alteração de senha via PUT /api/usuarios/{id}
+    @Size(min = 6, max = 100, message = "Senha deve ter ao menos 6 caracteres")
+    private String password;
     
     // Campos de Aluno
     private String escolaridade;

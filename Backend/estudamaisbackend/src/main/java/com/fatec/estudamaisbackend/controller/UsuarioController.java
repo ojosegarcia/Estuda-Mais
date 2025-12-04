@@ -128,6 +128,13 @@ public class UsuarioController {
                 if (dto.getDataNascimento() != null) aluno.setDataNascimento(dto.getDataNascimento());
                 if (dto.getEscolaridade() != null) aluno.setEscolaridade(dto.getEscolaridade());
                 if (dto.getInteresse() != null) aluno.setInteresse(dto.getInteresse());
+
+                // TRATAMENTO DE SENHA: se o payload trouxe password, encode e aplica
+                if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+                    String encoded = passwordEncoder.encode(dto.getPassword());
+                    aluno.setPassword(encoded);
+                    System.out.println("🔒 Senha atualizada para Aluno id=" + id);
+                }
                 
                 return ResponseEntity.ok(alunoService.update(id, aluno)); // Use create ou update se existir
                 
@@ -146,6 +153,13 @@ public class UsuarioController {
                 if (dto.getLinkPadraoAula() != null) professor.setLinkPadraoAula(dto.getLinkPadraoAula());
                 if (dto.getUsarLinkPadrao() != null) professor.setUsarLinkPadrao(dto.getUsarLinkPadrao());
                 
+                // TRATAMENTO DE SENHA para Professor
+                if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+                    String encoded = passwordEncoder.encode(dto.getPassword());
+                    professor.setPassword(encoded);
+                    System.out.println("🔒 Senha atualizada para Professor id=" + id);
+                }
+
                 // Chamada Correta do Service com IDs
                 Professor result = professorService.updateComMaterias(id, professor, dto.getMateriaIds());
                 

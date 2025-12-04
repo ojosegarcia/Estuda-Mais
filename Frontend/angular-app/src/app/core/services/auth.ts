@@ -77,6 +77,7 @@ export class AuthService {
         }
       });
   }
+
   private setSession(usuario: Usuario): void {
     console.log('🔍 AuthService.setSession - Salvando na sessão:', {
       id: usuario.id,
@@ -119,6 +120,10 @@ export class AuthService {
     return this.isLoggedInSubject.value;
   }
 
+  /**
+   * Atualiza perfil no backend e faz MERGE seguro com o usuário atual em sessão.
+   * Evita sobrescrever fotoPerfil e outros campos ausentes na resposta.
+   */
   updateUserProfile(payload: any, usuarioId: number): Observable<Usuario> {
     console.log('🔍 AuthService.updateUserProfile - Iniciando atualização:', {
       id: usuarioId,
@@ -130,10 +135,12 @@ export class AuthService {
         console.log('✅ AuthService.updateUserProfile - Backend respondeu:', {
           id: usuarioAtualizado.id,
           nomeCompleto: usuarioAtualizado.nomeCompleto,
-          tipoUsuario: usuarioAtualizado.tipoUsuario
+          tipoUsuario: usuarioAtualizado.tipoUsuario,
+          fotoPerfilReturned: (usuarioAtualizado as any)?.fotoPerfil
         });
-        this.setSession(usuarioAtualizado);
-        console.log('✅ AuthService.updateUserProfile - Sessão atualizada no localStorage e BehaviorSubject');
+        // em vez de setSession direto, fazemos merge para preservar campos existentes
+        this.refreshCurrentUserSessionWithMerge(usuarioAtualizado);
+        console.log('✅ AuthService.updateUserProfile - Sessão atualizada (merge) no localStorage e BehaviorSubject');
       }),
       catchError(err => {
         console.error('❌ AuthService.updateUserProfile - Erro ao atualizar perfil:', err);
@@ -163,11 +170,34 @@ export class AuthService {
 
     return true;
   }
+
+  /**
+   * Atualiza a sessão com 'usuario' MERGEando com o usuário atual.
+   * Preserva fotoPerfil se a resposta não trouxer.
+   */
   refreshCurrentUserSession(usuario: Usuario): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+    // manter compatibilidade com código existente: chama a função de merge
+    this.refreshCurrentUserSessionWithMerge(usuario);
+  }
+
+  private refreshCurrentUserSessionWithMerge(usuario: Usuario): void {
+    const current = this.getCurrentUserFromStorage() || this.currentUserSubject.value || null;
+    let merged: any;
+    if (current) {
+      merged = { ...current, ...(usuario || {}) };
+      // preserva fotoPerfil se backend não retornar
+      if ((!merged.fotoPerfil || merged.fotoPerfil === '') && (current as any).fotoPerfil) {
+        merged.fotoPerfil = (current as any).fotoPerfil;
+      }
+    } else {
+      merged = usuario;
     }
-    this.currentUserSubject.next(usuario);
+
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('usuarioLogado', JSON.stringify(merged));
+      console.log('✅ refreshCurrentUserSessionWithMerge - localStorage salvo (merge)');
+    }
+    // não alteramos isLoggedInSubject (assume que se já estava logado continua)
+    this.currentUserSubject.next(merged);
   }
 }
-
