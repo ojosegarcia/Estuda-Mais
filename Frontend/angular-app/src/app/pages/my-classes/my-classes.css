@@ -771,3 +771,141 @@
     width: 100%;
   }
 }
+/* ========== FEEDBACK MODAL ========== */
+.feedback-modal {
+  max-width: 550px;
+}
+
+.professor-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.professor-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.professor-info h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.professor-info p {
+  margin: 0.25rem 0 0 0;
+  opacity: 0.9;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: var(--text-primary);
+}
+
+.char-counter {
+  display: block;
+  text-align: right;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.feedback-display {
+  background: rgba(59, 130, 246, 0.1);
+  border-top: 2px solid var(--primary-color);
+  padding: 1rem;
+}
+
+.feedback-info strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.feedback-text {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.feedback-date {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  margin-top: 0.5rem;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Feedback Badge para Professor */
+.feedback-badge {
+  display: flex;
+  align-items: center;
+}
+
+.feedback-icon {
+  font-size: 1.5rem;
+  cursor: help;
+}
+
+/* Feedback Content para Professor */
+.feedback-content {
+  width: 100%;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.feedback-box {
+  background: rgba(59, 130, 246, 0.1);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--primary-color);
+}
+
+.feedback-box strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.feedback-box p {
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.feedback-box small {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.class-item .status-realizada .feedback-content {
+  display: block;
+}

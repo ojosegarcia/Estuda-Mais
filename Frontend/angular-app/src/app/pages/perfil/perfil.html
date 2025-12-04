@@ -114,13 +114,13 @@
         </div>
         <div class="card-body">
           <div class="stats-grid">
-            <div class="stat-item">
-              <div class="stat-icon">📚</div>
-              <div class="stat-content">
-                <p class="stat-value">0</p>
-                <p class="stat-label">Aulas {{ isProfessor(currentUser) ? 'Ministradas' : 'Realizadas' }}</p>
-              </div>
-            </div>
+          <div class="stat-item">
+  <div class="stat-icon">📚</div>
+  <div class="stat-content">
+    <p class="stat-value">{{ aulasRealizadas }}</p>
+    <p class="stat-label">Aulas {{ isProfessor(currentUser) ? 'Ministradas' : 'Realizadas' }}</p>
+  </div>
+</div>
           </div>
         </div>
       </div>

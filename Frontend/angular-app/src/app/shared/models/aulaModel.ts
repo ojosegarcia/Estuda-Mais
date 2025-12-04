@@ -1,7 +1,7 @@
 ﻿import { Aluno } from './alunoModel';
 import { Professor } from './professorModel';
 import { Materia } from './materiaModel';
-
+import { Feedback } from './feedbackModel';
 
 export type StatusAula = 
   | 'SOLICITADA' 
@@ -19,11 +19,11 @@ export interface Aula {
   professor?: Professor;
   aluno?: Aluno;
   materia?: Materia;
+  feedback?: Feedback; // ← NOVO
   
   dataAula: string; 
   horarioInicio: string;
   horarioFim: string;
-  
   
   statusAula: StatusAula; 
   
@@ -31,7 +31,6 @@ export interface Aula {
   valorAula: number;
   dataCriacao: string;
   
-  // Controle de exclusão independente
   removidoPeloAluno?: boolean;
   removidoPeloProfessor?: boolean;
 }

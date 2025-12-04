@@ -10,21 +10,21 @@
   </div>
 
   <div *ngIf="isLoading" class="loading-state">
-    <p>Carregando...</p>
+    <p>Carregando... </p>
   </div>
 
-  <ng-container *ngIf="aulas$ | async as aulas">
+  <ng-container *ngIf="! isLoading">
 
     <div class="classes-content" *ngIf="isAluno()">
       
-      <div class="empty-state" *ngIf="aulas.length === 0 && !isLoading">
+      <div class="empty-state" *ngIf="aulas. length === 0">
         <div class="empty-icon">📚</div>
         <h3>Nenhuma aula agendada</h3>
         <p>Você ainda não tem aulas marcadas.</p>
         <a routerLink="/home" class="btn-primary">Encontrar Professores</a>
       </div>
 
-      <div class="classes-grid" *ngIf="aulas.length > 0">
+      <div class="classes-grid" *ngIf="aulas. length > 0">
         <div class="class-card" *ngFor="let aula of aulas" [ngClass]="getStatusClass(aula.statusAula)">
           <div class="card-header">
             <h3 class="class-subject">
@@ -62,9 +62,25 @@
               🔗 Acessar Aula
             </button>
           </div>
+
+          <!-- NOVO: Botão Finalizar Aula -->
+          <div class="card-footer" *ngIf="aula.statusAula === 'CONFIRMADA'">
+            <button class="btn-success btn-sm" (click)="abrirModalFeedback(aula)">
+              ✅ Finalizar Aula
+            </button>
+          </div>
+
+          <!-- NOVO: Exibir Feedback -->
+          <div class="card-footer feedback-display" *ngIf="aula.statusAula === 'REALIZADA' && aula.feedback">
+            <div class="feedback-info">
+              <strong>💬 Seu Feedback:</strong>
+              <p class="feedback-text">{{ aula.feedback. comentarioPublico }}</p>
+              <small class="feedback-date">{{ formatarDataFeedback(aula.feedback.dataFeedback) }}</small>
+            </div>
+          </div>
           
-          <div class="card-footer" *ngIf="aula.statusAula === 'CANCELADA' || aula.statusAula === 'RECUSADA'">
-            <button class="btn-secondary btn-sm" (click)="excluirAula(aula.id)">
+          <div class="card-footer" *ngIf="aula. statusAula === 'CANCELADA' || aula.statusAula === 'RECUSADA'">
+            <button class="btn-secondary btn-sm" (click)="excluirAula(aula. id)">
               🗑️ Remover
             </button>
           </div>
@@ -80,7 +96,7 @@
         <div class="stat-card"><div class="stat-number">{{ aulasPendentes }}</div><div class="stat-label">Pendentes</div></div>
       </div>
 
-      <div class="empty-state" *ngIf="aulas.length === 0 && !isLoading">
+      <div class="empty-state" *ngIf="aulas.length === 0">
         <div class="empty-icon">🔔</div>
         <h3>Nenhuma solicitação de aula</h3>
         <p>Você ainda não tem aulas na sua agenda.</p>
@@ -97,7 +113,7 @@
               <p class="class-details">
                 <span class="subject-tag">📚 {{ getMateriaNome(aula) }}</span>
                 <span class="separator">•</span>
-                <span>{{ formatarData(aula.dataAula) }} às {{ aula.horarioInicio }}</span>
+                <span>{{ formatarData(aula. dataAula) }} às {{ aula.horarioInicio }}</span>
               </p>
             </div>
           </div>
@@ -109,15 +125,29 @@
             
             <div class="action-buttons" *ngIf="aula.statusAula === 'SOLICITADA'">
               <button class="btn-icon btn-success" (click)="abrirModalAceitarAula(aula)" title="Aceitar Aula">✔️</button>
-              <button class="btn-icon btn-danger" (click)="recusarAula(aula.id)" title="Recusar Aula">❌</button>
+              <button class="btn-icon btn-danger" (click)="recusarAula(aula. id)" title="Recusar Aula">❌</button>
             </div>
 
             <div class="action-buttons" *ngIf="aula.statusAula === 'CONFIRMADA'">
               <button class="btn-icon btn-danger" (click)="cancelarAula(aula.id)" title="Cancelar Aula">❌</button>
             </div>
+
+            <!-- Ícone de feedback recebido -->
+            <div class="feedback-badge" *ngIf="aula.statusAula === 'REALIZADA' && aula.feedback">
+              <span class="feedback-icon" title="Feedback recebido">💬</span>
+            </div>
             
             <div class="action-buttons" *ngIf="aula.statusAula === 'CANCELADA' || aula.statusAula === 'RECUSADA'">
               <button class="btn-icon btn-secondary" (click)="excluirAula(aula.id)" title="Remover Permanentemente">🗑️</button>
+            </div>
+          </div>
+
+          <!-- Exibir conteúdo do feedback para professor -->
+          <div class="feedback-content" *ngIf="aula.statusAula === 'REALIZADA' && aula.feedback">
+            <div class="feedback-box">
+              <strong>💬 Feedback do Aluno:</strong>
+              <p>{{ aula.feedback.comentarioPublico }}</p>
+              <small>{{ formatarDataFeedback(aula.feedback.dataFeedback) }}</small>
             </div>
           </div>
         </div>
@@ -148,7 +178,7 @@
           placeholder="https://zoom.us/j/123456789 ou https://meet.google.com/xxx-yyyy-zzz"
           (input)="linkInvalido = false">
         <small class="form-hint">Cole aqui o link do Zoom, Google Meet, Microsoft Teams ou outra plataforma</small>
-        <small class="form-error" *ngIf="linkInvalido">❌ Link inválido! Use um link de videoconferência válido.</small>
+        <small class="form-error" *ngIf="linkInvalido">❌ Link inválido!  Use um link de videoconferência válido. </small>
       </div>
       
       <div class="form-group checkbox-group">
@@ -166,15 +196,60 @@
         <ul>
           <li>🟦 Zoom: <code>https://zoom.us/j/123456789</code></li>
           <li>🟩 Google Meet: <code>https://meet.google.com/abc-defg-hij</code></li>
-          <li>🟪 Microsoft Teams: <code>https://teams.microsoft.com/l/meetup-join/...</code></li>
+          <li>🟪 Microsoft Teams: <code>https://teams.microsoft.com/l/meetup-join/... </code></li>
         </ul>
       </div>
     </div>
     
     <div class="modal-footer">
       <button class="btn-secondary" (click)="fecharModalLink()">Cancelar</button>
-      <button class="btn-primary" (click)="confirmarAceitacaoComLink()" [disabled]="!linkReuniao.trim()">
+      <button class="btn-primary" (click)="confirmarAceitacaoComLink()" [disabled]="!linkReuniao. trim()">
         ✅ Aceitar Aula
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- NOVO: Modal de Feedback -->
+<div class="modal-overlay" *ngIf="showFeedbackModal" (click)="fecharModalFeedback()">
+  <div class="modal-content feedback-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>🎉 Finalizar Aula</h2>
+      <button class="btn-close" (click)="fecharModalFeedback()">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="professor-card">
+        <div class="professor-avatar">
+          {{ getIniciais(getProfessorNome(aulaParaFeedback! )) }}
+        </div>
+        <div class="professor-info">
+          <h3>{{ getProfessorNome(aulaParaFeedback!) }}</h3>
+          <p>{{ getMateriaNome(aulaParaFeedback!) }}</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="feedback">Como foi sua experiência com o professor?  💭</label>
+        <textarea 
+          id="feedback"
+          class="form-control"
+          [(ngModel)]="feedbackComentario"
+          placeholder="Compartilhe sua opinião sobre a aula..."
+          rows="5"
+          maxlength="500"
+        ></textarea>
+        <small class="char-counter">{{ feedbackComentario.length }}/500 caracteres</small>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="fecharModalFeedback()">Cancelar</button>
+      <button 
+        class="btn-primary" 
+        (click)="finalizarAulaComFeedback()"
+        [disabled]="!feedbackComentario.trim()">
+        ✅ Enviar e Finalizar
       </button>
     </div>
   </div>

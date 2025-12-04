@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router'; 
 import { Usuario } from '../../shared/models/usuarioModel';
 import { Professor } from '../../shared/models/professorModel';
-import { Aula } from '../../shared/models'; 
+import { Aula, Feedback } from '../../shared/models'; 
 import { AulaService } from '../../core/services/aula';
 import { AuthService } from '../../core/services/auth';
+import { FeedbackService } from '../../core/services/feedback';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -21,6 +22,7 @@ export class MyClassesComponent implements OnInit {
   currentUser: Usuario | null = null;
   isLoading = true;
   aulas$!: Observable<Aula[]>;
+  aulas: Aula[] = [];
   
   totalAulas = 0;
   aulasConfirmadas = 0;
@@ -33,10 +35,16 @@ export class MyClassesComponent implements OnInit {
   usarLinkPadrao = false;
   linkInvalido = false;
 
+  // NOVO: Modal de Feedback
+  showFeedbackModal = false;
+  aulaParaFeedback: Aula | null = null;
+  feedbackComentario = '';
+
   constructor(
     private router: Router,
     private authService: AuthService,
-    private aulaService: AulaService
+    private aulaService: AulaService,
+    private feedbackService: FeedbackService
   ) {}
 
   ngOnInit(): void {
@@ -56,28 +64,46 @@ export class MyClassesComponent implements OnInit {
   }
 
   carregarAulas(): void {
-    if (!this.currentUser) {
+    if (! this.currentUser) {
       this.isLoading = false;
       return;
     }
     
     this.isLoading = true;
-    this.aulas$ = this.aulaService.getAulasPorUsuarioLogado().pipe(
+    this.aulas$ = this.aulaService.getAulasPorUsuarioLogado(). pipe(
       map(aulas => this.ordenarAulasPorStatus(aulas))
     );
 
     this.aulas$.subscribe(aulas => {
+      this.aulas = aulas;
+      
       if (this.isProfessor()) {
         this.totalAulas = aulas.length;
         this.aulasConfirmadas = aulas.filter(a => a.statusAula === 'CONFIRMADA').length;
         this.aulasPendentes = aulas.filter(a => a.statusAula === 'SOLICITADA').length;
       }
+      
+      // Carrega feedbacks para aulas REALIZADAS
+      aulas
+        .filter(a => a. statusAula === 'REALIZADA')
+        .forEach(aula => {
+          this.feedbackService.buscarPorAula(aula.id).subscribe({
+            next: (feedback) => {
+              aula.feedback = feedback;
+              console.log('✅ Feedback carregado para aula', aula.id, feedback);
+            },
+            error: () => {
+              console. log('⚠️ Sem feedback para aula', aula.id);
+            }
+          });
+        });
+      
       this.isLoading = false;
     });
   }
 
   isProfessor(): boolean {
-    return this.currentUser?.tipoUsuario === 'PROFESSOR';
+    return this.currentUser?. tipoUsuario === 'PROFESSOR';
   }
 
   isAluno(): boolean {
@@ -93,24 +119,20 @@ export class MyClassesComponent implements OnInit {
       },
       error: (err) => {
         console.error('❌ Erro ao confirmar aula:', err);
-        alert('Erro ao confirmar aula. Tente novamente.');
+        alert('Erro ao confirmar aula.  Tente novamente.');
       }
     });
   }
 
-  /**
-   * Abre modal para professor inserir link antes de aceitar
-   */
   abrirModalAceitarAula(aula: Aula): void {
     this.aulaParaAceitar = aula;
     this.showLinkModal = true;
     this.linkInvalido = false;
     
-    // Se tem link padrão configurado, preenche automaticamente
     const professor = this.currentUser as Professor;
-    if (professor?.linkPadraoAula && professor?.usarLinkPadrao) {
+    if (professor?. linkPadraoAula && professor?. usarLinkPadrao) {
       this.linkReuniao = professor.linkPadraoAula;
-      this.usarLinkPadrao = true;
+      this. usarLinkPadrao = true;
     }
   }
 
@@ -122,17 +144,14 @@ export class MyClassesComponent implements OnInit {
     this.linkInvalido = false;
   }
 
-  /**
-   * Valida se o link é válido (Zoom, Meet, Teams ou URL genérica)
-   */
   validarLink(link: string): boolean {
     if (!link || link.trim() === '') return false;
     
     const linkLower = link.toLowerCase();
     const plataformasValidas = [
-      'zoom.us',
+      'zoom. us',
       'meet.google.com',
-      'teams.microsoft.com',
+      'teams. microsoft.com',
       'teams.live.com',
       'http://',
       'https://'
@@ -141,28 +160,24 @@ export class MyClassesComponent implements OnInit {
     return plataformasValidas.some(plataforma => linkLower.includes(plataforma));
   }
 
-  /**
-   * Confirma aceitação da aula com o link fornecido
-   */
   confirmarAceitacaoComLink(): void {
     if (!this.aulaParaAceitar) return;
 
     const linkTrimmed = this.linkReuniao.trim();
 
-    if (!this.validarLink(linkTrimmed)) {
-      this.linkInvalido = true;
-      alert('❌ Link inválido! Use um link de Zoom, Google Meet, Microsoft Teams ou URL válida (http/https).');
+    if (! this.validarLink(linkTrimmed)) {
+      this. linkInvalido = true;
+      alert('❌ Link inválido!  Use um link de Zoom, Google Meet, Microsoft Teams ou URL válida (http/https).');
       return;
     }
 
     this.aulaService.aceitarAulaComLink(this.aulaParaAceitar.id, linkTrimmed).subscribe({
       next: () => {
-        console.log('✅ Aula aceita com link!');
-        alert('✅ Aula confirmada com sucesso! O aluno receberá o link da reunião.');
+        console.log('✅ Aula aceita com link! ');
+        alert('✅ Aula confirmada com sucesso!  O aluno receberá o link da reunião.');
         this.fecharModalLink();
         this.carregarAulas();
         
-        // TODO: Salvar link padrão se checkbox marcado
         if (this.usarLinkPadrao) {
           console.log('💾 Link padrão salvo para próximas aulas');
         }
@@ -175,7 +190,7 @@ export class MyClassesComponent implements OnInit {
   }
 
   recusarAula(aulaId: number): void {
-    if (confirm('Tem certeza que deseja recusar esta aula?')) {
+    if (confirm('Tem certeza que deseja recusar esta aula? ')) {
       this.aulaService.recusarAula(aulaId).subscribe({
         next: () => {
           console.log('✅ Aula recusada.');
@@ -199,7 +214,7 @@ export class MyClassesComponent implements OnInit {
           this.carregarAulas();
         },
         error: (err) => {
-          console.error('❌ Erro ao cancelar aula:', err);
+          console. error('❌ Erro ao cancelar aula:', err);
           alert('Erro ao cancelar aula. Tente novamente.');
         }
       });
@@ -207,8 +222,8 @@ export class MyClassesComponent implements OnInit {
   }
 
   excluirAula(aulaId: number): void {
-    if (confirm('Tem certeza que deseja EXCLUIR permanentemente esta aula? Esta ação não pode ser desfeita.')) {
-      this.aulaService.excluirAula(aulaId).subscribe({
+    if (confirm('Tem certeza que deseja EXCLUIR permanentemente esta aula?  Esta ação não pode ser desfeita.')) {
+      this. aulaService.excluirAula(aulaId).subscribe({
         next: () => {
           console.log('✅ Aula excluída permanentemente.');
           alert('Aula removida com sucesso.');
@@ -226,26 +241,82 @@ export class MyClassesComponent implements OnInit {
     alert(`Reagendar aula #${aulaId} - Funcionalidade em desenvolvimento`);
   }
 
-  /**
-   * Abre o link da reunião em nova aba
-   */
   acessarAula(aula: Aula): void {
-    if (!aula.linkReuniao) {
+    if (! aula.linkReuniao) {
       alert('❌ Link da reunião não disponível ainda.');
       return;
     }
-
-    // Abre em nova aba
     window.open(aula.linkReuniao, '_blank');
     console.log('🔗 Abrindo link da aula:', aula.linkReuniao);
   }
 
-  /**
-   * Verifica se o botão "Acessar Aula" deve estar habilitado
-   */
   podeAcessarAula(aula: Aula): boolean {
     return aula.statusAula === 'CONFIRMADA' && !!aula.linkReuniao;
   }
+
+  // ========== FEEDBACK: NOVOS MÉTODOS ==========
+
+  abrirModalFeedback(aula: Aula): void {
+    this.aulaParaFeedback = aula;
+    this.feedbackComentario = '';
+    this.showFeedbackModal = true;
+  }
+
+  fecharModalFeedback(): void {
+    this.showFeedbackModal = false;
+    this. aulaParaFeedback = null;
+    this.feedbackComentario = '';
+  }
+
+  finalizarAulaComFeedback(): void {
+    if (! this.aulaParaFeedback || !this.feedbackComentario.trim()) {
+      alert('❌ Por favor, escreva um comentário antes de finalizar.');
+      return;
+    }
+
+    const aulaId = this.aulaParaFeedback.id;
+
+    // 1. Marcar aula como REALIZADA
+    this.aulaService.concluirAula(aulaId).subscribe({
+      next: () => {
+        // 2. Criar feedback
+        const feedbackData: Partial<Feedback> = {
+          idAula: aulaId,
+          idAluno: this.currentUser! .id,
+          idProfessor: this.aulaParaFeedback! .idProfessor,
+          comentarioPublico: this. feedbackComentario.trim(),
+          nota: 5,
+          recomenda: true
+        };
+
+        this.feedbackService.criarFeedback(feedbackData).subscribe({
+          next: () => {
+            alert('🎉 Aula finalizada com sucesso!  Obrigado pelo feedback.');
+            this.fecharModalFeedback();
+            this.carregarAulas();
+          },
+          error: (err) => {
+            console. error('Erro ao enviar feedback:', err);
+            alert('Aula finalizada, mas houve erro ao enviar feedback.');
+            this.fecharModalFeedback();
+            this.carregarAulas();
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Erro ao finalizar aula:', err);
+        alert('❌ Erro ao finalizar aula. Tente novamente.');
+      }
+    });
+  }
+
+  formatarDataFeedback(data: string): string {
+    if (!data) return '';
+    const d = new Date(data);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  // ========== MÉTODOS AUXILIARES ==========
 
   private ordenarAulasPorStatus(aulas: Aula[]): Aula[] {
     const ordemPrioridade: { [key: string]: number } = {
@@ -264,15 +335,15 @@ export class MyClassesComponent implements OnInit {
   }
 
   getIniciais(nome: string): string {
-    if (!nome) return '??';
+    if (!nome) return '?? ';
     const names = nome.split(' ');
-    if (names.length === 1) return names[0].substring(0, 2).toUpperCase();
-    return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+    if (names.length === 1) return names[0]. substring(0, 2). toUpperCase();
+    return (names[0][0] + names[names.length - 1][0]). toUpperCase();
   }
 
   formatarData(data: string): string {
     if (!data) return 'Data não informada';
-    const [ano, mes, dia] = data.split('-');
+    const [ano, mes, dia] = data. split('-');
     return `${dia}/${mes}/${ano}`;
   }
 
@@ -282,17 +353,17 @@ export class MyClassesComponent implements OnInit {
       'CONFIRMADA': 'Confirmada',
       'RECUSADA': 'Recusada',
       'CANCELADA': 'Cancelada',
-      'REALIZADA': 'Realizada'
+      'REALIZADA': 'Concluída'
     };
     return labels[status] || status;
   }
 
   getStatusClass(status: string): string {
-    return `status-${status.toLowerCase()}`;
+    return `status-${status. toLowerCase()}`;
   }
   
   getMateriaNome(aula: Aula): string {
-    return aula.materia?.nome || `Matéria ID: ${aula.idMateria}`;
+    return aula.materia?. nome || `Matéria ID: ${aula.idMateria}`;
   }
   
   getProfessorNome(aula: Aula): string {
