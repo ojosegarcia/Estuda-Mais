@@ -1,4 +1,6 @@
-﻿/* ==================== LAYOUT PRINCIPAL ==================== */
+﻿/* Melhor espaçamento e alinhamento para a tela de login (arquivo usado pelo template existente) */
+
+/* ==================== LAYOUT PRINCIPAL ==================== */
 .login-page {
   display: flex;
   min-height: 100vh;
